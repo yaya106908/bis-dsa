@@ -362,43 +362,40 @@
     const terrainGeom = new THREE.PlaneGeometry(WIDTH, DEPTH, TIME_SEGMENTS - 1, FREQ_SEGMENTS - 1);
     terrainGeom.rotateX(-Math.PI / 2); // Lay horizontal on X-Z
 
-    // Colormap calculation (Standard Clinical Spectrogram Heatmap)
+    // Colormap calculation (Clinical Spectrogram Heatmap: Pure Vivid Colors, Red Never Fades)
     function powerToColor(val) {
       val = Math.max(0, Math.min(1, val));
       const color = new THREE.Color();
       if (val < 0.15) {
-        // Deep Navy to Blue
-        color.setRGB(0, 0, 0.3 + val * 3.5);
-      } else if (val < 0.35) {
-        // Blue to Cyan
-        const t = (val - 0.15) / 0.2;
-        color.setRGB(0, 0.4 + t * 0.6, 1);
-      } else if (val < 0.55) {
-        // Cyan to Green / Lime
-        const t = (val - 0.35) / 0.2;
-        color.setRGB(t * 0.8, 1, 1 - t * 0.9);
-      } else if (val < 0.75) {
-        // Yellow to Orange
-        const t = (val - 0.55) / 0.2;
-        color.setRGB(1, 1 - t * 0.5, 0);
-      } else if (val < 0.9) {
-        // Orange to Crimson Red
-        const t = (val - 0.75) / 0.15;
-        color.setRGB(1, 0.5 - t * 0.5, 0);
+        // Deep Navy to Dark Blue
+        color.setRGB(0.0, 0.05, 0.4 + val * 3.0);
+      } else if (val < 0.32) {
+        // Blue to Vibrant Cyan
+        const t = (val - 0.15) / 0.17;
+        color.setRGB(0.0, 0.3 + t * 0.7, 1.0);
+      } else if (val < 0.50) {
+        // Cyan to Pure Emerald Green
+        const t = (val - 0.32) / 0.18;
+        color.setRGB(0.0, 1.0, 1.0 - t * 0.9);
+      } else if (val < 0.68) {
+        // Green to Vivid Yellow
+        const t = (val - 0.50) / 0.18;
+        color.setRGB(t * 1.0, 1.0, 0.0);
+      } else if (val < 0.82) {
+        // Yellow to Bright Orange-Red
+        const t = (val - 0.68) / 0.14;
+        color.setRGB(1.0, 0.9 - t * 0.8, 0.0);
       } else {
-        // White-hot peak
-        const t = (val - 0.9) / 0.1;
-        color.setRGB(1, t, t);
+        // PURE CRIMSON RED: Stays intensely red and NEVER washes out to white! (純火紅色，絕不發白、絕不變淡)
+        const t = (val - 0.82) / 0.18;
+        color.setRGB(1.0, 0.1 * (1.0 - t), 0.0);
       }
       return color;
     }
 
-    // Material with Vertex Colors (Bright and vibrant at any viewing distance)
-    const terrainMat = new THREE.MeshStandardMaterial({
+    // Material with Vertex Colors (Self-luminous Basic Material: 100% color fidelity, impervious to shadow washout)
+    const terrainMat = new THREE.MeshBasicMaterial({
       vertexColors: true,
-      roughness: 0.15,
-      metalness: 0.0,
-      flatShading: false,
       side: THREE.DoubleSide
     });
 
@@ -529,9 +526,9 @@
           alertType: "normal",
           alertText: "【臨床指引】維持目前 Propofol 標靶濃度。雙軌分離清晰銳利，Alpha 功率強健，代表丘腦—皮質阻斷完善，POD 發生率最低。",
           formula: (normTime, freqHz) => {
-            const delta = Math.exp(-Math.pow((freqHz - 2.0) / 1.5, 2)) * 0.88;
+            const delta = Math.exp(-Math.pow((freqHz - 2.0) / 1.6, 2)) * 0.95;
             // Clear gap at 4-8 Hz (Theta is near zero)
-            const alpha = Math.exp(-Math.pow((freqHz - 10.2) / 1.2, 2)) * 0.98;
+            const alpha = Math.exp(-Math.pow((freqHz - 10.2) / 1.5, 2)) * 1.05; // Intensely saturated red ridge
             const beta = Math.exp(-Math.pow((freqHz - 22) / 6, 2)) * 0.08;
             return Math.max(0, delta + alpha + beta);
           }
