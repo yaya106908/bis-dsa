@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>麻醉腦電頻譜圖 (DSA) 臨床判讀與 3D ➔ 2D 互動決策系統</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Three.js, OrbitControls, and Tween.js via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #070a0f;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    #canvas-container {
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+    .panel-glass {
+      background: rgba(13, 17, 23, 0.88);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(48, 54, 61, 0.7);
+    }
+    .color-bar-gradient {
+      background: linear-gradient(to top, #000055, #0022cc, #00aaff, #00dd55, #ffff00, #ff5500, #ff0000, #ffffff);
+    }
+    .btn-active-scenario {
+      border-color: #38bdf8 !important;
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.25), rgba(30, 41, 59, 0.8)) !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+    }
+    .btn-active-view {
+      border-color: #34d399 !important;
+      background-color: rgba(52, 211, 153, 0.2) !important;
+      color: #34d399 !important;
+      box-shadow: 0 0 12px rgba(52, 211, 153, 0.35);
+    }
+    .pulse-danger {
+      animation: pulseDanger 1.5s infinite;
+    }
+    @keyframes pulseDanger {
+      0%, 100% { border-color: rgba(239, 68, 68, 0.9); box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); }
+      50% { border-color: rgba(239, 68, 68, 0.3); box-shadow: 0 0 5px rgba(239, 68, 68, 0.2); }
+    }
+    /* Custom Scrollbar for side panels */
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.5);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="select-none">
+
+  <!-- 3D WebGL Canvas Layer -->
+  <div id="canvas-container"></div>
+
+  <!-- Top Global Header & Medical Reference -->
+  <header class="absolute top-3 left-4 right-4 z-20 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
+    <div class="panel-glass px-4 py-2.5 rounded-xl shadow-2xl pointer-events-auto border-l-4 border-l-cyan-400 flex items-center gap-3">
+      <div class="h-3 w-3 rounded-full bg-cyan-400 animate-pulse"></div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="text-sm md:text-base font-extrabold tracking-wide text-white">
+            麻醉腦電頻譜圖 (DSA) 臨床判讀與 3D ➔ 2D 互動決策系統
+          </h1>
+          <span class="text-[10px] px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 font-mono border border-cyan-800/60">
+            Neurophysiologic Spectrogram
+          </span>
+        </div>
+        <p class="text-[11px] text-slate-400 mt-0.5">
+          實證指引：Mukai et al., <em class="text-slate-300">Korean J Anesthesiol</em> (2026) &middot; 全身麻醉迴路動態監測
+        </p>
+      </div>
+    </div>
+
+    <!-- View Mode Switches (3D vs 2D) -->
+    <div class="panel-glass p-1.5 rounded-xl shadow-2xl flex items-center gap-1 pointer-events-auto">
+      <button id="view-3d-btn" onclick="setViewMode('3d')" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 border border-transparent hover:bg-slate-800 text-slate-300 btn-active-view">
+        ⛰️ 3D 頻譜山脈
+      </button>
+      <button id="view-aerial-btn" onclick="setViewMode('aerial')" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 border border-transparent hover:bg-slate-800 text-slate-300">
+        🚁 空照鳥瞰
+      </button>
+      <button id="view-2d-btn" onclick="setViewMode('2d')" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 border border-transparent hover:bg-slate-800 text-slate-300">
+        📟 2D 監測儀 DSA
+      </button>
+      <div class="h-4 w-[1px] bg-slate-700 mx-1"></div>
+      <button id="auto-cycle-btn" onclick="toggleAutoCycle()" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 border border-cyan-500/40 flex items-center gap-1">
+        <svg id="play-icon" class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"></path></svg>
+        <span id="auto-cycle-text">自動巡迴演示</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Scenario Bar (6 Key Clinical Scenarios) -->
+  <nav class="absolute top-18 md:top-16 left-4 right-4 z-20 flex gap-1.5 overflow-x-auto pb-1 pointer-events-none">
+    <div class="panel-glass p-1.5 rounded-xl shadow-2xl flex items-center gap-1.5 pointer-events-auto border border-slate-700/60 max-w-full overflow-x-auto">
+      <span class="text-[11px] font-bold text-slate-400 px-2 uppercase tracking-wider shrink-0 flex items-center gap-1">
+        <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span> 臨床情境：
+      </span>
+
+      <div class="flex items-center gap-1 bg-slate-900/90 p-1 rounded-lg border border-slate-700 shrink-0">
+        <button id="scen-1" onclick="switchScenario(1)" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 btn-active-scenario">
+          1. 正常全身麻醉
+        </button>
+        <!-- Propofol vs Sevo Sub-Toggle -->
+        <div id="gaba-toggle-group" class="flex items-center gap-0.5 bg-slate-950 p-0.5 rounded-md border border-slate-800">
+          <button id="sub-propofol-btn" onclick="switchGabaDrug('propofol')" class="px-2 py-1 rounded text-[10px] font-bold transition-all duration-150 bg-cyan-500/20 text-cyan-300 border border-cyan-500/50">
+            💉 Propofol (TIVA)
+          </button>
+          <button id="sub-sevo-btn" onclick="switchGabaDrug('sevo')" class="px-2 py-1 rounded text-[10px] font-bold transition-all duration-150 text-slate-400 hover:text-slate-200 border border-transparent">
+            🫁 Sevoflurane (吸入)
+          </button>
+        </div>
+      </div>
+
+      <button id="scen-2" onclick="switchScenario(2)" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 shrink-0">
+        2. 體表疼痛刺激 (Beta Arousal)
+      </button>
+
+      <button id="scen-3" onclick="switchScenario(3)" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 shrink-0">
+        3. 內臟痛陷阱 (Delta Arousal) 🚨
+      </button>
+
+      <button id="scen-4" onclick="switchScenario(4)" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 shrink-0">
+        4. 麻醉過深 (Burst Suppression)
+      </button>
+
+      <button id="scen-5" onclick="switchScenario(5)" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 shrink-0">
+        5. 多模式藥物指紋 (Ketamine 解離)
+      </button>
+
+      <button id="scen-6" onclick="switchScenario(6)" class="px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 shrink-0">
+        6. 高齡長者脆弱大腦 (Alpha 衰退)
+      </button>
+    </div>
+  </nav>
+
+  <!-- Left: Real-time Patient Monitor HUD & Raw EEG Oscilloscope -->
+  <!-- Mobile Toggle Button (Visible on Small Screens) -->
+  <div class="md:hidden absolute left-4 bottom-4 z-30 pointer-events-auto">
+    <button id="mobile-hud-toggle" onclick="toggleMobileHUD()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-cyan-600/90 text-white shadow-2xl flex items-center gap-1.5 border border-cyan-400/50 backdrop-blur-md">
+      <span id="mobile-toggle-icon">📊</span>
+      <span id="mobile-toggle-text">監測數據與決策</span>
+    </button>
+  </div>
+
+  <aside id="patient-hud-panel" class="absolute left-4 top-32 md:top-28 bottom-16 md:bottom-4 w-[calc(100vw-2rem)] max-w-sm md:w-88 panel-glass p-4 rounded-2xl shadow-2xl z-20 pointer-events-auto border border-slate-700/70 flex flex-col justify-between overflow-y-auto transition-all duration-300 transform -translate-x-[120%] md:translate-x-0 opacity-0 md:opacity-100 pointer-events-none md:pointer-events-auto">
+    
+    <!-- Top HUD: Processed Indices -->
+    <div>
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+        <span class="text-xs font-bold text-slate-300 tracking-wider flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          床邊即時監測儀數值 (Processed HUD)
+        </span>
+        <span id="emg-badge" class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">
+          EMG: 28 dB
+        </span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 my-3">
+        <!-- BIS Value Display Card -->
+        <div id="bis-card" class="bg-slate-900/90 p-3 rounded-xl border border-slate-700 flex flex-col items-center justify-center transition-all duration-300">
+          <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">雙頻指數 (BIS)</span>
+          <span id="bis-value" class="text-3xl font-black font-mono text-cyan-400 my-0.5">46</span>
+          <span id="bis-status" class="text-[10px] font-medium text-emerald-400">適當麻醉深度</span>
+        </div>
+
+        <!-- Suppression Ratio (SR) Card -->
+        <div id="sr-card" class="bg-slate-900/90 p-3 rounded-xl border border-slate-700 flex flex-col items-center justify-center">
+          <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">抑制比 (SR %)</span>
+          <span id="sr-value" class="text-3xl font-black font-mono text-slate-300 my-0.5">0%</span>
+          <span id="sr-status" class="text-[10px] font-medium text-slate-400">無等電位抑制</span>
+        </div>
+      </div>
+
+      <!-- Raw EEG Live Waveform Canvas (1-Channel Oscilloscope) -->
+      <div class="bg-slate-950/90 rounded-xl p-2.5 border border-slate-800">
+        <div class="flex items-center justify-between mb-1">
+          <span class="text-[10px] font-bold text-slate-400 tracking-wide flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> 原始腦波示波軌跡 (Raw EEG)
+          </span>
+          <span class="text-[9px] font-mono text-slate-500">25 mm/s &middot; 50 &mu;V</span>
+        </div>
+        <canvas id="raw-eeg-canvas" width="310" height="60" class="w-full h-15 rounded bg-black/80"></canvas>
+        <div id="eeg-pattern-desc" class="text-[10px] text-slate-400 mt-1 italic text-center">
+          典型 10 Hz Alpha 紡錘波 ＋ 慢波振盪
+        </div>
+      </div>
+
+      <!-- 5-Second 3-Step Rapid Bedside Inspection Tool -->
+      <div class="mt-3 bg-slate-900/70 p-2.5 rounded-xl border border-slate-800">
+        <div class="text-[11px] font-bold text-amber-400 flex items-center justify-between mb-1.5">
+          <span>⚡ 床邊 5 秒 DSA 判讀 3 口訣：</span>
+        </div>
+        <div class="grid grid-cols-3 gap-1">
+          <button onclick="highlightFeature('alpha')" class="py-1 px-1.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-center">
+            1. 看 Alpha
+          </button>
+          <button onclick="highlightFeature('arousal')" class="py-1 px-1.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 text-center">
+            2. 鑑別疼痛
+          </button>
+          <button onclick="highlightFeature('burst')" class="py-1 px-1.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-red-300 border border-slate-700 text-center">
+            3. 看黑條過深
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clinical Decision Support Box -->
+    <div id="clinical-decision-box" class="mt-3 pt-3 border-t border-slate-800">
+      <div class="flex items-center gap-1.5 mb-1.5">
+        <span id="decision-icon" class="text-base">🟢</span>
+        <h3 id="decision-title" class="text-xs font-bold text-white">
+          生理狀態：丘腦—皮質迴路充分契合
+        </h3>
+      </div>
+      <p id="decision-mechanism" class="text-[11px] text-slate-300 leading-relaxed mb-2">
+        後腦 Alpha 節律前移至前額（Alpha Anteriorization），丘腦網狀核與皮質錐體細胞形成超同步封閉共振，感覺訊號阻斷。
+      </p>
+
+      <!-- Danger/Pitfall Alert Box -->
+      <div id="danger-alert-box" class="p-2 rounded-lg bg-emerald-950/40 border border-emerald-800/60 text-[11px] text-emerald-200">
+        <span class="font-bold">臨床指引：</span>
+        <span id="danger-alert-text">維持目前 Propofol / 吸入氣體濃度，Alpha 功率飽滿，術後譫妄風險低。</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Right: Color Intensity Bar (dB) & Frequency Bands Legend -->
+  <aside class="absolute right-2 sm:right-4 bottom-2 sm:bottom-4 panel-glass p-2 sm:p-3 rounded-2xl shadow-2xl z-20 pointer-events-auto border border-slate-700/60 flex items-stretch gap-2 sm:gap-3 scale-90 sm:scale-100 origin-bottom-right">
+    
+    <!-- Frequency Bands Range Guide on Right -->
+    <div class="flex flex-col justify-between py-1 text-right border-r border-slate-800 pr-3">
+      <span class="text-[10px] font-extrabold tracking-wider text-slate-300 uppercase">波形頻率範圍</span>
+      
+      <!-- Beta / Gamma -->
+      <div class="flex flex-col items-end">
+        <div class="flex items-center gap-1.5">
+          <span class="text-[11px] font-bold text-slate-300">Beta / Gamma</span>
+          <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+        </div>
+        <span class="text-[9px] text-slate-400 font-mono">13 - 30+ Hz</span>
+        <span class="text-[8px] text-slate-500">清醒 &middot; 體表痛 &middot; Ketamine</span>
+      </div>
+
+      <!-- Alpha -->
+      <div class="flex flex-col items-end my-1">
+        <div class="flex items-center gap-1.5">
+          <span class="text-[11px] font-bold text-amber-400">Alpha 帶</span>
+          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+        </div>
+        <span class="text-[9px] text-amber-300/80 font-mono">8 - 12 Hz</span>
+        <span class="text-[8px] text-amber-400/80">丘腦皮質偶聯 (麻醉核心)</span>
+      </div>
+
+      <!-- Theta -->
+      <div class="flex flex-col items-end my-1">
+        <div class="flex items-center gap-1.5">
+          <span class="text-[11px] font-bold text-emerald-400">Theta 帶</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        </div>
+        <span class="text-[9px] text-emerald-300/80 font-mono">4 - 8 Hz</span>
+        <span class="text-[8px] text-emerald-500">Sevo 活化瀰散寬頻</span>
+      </div>
+
+      <!-- Slow-Delta -->
+      <div class="flex flex-col items-end">
+        <div class="flex items-center gap-1.5">
+          <span class="text-[11px] font-bold text-cyan-300">Slow-Delta 帶</span>
+          <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+        </div>
+        <span class="text-[9px] text-cyan-200/80 font-mono">0.1 - 4 Hz</span>
+        <span class="text-[8px] text-cyan-500">皮質超極化 &middot; 深睡/深麻</span>
+      </div>
+    </div>
+
+    <!-- Power (dB) Colorbar -->
+    <div class="flex flex-col items-center justify-between pl-1">
+      <span class="text-[10px] font-bold tracking-wider text-slate-300 writing-vertical">能量功率 Power (dB)</span>
+      <span class="text-[10px] text-red-400 font-mono font-bold">+25 dB</span>
+      <div class="w-3 h-36 rounded-full color-bar-gradient border border-slate-600 my-1"></div>
+      <span class="text-[10px] text-blue-400 font-mono font-bold">-10 dB</span>
+      <span class="text-[9px] text-slate-400 text-center leading-tight mt-1">3D高度<br>➔ 色彩</span>
+    </div>
+  </aside>
+
+  <!-- Interactive 3D Spectrogram Core Script -->
+  <script>
+    // --- Global Variables & Scene Setup ---
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x06090e);
+    scene.fog = new THREE.FogExp2(0x06090e, 0.007);
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    container.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
+    dirLight.position.set(40, 90, 50);
+    scene.add(dirLight);
+
+    const pointLight = new THREE.PointLight(0x38bdf8, 1.2, 120);
+    pointLight.position.set(0, 35, 0);
+    scene.add(pointLight);
+
+    // --- Spectrogram Terrain Setup ---
+    const TIME_SEGMENTS = 100;
+    const FREQ_SEGMENTS = 70;
+    const WIDTH = 94;   // X-axis: Time
+    const DEPTH = 52;   // Z-axis: Frequency (0 to 30 Hz)
+    const MAX_POWER_HEIGHT = 15;
+
+    const terrainGeom = new THREE.PlaneGeometry(WIDTH, DEPTH, TIME_SEGMENTS - 1, FREQ_SEGMENTS - 1);
+    terrainGeom.rotateX(-Math.PI / 2); // Lay horizontal on X-Z
+
+    // Colormap calculation (Standard Clinical Spectrogram Heatmap)
+    function powerToColor(val) {
+      val = Math.max(0, Math.min(1, val));
+      const color = new THREE.Color();
+      if (val < 0.15) {
+        // Deep Navy to Blue
+        color.setRGB(0, 0, 0.3 + val * 3.5);
+      } else if (val < 0.35) {
+        // Blue to Cyan
+        const t = (val - 0.15) / 0.2;
+        color.setRGB(0, 0.4 + t * 0.6, 1);
+      } else if (val < 0.55) {
+        // Cyan to Green / Lime
+        const t = (val - 0.35) / 0.2;
+        color.setRGB(t * 0.8, 1, 1 - t * 0.9);
+      } else if (val < 0.75) {
+        // Yellow to Orange
+        const t = (val - 0.55) / 0.2;
+        color.setRGB(1, 1 - t * 0.5, 0);
+      } else if (val < 0.9) {
+        // Orange to Crimson Red
+        const t = (val - 0.75) / 0.15;
+        color.setRGB(1, 0.5 - t * 0.5, 0);
+      } else {
+        // White-hot peak
+        const t = (val - 0.9) / 0.1;
+        color.setRGB(1, t, t);
+      }
+      return color;
+    }
+
+    // Material with Vertex Colors
+    const terrainMat = new THREE.MeshStandardMaterial({
+      vertexColors: true,
+      roughness: 0.3,
+      metalness: 0.08,
+      flatShading: false,
+      side: THREE.DoubleSide
+    });
+
+    const terrainMesh = new THREE.Mesh(terrainGeom, terrainMat);
+    scene.add(terrainMesh);
+
+    // Subtle Wireframe overlay for technical 3D topography feel
+    const wireMat = new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      wireframe: true,
+      transparent: true,
+      opacity: 0.06
+    });
+    const wireMesh = new THREE.Mesh(terrainGeom, wireMat);
+    wireMesh.position.y += 0.02;
+    scene.add(wireMesh);
+
+    // Base Grid Floor
+    const grid = new THREE.GridHelper(120, 30, 0x1e293b, 0x090d16);
+    grid.position.y = -0.1;
+    scene.add(grid);
+
+    // --- Spatial 3D Labels & Axes ---
+    function makeTextSprite(text, color = "#94a3b8", size = 26) {
+      const c = document.createElement('canvas');
+      c.width = 512;
+      c.height = 128;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = color;
+      ctx.font = `bold ${size}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(text, 256, 64);
+      const texture = new THREE.CanvasTexture(c);
+      const mat = new THREE.SpriteMaterial({ map: texture, transparent: true });
+      const sp = new THREE.Sprite(mat);
+      sp.scale.set(22, 5.5, 1);
+      return sp;
+    }
+
+    // Time Axis Label on the OPPOSITE side (-DEPTH / 2 - 8)
+    const timeLabel = makeTextSprite("➔ 手術時程推進 (Time Axis ➔)", "#38bdf8", 30);
+    timeLabel.position.set(0, 0, -DEPTH / 2 - 8);
+    scene.add(timeLabel);
+
+    // --- Rightmost Edge: Most Recent Time Slice (最近時間點斷面標示) ---
+    const RIGHT_EDGE_X = WIDTH / 2; // +47
+
+    // "Recent Time Point" Header Sprite right above the slice
+    const sliceHeaderLabel = makeTextSprite("⏱️ 最近時間點 (當前即時切片)", "#38bdf8", 26);
+    sliceHeaderLabel.position.set(RIGHT_EDGE_X + 2, 18, -4);
+    sliceHeaderLabel.scale.set(24, 6, 1);
+    scene.add(sliceHeaderLabel);
+
+    // Anchor Pin helper to connect slice peak to label
+    function createSliceAnchor(colorHex, x, y, z) {
+      const dotGeom = new THREE.SphereGeometry(0.5, 16, 16);
+      const dotMat = new THREE.MeshBasicMaterial({ color: colorHex });
+      const dot = new THREE.Mesh(dotGeom, dotMat);
+      dot.position.set(x, y, z);
+      scene.add(dot);
+      return dot;
+    }
+
+    // 1. Delta Band Label & Anchor (0.1 - 4 Hz: 靠近螢幕下方)
+    const deltaZ = DEPTH / 2 - (2.0 / 30) * DEPTH; // Near screen bottom (+Z side)
+    createSliceAnchor(0x38bdf8, RIGHT_EDGE_X, 10.5, deltaZ);
+    const freq0 = makeTextSprite("◀ 0.1 - 4 Hz (Delta 慢波帶)", "#e2e8f0", 25);
+    freq0.position.set(RIGHT_EDGE_X + 11, 10.5, deltaZ);
+    freq0.scale.set(20, 5, 1);
+    scene.add(freq0);
+
+    // 2. Theta Band Label & Anchor (4 - 8 Hz)
+    const thetaZ = DEPTH / 2 - (6.0 / 30) * DEPTH;
+    createSliceAnchor(0x34d399, RIGHT_EDGE_X, 5.5, thetaZ);
+    const freqTheta = makeTextSprite("◀ 4 - 8 Hz (Theta 帶)", "#34d399", 24);
+    freqTheta.position.set(RIGHT_EDGE_X + 10, 5.5, thetaZ);
+    freqTheta.scale.set(18, 4.5, 1);
+    scene.add(freqTheta);
+
+    // 3. Alpha Band Label & Anchor (8 - 12 Hz) - High Peak
+    const alphaZ = DEPTH / 2 - (10.2 / 30) * DEPTH;
+    createSliceAnchor(0xfbbf24, RIGHT_EDGE_X, 14.5, alphaZ);
+    const freqAlpha = makeTextSprite("◀ 8 - 12 Hz (Alpha 丘腦皮質)", "#fbbf24", 26);
+    freqAlpha.position.set(RIGHT_EDGE_X + 12, 14.8, alphaZ);
+    freqAlpha.scale.set(22, 5.5, 1);
+    scene.add(freqAlpha);
+
+    // 4. Beta Band Label & Anchor (13 - 30 Hz: 靠近螢幕上方)
+    const betaZ = DEPTH / 2 - (20.0 / 30) * DEPTH; // Near screen top (-Z side)
+    createSliceAnchor(0x94a3b8, RIGHT_EDGE_X, 3.5, betaZ);
+    const freqBeta = makeTextSprite("◀ 13 - 30 Hz (Beta / EMG)", "#94a3b8", 24);
+    freqBeta.position.set(RIGHT_EDGE_X + 11, 3.5, betaZ);
+    freqBeta.scale.set(20, 5, 1);
+    scene.add(freqBeta);
+
+    // Feature Highlight Ring (for 5-Second Rapid Inspection)
+    const highlightRingGeom = new THREE.RingGeometry(3, 3.6, 32);
+    highlightRingGeom.rotateX(-Math.PI / 2);
+    const highlightRingMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, side: THREE.DoubleSide, transparent: true, opacity: 0 });
+    const highlightRing = new THREE.Mesh(highlightRingGeom, highlightRingMat);
+    highlightRing.position.set(0, 8, 0);
+    scene.add(highlightRing);
+
+    // --- Clinical Scenario Data & Spectral Generators ---
+    let currentScenarioId = 1;
+    let currentGabaDrug = 'propofol'; // 'propofol' vs 'sevo'
+    let targetHeights = new Float32Array(terrainGeom.attributes.position.count);
+    let targetColors = new Float32Array(terrainGeom.attributes.position.count * 3);
+    let currentHeights = new Float32Array(terrainGeom.attributes.position.count);
+    let currentColors = new Float32Array(terrainGeom.attributes.position.count * 3);
+
+    const scenarioConfigs = {
+      1: {
+        name: "正常全身麻醉",
+        propofol: {
+          name: "正常全身麻醉 (Propofol TIVA)",
+          bis: 46,
+          sr: "0%",
+          emg: "26 dB",
+          bisStatus: "適當麻醉深度 (TIVA)",
+          bisStatusClass: "text-emerald-400",
+          bisCardClass: "border-slate-700",
+          eegDesc: "【Propofol 特徵】極純淨 10 Hz Alpha 紡錘波 ＋ 慢波，無 Theta 雜訊",
+          icon: "💉",
+          title: "Propofol TIVA：乾淨銳利的 Alpha-Delta 雙軌偶聯",
+          mechanism: "【高選擇性 GABA_A 抑制】主要作用於皮質與丘腦網狀核（TRN）。呈現鮮明的 10 Hz Alpha 帶 ＋ 0.1~2 Hz Delta 帶，中間 4~8 Hz Theta 處完全無能量（清澈藍色深谷），背景極為乾淨！",
+          alertType: "normal",
+          alertText: "【臨床指引】維持目前 Propofol 標靶濃度。雙軌分離清晰銳利，Alpha 功率強健，代表丘腦—皮質阻斷完善，POD 發生率最低。",
+          formula: (normTime, freqHz) => {
+            const delta = Math.exp(-Math.pow((freqHz - 2.0) / 1.5, 2)) * 0.88;
+            // Clear gap at 4-8 Hz (Theta is near zero)
+            const alpha = Math.exp(-Math.pow((freqHz - 10.2) / 1.2, 2)) * 0.98;
+            const beta = Math.exp(-Math.pow((freqHz - 22) / 6, 2)) * 0.08;
+            return Math.max(0, delta + alpha + beta);
+          }
+        },
+        sevo: {
+          name: "正常全身麻醉 (Sevoflurane 吸入)",
+          bis: 42,
+          sr: "0%",
+          emg: "24 dB",
+          bisStatus: "適當麻醉深度 (Inhalational)",
+          bisStatusClass: "text-emerald-400 font-semibold",
+          bisCardClass: "border-teal-600",
+          eegDesc: "【Sevoflurane 特徵】Alpha 帶混雜 4~7 Hz Theta 鋸齒波，波峰較寬",
+          icon: "🫁",
+          title: "Sevoflurane：Theta 帶活化與連續寬頻帶 (Broadband)",
+          mechanism: "【多靶點離子通道作用】Sevoflurane 除 GABA_A 外，還廣泛作用於雙孔鉀通道（TREK）及 NMDA，誘發皮質深層與邊緣系統的【4~8 Hz Theta 振盪】。Alpha 帶向下瀰散，與 Theta 融合為一體成型的連續寬頻帶！",
+          alertType: "normal",
+          alertText: "【臨床指引】正常 Sevo 表現。注意觀察 Theta-Alpha 連續寬頻帶；若吸入濃度過高（MAC 偏高），此連續帶會向更低頻位移並可能轉為爆發抑制，特別在高齡長者宜微調調降。",
+          formula: (normTime, freqHz) => {
+            const delta = Math.exp(-Math.pow((freqHz - 2.0) / 1.8, 2)) * 0.85;
+            // Prominent Theta bridge at 4-8 Hz
+            const theta = Math.exp(-Math.pow((freqHz - 5.8) / 2.2, 2)) * 0.62;
+            // Broader downward-diffused Alpha band around 9.5 Hz
+            const alpha = Math.exp(-Math.pow((freqHz - 9.8) / 2.2, 2)) * 0.92;
+            const beta = Math.exp(-Math.pow((freqHz - 22) / 6, 2)) * 0.10;
+            return Math.max(0, delta + theta + alpha + beta);
+          }
+        }
+      },
+      2: {
+        name: "體表疼痛刺激 (Beta Arousal)",
+        bis: 78,
+        sr: "0%",
+        emg: "48 dB (高)",
+        bisStatus: "淺麻醉 / 疼痛活化",
+        bisStatusClass: "text-amber-400 font-bold",
+        bisCardClass: "border-amber-500",
+        eegDesc: "Alpha 紡錘波消失，出現高頻緊密快速 Beta 棘波",
+        icon: "⚡",
+        title: "經典型喚醒：體神經痛覺刺激 (Beta Arousal)",
+        mechanism: "手術切皮（Skin incision）或打骨釘刺激體神經，興奮上行網狀活化系統（ARAS）。【Alpha 帶突然斷裂消失 (Alpha Dropout)】＋【15~28 Hz Beta 頻段爆衝泛紅】。",
+        alertType: "warning",
+        alertText: "【警惕誤判！】麻醉照護人員常誤以為催眠深度不足而盲目加深 Propofol；正解為「鎮痛不足」，應立即追加 Fentanyl / 短效類鴉片藥物或局部神經阻斷！",
+        formula: (normTime, freqHz) => {
+          if (normTime < 0.35) {
+            // Early normal
+            return Math.max(0, Math.exp(-Math.pow((freqHz - 2) / 1.6, 2)) * 0.8 + Math.exp(-Math.pow((freqHz - 10) / 1.3, 2)) * 0.9);
+          } else {
+            // Post incision: Alpha drops out, Beta surges
+            const delta = Math.exp(-Math.pow((freqHz - 2) / 1.5, 2)) * 0.45;
+            const alpha = Math.exp(-Math.pow((freqHz - 10) / 1.2, 2)) * 0.15; // Alpha dropout
+            const betaSurge = Math.exp(-Math.pow((freqHz - 20) / 5.5, 2)) * 0.88; // Beta explosion
+            return Math.max(0, delta + alpha + betaSurge);
+          }
+        }
+      },
+      3: {
+        name: "內臟痛陷阱 (Delta Arousal) 🚨",
+        bis: 34,
+        sr: "0%",
+        emg: "30 dB",
+        bisStatus: "⚠️ 矛盾性偽深 (Paradoxical)",
+        bisStatusClass: "text-red-400 font-black",
+        bisCardClass: "pulse-danger border-red-500",
+        eegDesc: "Alpha 帶消失，全屏充斥巨大振幅的病態慢波 (Delta)",
+        icon: "🚨",
+        title: "矛盾型喚醒：內臟痛刺激 (Delta Arousal) —— 最致命陷阱！",
+        mechanism: "腹腔鏡 Trocar 穿刺、牽拉腸繫膜或腹膜充氣時迷走/內臟神經牽涉痛。【Alpha 帶消失】，高頻無反應，但【底層 Delta 帶異常暴漲、能量極度集中】！",
+        alertType: "danger",
+        alertText: "【致命陷阱警訊！】BIS 數值反常跌到 34！傳統演算法誤把高能量慢波判成「超深麻醉」。若此時誤信 BIS 調降麻醉藥，將導致病患術中清醒！應立即追加類鴉片鎮痛！",
+        formula: (normTime, freqHz) => {
+          if (normTime < 0.3) {
+            return Math.max(0, Math.exp(-Math.pow((freqHz - 2) / 1.6, 2)) * 0.8 + Math.exp(-Math.pow((freqHz - 10) / 1.3, 2)) * 0.9);
+          } else {
+            // Delta arousal: Giant delta surge, alpha vanishes
+            const giantDelta = Math.exp(-Math.pow((freqHz - 1.6) / 2.0, 2)) * 1.35; // Huge slow peak
+            const alpha = Math.exp(-Math.pow((freqHz - 10) / 1.2, 2)) * 0.08;
+            return Math.max(0, giantDelta + alpha);
+          }
+        }
+      },
+      4: {
+        name: "麻醉過深 (Burst Suppression)",
+        bis: 18,
+        sr: "65%",
+        emg: "18 dB",
+        bisStatus: "危險：大腦過度抑制",
+        bisStatusClass: "text-purple-400 font-black",
+        bisCardClass: "border-purple-600",
+        eegDesc: "等電位平線 (Isoelectric) 與短暫爆發尖波交替出現",
+        icon: "🟣",
+        title: "病理狀態：爆發抑制 (Burst Suppression, BS) 與神經代謝停滯",
+        mechanism: "麻醉藥過量導致大腦皮質神經元代謝活動完全靜止。DSA 雙軌帶斷裂，出現【垂直貫穿全頻率的死寂深藍/黑條條紋（等電位靜止期）】穿插短暫爆發。",
+        alertType: "purple",
+        alertText: "大規模研究證實：術中累積過長 BS 是高齡術後譫妄（POD）與認知障礙（POCD）獨立危險因子！立即調降 Propofol 標靶濃度或吸入氣體 MAC！",
+        formula: (normTime, freqHz) => {
+          // Periodic vertical gaps (suppression periods)
+          const gapPhase = Math.sin(normTime * 28);
+          if (gapPhase > 0.05) {
+            // Isoelectric silence
+            return 0.02;
+          } else {
+            // High-amplitude brief burst
+            const burstDelta = Math.exp(-Math.pow((freqHz - 2.5) / 2.5, 2)) * 0.95;
+            const burstTheta = Math.exp(-Math.pow((freqHz - 6.5) / 2.0, 2)) * 0.7;
+            return Math.max(0, burstDelta + burstTheta);
+          }
+        }
+      },
+      5: {
+        name: "多模式藥物指紋 (Ketamine 解離)",
+        bis: 72,
+        sr: "0%",
+        emg: "32 dB",
+        bisStatus: "數值失真 (非清醒)",
+        bisStatusClass: "text-blue-400 font-bold",
+        bisCardClass: "border-blue-500",
+        eegDesc: "全頻段廣泛性高頻 Gamma / Beta 快速震盪",
+        icon: "🌀",
+        title: "藥物神經指紋：Ketamine 非競爭性 NMDA 受體解離",
+        mechanism: "Ketamine 阻斷抑制性 GABA 能中間神經元，導致錐體細胞脫抑制。【Alpha 帶消失】，但在【全頻段 >25 Hz 出現均勻泛紅之高頻 Gamma 振盪】。",
+        alertType: "info",
+        alertText: "【切勿盲目加藥！】BIS 常假性飆高至 65~80，容易誤導臨床以為病患甦醒。只要 DSA 呈現均勻高頻 Gamma 泛紅，即代表處於良好的解離鎮痛狀態！",
+        formula: (normTime, freqHz) => {
+          const slow = Math.exp(-Math.pow((freqHz - 2.5) / 2.0, 2)) * 0.55;
+          const theta = Math.exp(-Math.pow((freqHz - 6.0) / 2.0, 2)) * 0.45;
+          // Ketamine High Frequency Gamma band explosion (>24 Hz)
+          const gamma = Math.exp(-Math.pow((freqHz - 26) / 5.0, 2)) * 0.88;
+          return Math.max(0, slow + theta + gamma);
+        }
+      },
+      6: {
+        name: "高齡長者脆弱大腦 (Alpha 衰退)",
+        bis: 62,
+        sr: "0%",
+        emg: "22 dB",
+        bisStatus: "假性偏高陷阱",
+        bisStatusClass: "text-amber-300 font-bold",
+        bisCardClass: "border-amber-600",
+        eegDesc: "極微弱低振幅慢波，前額 Alpha 節律幾近缺失",
+        icon: "👵",
+        title: "高齡神經退化：Alpha 衰竭與潛在腦部脆弱性 (Brain Vulnerability)",
+        mechanism: "隨年齡增長前額葉皮質變薄、丘腦突觸退化，【Alpha 功率自然衰竭至近乎消失】。導致監測儀普遍算出【假性偏高的 BIS（55~65）】。",
+        alertType: "warning",
+        alertText: "【切勿盲目追求 BIS 40~50！】若執意按 BIS 加藥，極易直接將長者推入致命的爆發抑制！應以 DSA 底層慢波作為深度指引，落實減量個體化精準麻醉。",
+        formula: (normTime, freqHz) => {
+          // Extremely attenuated alpha and low slow power
+          const faintDelta = Math.exp(-Math.pow((freqHz - 1.8) / 1.5, 2)) * 0.5;
+          const faintAlpha = Math.exp(-Math.pow((freqHz - 9.5) / 1.2, 2)) * 0.22; // very weak
+          return Math.max(0, faintDelta + faintAlpha);
+        }
+      }
+    };
+
+    // Calculate Scenario Terrain Targets
+    function computeScenarioTargets(scenarioId) {
+      let cfg = scenarioConfigs[scenarioId];
+      if (scenarioId === 1) {
+        cfg = scenarioConfigs[1][currentGabaDrug];
+      }
+      const pos = terrainGeom.attributes.position;
+      let colorIndex = 0;
+
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i);
+        const z = pos.getZ(i);
+
+        const normTime = (x + WIDTH / 2) / WIDTH;     // 0 to 1
+        const normFreq = (DEPTH / 2 - z) / DEPTH;     // 0 Hz at +Z (靠近螢幕下方), 30 Hz at -Z (靠近螢幕上方)
+        const freqHz = normFreq * 30;                 // 0 to 30 Hz
+
+        // Calculate power from specific scenario mathematical model
+        let power = cfg.formula(normTime, freqHz);
+
+        // Add subtle natural EEG random micro-fluctuations
+        const microNoise = (Math.sin(x * 1.2) * Math.cos(z * 1.5) + Math.sin(x * 3.1 + z * 2.3)) * 0.035;
+        power = Math.max(0, power + microNoise);
+
+        targetHeights[i] = power * MAX_POWER_HEIGHT;
+
+        const c = powerToColor(power / 1.05);
+        targetColors[colorIndex] = c.r;
+        targetColors[colorIndex + 1] = c.g;
+        targetColors[colorIndex + 2] = c.b;
+        colorIndex += 3;
+      }
+    }
+
+    // Switch between Propofol and Sevoflurane inside Scenario 1
+    function switchGabaDrug(drug) {
+      currentGabaDrug = drug;
+
+      const propofolBtn = document.getElementById('sub-propofol-btn');
+      const sevoBtn = document.getElementById('sub-sevo-btn');
+
+      if (drug === 'propofol') {
+        propofolBtn.className = "px-2 py-1 rounded text-[10px] font-bold transition-all duration-150 bg-cyan-500/20 text-cyan-300 border border-cyan-500/50";
+        sevoBtn.className = "px-2 py-1 rounded text-[10px] font-bold transition-all duration-150 text-slate-400 hover:text-slate-200 border border-transparent";
+      } else {
+        sevoBtn.className = "px-2 py-1 rounded text-[10px] font-bold transition-all duration-150 bg-teal-500/20 text-teal-300 border border-teal-500/50";
+        propofolBtn.className = "px-2 py-1 rounded text-[10px] font-bold transition-all duration-150 text-slate-400 hover:text-slate-200 border border-transparent";
+      }
+
+      switchScenario(1);
+    }
+
+    // Morph Terrain Smoothly between Clinical Scenarios
+    let morphProgress = 1.0;
+    let isMorphing = false;
+    let morphStartTime = 0;
+    const MORPH_DURATION = 800; // ms
+
+    function startTerrainMorph() {
+      // Save current states as start
+      const pos = terrainGeom.attributes.position;
+      const col = terrainGeom.attributes.color;
+      for (let i = 0; i < pos.count; i++) {
+        currentHeights[i] = pos.getY(i);
+      }
+      for (let i = 0; i < col.count * 3; i++) {
+        currentColors[i] = col.array[i];
+      }
+
+      morphStartTime = performance.now();
+      isMorphing = true;
+    }
+
+    function updateTerrainMorph() {
+      if (!isMorphing) return;
+      const elapsed = performance.now() - morphStartTime;
+      let t = elapsed / MORPH_DURATION;
+      if (t >= 1.0) {
+        t = 1.0;
+        isMorphing = false;
+      }
+
+      // Smooth Cubic Ease
+      const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+      const pos = terrainGeom.attributes.position;
+      const col = terrainGeom.attributes.color;
+
+      for (let i = 0; i < pos.count; i++) {
+        const y = currentHeights[i] + (targetHeights[i] - currentHeights[i]) * ease;
+        pos.setY(i, y);
+      }
+
+      for (let i = 0; i < col.count * 3; i++) {
+        col.array[i] = currentColors[i] + (targetColors[i] - currentColors[i]) * ease;
+      }
+
+      pos.needsUpdate = true;
+      col.needsUpdate = true;
+      terrainGeom.computeVertexNormals();
+    }
+
+    // Switch Scenario Function
+    function switchScenario(id) {
+      currentScenarioId = id;
+
+      // Update Nav Buttons
+      for (let i = 1; i <= 6; i++) {
+        const btn = document.getElementById(`scen-${i}`);
+        if (i === id) {
+          btn.classList.add('btn-active-scenario');
+        } else {
+          btn.classList.remove('btn-active-scenario');
+        }
+      }
+
+      // Dim or Highlight the GABA Toggle Group
+      const gabaToggle = document.getElementById('gaba-toggle-group');
+      if (id === 1) {
+        gabaToggle.style.opacity = '1';
+        gabaToggle.style.pointerEvents = 'auto';
+      } else {
+        gabaToggle.style.opacity = '0.4';
+      }
+
+      let cfg = scenarioConfigs[id];
+      if (id === 1) {
+        cfg = scenarioConfigs[1][currentGabaDrug];
+      }
+
+      // Update HUD Values
+      document.getElementById('bis-value').textContent = cfg.bis;
+      document.getElementById('sr-value').textContent = cfg.sr;
+      document.getElementById('emg-badge').textContent = `EMG: ${cfg.emg}`;
+
+      const bisStatus = document.getElementById('bis-status');
+      bisStatus.textContent = cfg.bisStatus;
+      bisStatus.className = `text-[10px] ${cfg.bisStatusClass}`;
+
+      const bisCard = document.getElementById('bis-card');
+      bisCard.className = `bg-slate-900/90 p-3 rounded-xl flex flex-col items-center justify-center transition-all duration-300 ${cfg.bisCardClass}`;
+
+      document.getElementById('eeg-pattern-desc').textContent = cfg.eegDesc;
+      document.getElementById('decision-icon').textContent = cfg.icon;
+      document.getElementById('decision-title').textContent = cfg.title;
+      document.getElementById('decision-mechanism').textContent = cfg.mechanism;
+      document.getElementById('danger-alert-text').textContent = cfg.alertText;
+
+      const alertBox = document.getElementById('danger-alert-box');
+      if (cfg.alertType === 'danger') {
+        alertBox.className = "p-2 rounded-lg bg-red-950/60 border border-red-700 text-[11px] text-red-200";
+      } else if (cfg.alertType === 'warning') {
+        alertBox.className = "p-2 rounded-lg bg-amber-950/60 border border-amber-700 text-[11px] text-amber-200";
+      } else if (cfg.alertType === 'purple') {
+        alertBox.className = "p-2 rounded-lg bg-purple-950/60 border border-purple-700 text-[11px] text-purple-200";
+      } else {
+        alertBox.className = "p-2 rounded-lg bg-emerald-950/40 border border-emerald-800/60 text-[11px] text-emerald-200";
+      }
+
+      computeScenarioTargets(id);
+      startTerrainMorph();
+    }
+
+    // --- Camera & View Configurations ---
+    const cameraViews = {
+      '3d': {
+        pos: { x: -38, y: 36, z: 62 },
+        target: { x: 10, y: 6, z: -3 }
+      },
+      'aerial': {
+        pos: { x: 5, y: 86, z: 28 },
+        target: { x: 6, y: 0, z: -2 }
+      },
+      '2d': {
+        pos: { x: 6, y: 96, z: 0.001 },
+        target: { x: 6, y: 0, z: 0 }
+      }
+    };
+
+    let activeViewMode = '3d';
+
+    function setViewMode(mode) {
+      activeViewMode = mode;
+      document.getElementById('view-3d-btn').classList.toggle('btn-active-view', mode === '3d');
+      document.getElementById('view-aerial-btn').classList.toggle('btn-active-view', mode === 'aerial');
+      document.getElementById('view-2d-btn').classList.toggle('btn-active-view', mode === '2d');
+
+      const v = cameraViews[mode];
+
+      // Ensure 0 Hz (+Z) is ALWAYS at screen bottom and 30 Hz (-Z) at screen top
+      if (mode === '2d' || mode === 'aerial') {
+        camera.up.set(0, 0, -1);
+      } else {
+        camera.up.set(0, 1, 0);
+      }
+
+      new TWEEN.Tween(camera.position)
+        .to(v.pos, 1400)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .start();
+
+      new TWEEN.Tween(controls.target)
+        .to(v.target, 1400)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .onUpdate(() => controls.update())
+        .start();
+    }
+
+    // Mobile HUD Drawer Toggle
+    let isMobileHUDOpen = false;
+    function toggleMobileHUD() {
+      const panel = document.getElementById('patient-hud-panel');
+      const icon = document.getElementById('mobile-toggle-icon');
+      const text = document.getElementById('mobile-toggle-text');
+      isMobileHUDOpen = !isMobileHUDOpen;
+
+      if (isMobileHUDOpen) {
+        panel.classList.remove('-translate-x-[120%]', 'opacity-0', 'pointer-events-none');
+        panel.classList.add('translate-x-0', 'opacity-100', 'pointer-events-auto');
+        icon.textContent = "✕";
+        text.textContent = "收起監測面板";
+      } else {
+        panel.classList.add('-translate-x-[120%]', 'opacity-0', 'pointer-events-none');
+        panel.classList.remove('translate-x-0', 'opacity-100', 'pointer-events-auto');
+        icon.textContent = "📊";
+        text.textContent = "監測數據與決策";
+      }
+    }
+
+    // Auto Cycle Demo
+    let autoCycleTimer = null;
+    function toggleAutoCycle() {
+      if (autoCycleTimer) {
+        clearInterval(autoCycleTimer);
+        autoCycleTimer = null;
+        document.getElementById('auto-cycle-text').textContent = "自動巡迴演示";
+      } else {
+        document.getElementById('auto-cycle-text').textContent = "暫停自動巡迴";
+        let nextScen = currentScenarioId >= 6 ? 1 : currentScenarioId + 1;
+        switchScenario(nextScen);
+
+        autoCycleTimer = setInterval(() => {
+          nextScen = currentScenarioId >= 6 ? 1 : currentScenarioId + 1;
+          switchScenario(nextScen);
+        }, 5500);
+      }
+    }
+
+    // Rapid Inspection Highlight
+    function highlightFeature(feat) {
+      highlightRing.material.opacity = 0.85;
+      if (feat === 'alpha') {
+        highlightRing.position.set(0, 7, DEPTH / 2 - (10.2 / 30) * DEPTH);
+        highlightRing.scale.set(3.5, 3.5, 3.5);
+        highlightRing.material.color.setHex(0xfbbf24);
+      } else if (feat === 'arousal') {
+        highlightRing.position.set(0, 7, DEPTH / 2 - (22 / 30) * DEPTH);
+        highlightRing.scale.set(4.0, 4.0, 4.0);
+        highlightRing.material.color.setHex(0xef4444);
+      } else if (feat === 'burst') {
+        highlightRing.position.set(10, 4, 0);
+        highlightRing.scale.set(5.0, 5.0, 5.0);
+        highlightRing.material.color.setHex(0xa855f7);
+      }
+
+      new TWEEN.Tween(highlightRing.material)
+        .to({ opacity: 0 }, 2800)
+        .easing(TWEEN.Easing.Quadratic.Out)
+        .start();
+    }
+
+    // --- Dynamic Raw EEG Canvas Oscilloscope ---
+    const eegCanvas = document.getElementById('raw-eeg-canvas');
+    const eegCtx = eegCanvas.getContext('2d');
+    let eegTime = 0;
+
+    function renderRawEEG() {
+      eegCtx.fillStyle = "rgba(0, 0, 0, 0.28)";
+      eegCtx.fillRect(0, 0, eegCanvas.width, eegCanvas.height);
+
+      eegCtx.lineWidth = 1.5;
+      eegCtx.strokeStyle = "#38bdf8";
+      eegCtx.beginPath();
+
+      const midY = eegCanvas.height / 2;
+      const width = eegCanvas.width;
+
+      for (let x = 0; x < width; x++) {
+        const t = eegTime + x * 0.05;
+        let yOffset = 0;
+
+        if (currentScenarioId === 1) {
+          if (currentGabaDrug === 'propofol') {
+            // Propofol: Sharp, pure 10 Hz Spindle + Smooth Slow wave
+            yOffset = Math.sin(t * 10.2) * 15 * Math.sin(t * 1.5) + Math.sin(t * 1.8) * 10;
+          } else {
+            // Sevoflurane: 9.8 Hz Alpha combined with prominent 5-7 Hz Theta jagged waves
+            yOffset = Math.sin(t * 9.8) * 12 * Math.sin(t * 1.3) + Math.sin(t * 5.8) * 8.5 + Math.sin(t * 1.8) * 9;
+          }
+        } else if (currentScenarioId === 2) {
+          // Beta Arousal: Fast irregular spikes (20-30 Hz)
+          yOffset = Math.sin(t * 22) * 11 + Math.sin(t * 31) * 7 + Math.random() * 4;
+        } else if (currentScenarioId === 3) {
+          // Delta Arousal: Giant high-amplitude slow wave
+          yOffset = Math.sin(t * 1.5) * 24 + Math.sin(t * 3.0) * 6;
+        } else if (currentScenarioId === 4) {
+          // Burst Suppression: flatline vs sudden burst
+          const phase = Math.sin(t * 1.2);
+          if (phase > 0.1) {
+            yOffset = (Math.random() - 0.5) * 1.5; // isoelectric flatline
+          } else {
+            yOffset = Math.sin(t * 14) * 25 * Math.sin(t * 4); // burst
+          }
+        } else if (currentScenarioId === 5) {
+          // Ketamine: Continuous High Frequency Gamma
+          yOffset = Math.sin(t * 28) * 12 + Math.sin(t * 38) * 8 + Math.sin(t * 2) * 6;
+        } else if (currentScenarioId === 6) {
+          // Geriatric: Low amplitude faint wave
+          yOffset = Math.sin(t * 1.6) * 6 + Math.sin(t * 9.5) * 3;
+        }
+
+        const y = midY + yOffset;
+        if (x === 0) eegCtx.moveTo(x, y);
+        else eegCtx.lineTo(x, y);
+      }
+
+      eegCtx.stroke();
+      eegTime += 0.08;
+    }
+
+    // --- Init & Render Loop ---
+    camera.position.set(cameraViews['3d'].pos.x, cameraViews['3d'].pos.y, cameraViews['3d'].pos.z);
+    controls.target.set(cameraViews['3d'].target.x, cameraViews['3d'].target.y, cameraViews['3d'].target.z);
+    controls.update();
+
+    // Initialize with Scenario 1
+    computeScenarioTargets(1);
+    const initPos = terrainGeom.attributes.position;
+    const initCol = new Float32Array(initPos.count * 3);
+    for (let i = 0; i < initPos.count; i++) {
+      initPos.setY(i, targetHeights[i]);
+    }
+    for (let i = 0; i < initCol.length; i++) {
+      initCol[i] = targetColors[i];
+    }
+    terrainGeom.setAttribute('color', new THREE.Float32BufferAttribute(initCol, 3));
+    terrainGeom.computeVertexNormals();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      TWEEN.update();
+      updateTerrainMorph();
+      controls.update();
+      renderer.render(scene, camera);
+      renderRawEEG();
+    }
+    requestAnimationFrame(animate);
+
+  </script>
+</body>
+</html>
