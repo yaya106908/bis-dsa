@@ -72,86 +72,86 @@
   <div id="canvas-container"></div>
 
   <!-- Top Global Header & Medical Reference: Unified Flex Container (Never overlaps!) -->
-  <div class="absolute top-2 left-2 right-2 md:top-3 md:left-4 md:right-4 z-20 flex flex-col gap-1.5 pointer-events-none">
+  <div class="absolute top-2 left-2 right-2 md:top-3 md:left-4 md:right-4 z-20 flex flex-col gap-1.5 lg:gap-2 pointer-events-none">
     
     <!-- Row 1: Header Bar -->
     <header class="flex items-center justify-between gap-2 pointer-events-none">
       <!-- Title Card -->
-      <div class="panel-glass px-3 py-1 md:px-4 md:py-2 rounded-xl shadow-2xl pointer-events-auto border-l-4 border-l-cyan-400 flex items-center justify-between md:justify-start gap-2.5">
-        <div class="flex items-center gap-2">
-          <div class="h-2.5 w-2.5 rounded-full bg-cyan-400 animate-pulse"></div>
+      <div class="panel-glass px-3 py-1.5 md:px-4 md:py-2.5 rounded-xl shadow-2xl pointer-events-auto border-l-4 border-l-cyan-400 flex items-center justify-between md:justify-start gap-2.5">
+        <div class="flex items-center gap-2.5">
+          <div class="h-3 w-3 rounded-full bg-cyan-400 animate-pulse"></div>
           <div>
-            <h1 class="text-xs md:text-base font-extrabold tracking-wide text-white flex items-center gap-1.5">
+            <h1 class="text-xs md:text-sm lg:text-lg font-black tracking-wide text-white flex items-center gap-2">
               <span>BIS DSA 腦電頻譜模擬</span>
-              <span class="hidden lg:inline-block text-[10px] px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 font-mono border border-cyan-800/60">
+              <span class="hidden lg:inline-block text-xs px-2.5 py-0.5 rounded bg-cyan-950 text-cyan-300 font-mono border border-cyan-800/60">
                 3D ➔ 2D 臨床決策
               </span>
             </h1>
-            <p class="hidden lg:block text-[11px] text-slate-400 mt-0.5">
-              實證指引：Purdon et al., <em class="text-slate-300">Anesthesiology</em> (2015) &middot; Mukai et al., (2026)
+            <p class="hidden lg:block text-xs text-slate-300 mt-0.5">
+              實證指引：Purdon et al., <em class="text-cyan-200">Anesthesiology</em> (2015) &middot; Mukai et al., (2026)
             </p>
           </div>
         </div>
       </div>
 
       <!-- View Mode Switches (Always neatly on the right) -->
-      <div class="panel-glass p-1 md:p-1.5 rounded-xl shadow-2xl flex items-center gap-1 pointer-events-auto">
-        <button id="view-3d-btn" onclick="setViewMode('3d')" class="px-2 py-1 md:px-3 md:py-1.5 rounded-lg text-[10px] md:text-xs font-semibold transition-all duration-200 border border-transparent hover:bg-slate-800 text-slate-300 btn-active-view">
+      <div class="panel-glass p-1 md:p-1.5 rounded-xl shadow-2xl flex items-center gap-1.5 pointer-events-auto">
+        <button id="view-3d-btn" onclick="setViewMode('3d')" class="px-2 py-1 md:px-3 md:py-1.5 lg:px-4 lg:py-2 rounded-lg text-[10px] md:text-xs lg:text-sm font-bold transition-all duration-200 border border-transparent hover:bg-slate-800 text-slate-300 btn-active-view">
           ⛰️ 3D
         </button>
-        <button id="view-aerial-btn" onclick="setViewMode('aerial')" class="px-2 py-1 md:px-3 md:py-1.5 rounded-lg text-[10px] md:text-xs font-semibold transition-all duration-200 border border-transparent hover:bg-slate-800 text-slate-300">
+        <button id="view-aerial-btn" onclick="setViewMode('aerial')" class="px-2 py-1 md:px-3 md:py-1.5 lg:px-4 lg:py-2 rounded-lg text-[10px] md:text-xs lg:text-sm font-bold transition-all duration-200 border border-transparent hover:bg-slate-800 text-slate-300">
           🚁 空照
         </button>
-        <button id="view-2d-btn" onclick="setViewMode('2d')" class="px-2 py-1 md:px-3 md:py-1.5 rounded-lg text-[10px] md:text-xs font-semibold transition-all duration-200 border border-transparent hover:bg-slate-800 text-slate-300">
+        <button id="view-2d-btn" onclick="setViewMode('2d')" class="px-2 py-1 md:px-3 md:py-1.5 lg:px-4 lg:py-2 rounded-lg text-[10px] md:text-xs lg:text-sm font-bold transition-all duration-200 border border-transparent hover:bg-slate-800 text-slate-300">
           📟 2D
         </button>
-        <div class="h-3.5 w-[1px] bg-slate-700 mx-0.5 hidden sm:block"></div>
-        <button id="auto-cycle-btn" onclick="toggleAutoCycle()" class="hidden sm:flex px-2 py-1 md:px-3 md:py-1.5 rounded-lg text-[10px] md:text-xs font-semibold transition-all duration-200 bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 border border-cyan-500/40 items-center gap-1">
-          <svg id="play-icon" class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"></path></svg>
-          <span id="auto-cycle-text">自動</span>
+        <div class="h-4 w-[1px] bg-slate-700 mx-1 hidden sm:block"></div>
+        <button id="auto-cycle-btn" onclick="toggleAutoCycle()" class="hidden sm:flex px-2 py-1 md:px-3 md:py-1.5 lg:px-4 lg:py-2 rounded-lg text-[10px] md:text-xs lg:text-sm font-bold transition-all duration-200 bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 border border-cyan-500/40 items-center gap-1">
+          <svg id="play-icon" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"></path></svg>
+          <span id="auto-cycle-text">自動演示</span>
         </button>
       </div>
     </header>
 
     <!-- Row 2: Scenario Bar (Flows naturally right below Header, NO absolute collision) -->
     <nav class="flex overflow-x-auto pb-1 pointer-events-none no-scrollbar">
-      <div class="panel-glass p-1 md:p-1.5 rounded-xl shadow-2xl flex items-center gap-1 md:gap-1.5 pointer-events-auto border border-slate-700/60 max-w-full overflow-x-auto">
-        <span class="hidden sm:inline-flex text-[11px] font-bold text-slate-400 px-2 uppercase tracking-wider shrink-0 items-center gap-1">
-          <span class="inline-block w-2 h-2 rounded-full bg-cyan-400"></span> 臨床情境：
+      <div class="panel-glass p-1 md:p-1.5 lg:p-2 rounded-xl shadow-2xl flex items-center gap-1 md:gap-1.5 lg:gap-2 pointer-events-auto border border-slate-700/60 max-w-full overflow-x-auto">
+        <span class="hidden sm:inline-flex text-xs lg:text-sm font-bold text-slate-400 px-2 uppercase tracking-wider shrink-0 items-center gap-1.5">
+          <span class="inline-block w-2.5 h-2.5 rounded-full bg-cyan-400"></span> 臨床情境：
         </span>
 
-        <div class="flex items-center gap-1 bg-slate-900/90 p-0.5 md:p-1 rounded-lg border border-slate-700 shrink-0">
-          <button id="scen-1" onclick="switchScenario(1)" class="px-2 py-1 md:px-2.5 md:py-1.5 rounded-lg text-[11px] md:text-xs font-medium transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 btn-active-scenario">
+        <div class="flex items-center gap-1 bg-slate-900/90 p-0.5 md:p-1 lg:p-1.5 rounded-lg border border-slate-700 shrink-0">
+          <button id="scen-1" onclick="switchScenario(1)" class="px-2 py-1 md:px-2.5 md:py-1.5 lg:px-3.5 lg:py-2 rounded-lg text-[11px] md:text-xs lg:text-sm font-semibold transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 btn-active-scenario">
             1. 正常全身麻醉
           </button>
           <!-- Propofol vs Sevo Sub-Toggle -->
           <div id="gaba-toggle-group" class="flex items-center gap-0.5 bg-slate-950 p-0.5 rounded-md border border-slate-800">
-            <button id="sub-propofol-btn" onclick="switchGabaDrug('propofol')" class="px-1.5 py-0.5 md:px-2 md:py-1 rounded text-[9px] md:text-[10px] font-bold transition-all duration-150 bg-cyan-500/20 text-cyan-300 border border-cyan-500/50">
+            <button id="sub-propofol-btn" onclick="switchGabaDrug('propofol')" class="px-1.5 py-0.5 md:px-2 md:py-1 lg:px-2.5 lg:py-1.5 rounded text-[9px] md:text-[10px] lg:text-xs font-bold transition-all duration-150 bg-cyan-500/20 text-cyan-300 border border-cyan-500/50">
               💉 Propofol
             </button>
-            <button id="sub-sevo-btn" onclick="switchGabaDrug('sevo')" class="px-1.5 py-0.5 md:px-2 md:py-1 rounded text-[9px] md:text-[10px] font-bold transition-all duration-150 text-slate-400 hover:text-slate-200 border border-transparent">
+            <button id="sub-sevo-btn" onclick="switchGabaDrug('sevo')" class="px-1.5 py-0.5 md:px-2 md:py-1 lg:px-2.5 lg:py-1.5 rounded text-[9px] md:text-[10px] lg:text-xs font-bold transition-all duration-150 text-slate-400 hover:text-slate-200 border border-transparent">
               🫁 Sevo
             </button>
           </div>
         </div>
 
-        <button id="scen-2" onclick="switchScenario(2)" class="px-2 py-1 md:px-2.5 md:py-1.5 rounded-lg text-[11px] md:text-xs font-medium transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 shrink-0">
+        <button id="scen-2" onclick="switchScenario(2)" class="px-2 py-1 md:px-2.5 md:py-1.5 lg:px-3.5 lg:py-2 rounded-lg text-[11px] md:text-xs lg:text-sm font-semibold transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 shrink-0">
           2. 體表痛 (Beta)
         </button>
 
-        <button id="scen-3" onclick="switchScenario(3)" class="px-2 py-1 md:px-2.5 md:py-1.5 rounded-lg text-[11px] md:text-xs font-medium transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 shrink-0">
+        <button id="scen-3" onclick="switchScenario(3)" class="px-2 py-1 md:px-2.5 md:py-1.5 lg:px-3.5 lg:py-2 rounded-lg text-[11px] md:text-xs lg:text-sm font-semibold transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 shrink-0">
           3. 內臟痛陷阱 (Delta) 🚨
         </button>
 
-        <button id="scen-4" onclick="switchScenario(4)" class="px-2 py-1 md:px-2.5 md:py-1.5 rounded-lg text-[11px] md:text-xs font-medium transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 shrink-0">
+        <button id="scen-4" onclick="switchScenario(4)" class="px-2 py-1 md:px-2.5 md:py-1.5 lg:px-3.5 lg:py-2 rounded-lg text-[11px] md:text-xs lg:text-sm font-semibold transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 shrink-0">
           4. 麻醉過深 (Burst)
         </button>
 
-        <button id="scen-5" onclick="switchScenario(5)" class="px-2 py-1 md:px-2.5 md:py-1.5 rounded-lg text-[11px] md:text-xs font-medium transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 shrink-0">
+        <button id="scen-5" onclick="switchScenario(5)" class="px-2 py-1 md:px-2.5 md:py-1.5 lg:px-3.5 lg:py-2 rounded-lg text-[11px] md:text-xs lg:text-sm font-semibold transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 shrink-0">
           5. Ketamine 解離
         </button>
 
-        <button id="scen-6" onclick="switchScenario(6)" class="px-2 py-1 md:px-2.5 md:py-1.5 rounded-lg text-[11px] md:text-xs font-medium transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 shrink-0">
+        <button id="scen-6" onclick="switchScenario(6)" class="px-2 py-1 md:px-2.5 md:py-1.5 lg:px-3.5 lg:py-2 rounded-lg text-[11px] md:text-xs lg:text-sm font-semibold transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 shrink-0">
           6. 高齡腦衰退
         </button>
       </div>
@@ -161,24 +161,24 @@
   <!-- Left: Real-time Patient Monitor HUD & Raw EEG Oscilloscope -->
   <!-- Floating Drawer Trigger Button (Always visible on mobile / tablet / landscape) -->
   <div class="lg:hidden absolute left-2 md:left-4 bottom-2 md:bottom-4 z-30 pointer-events-auto">
-    <button id="mobile-hud-toggle" onclick="toggleMobileHUD()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-cyan-600/95 text-white shadow-2xl flex items-center gap-1.5 border border-cyan-400/60 backdrop-blur-md">
+    <button id="mobile-hud-toggle" onclick="toggleMobileHUD()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-cyan-600/95 text-white shadow-2xl flex items-center gap-1.5 border border-cyan-400/60 backdrop-blur-md">
       <span id="mobile-toggle-icon">📊</span>
       <span id="mobile-toggle-text">監測數據</span>
     </button>
   </div>
 
   <!-- Patient HUD Panel: Drawer on mobile/landscape (< lg), Fixed Sidebar on Large Desktop (>= lg) -->
-  <aside id="patient-hud-panel" class="fixed lg:absolute left-2 md:left-4 top-16 lg:top-[132px] bottom-12 lg:bottom-4 w-[calc(100vw-1rem)] max-w-sm lg:w-88 panel-glass p-3 md:p-4 rounded-2xl shadow-2xl z-40 lg:z-20 pointer-events-auto border border-slate-700/80 flex flex-col justify-between overflow-y-auto transition-all duration-300 transform -translate-x-[120%] lg:translate-x-0 opacity-0 lg:opacity-100 pointer-events-none lg:pointer-events-auto">
+  <aside id="patient-hud-panel" class="fixed lg:absolute left-2 md:left-4 top-16 lg:top-[140px] bottom-12 lg:bottom-4 w-[calc(100vw-1rem)] max-w-sm lg:w-[390px] panel-glass p-3 md:p-4 rounded-2xl shadow-2xl z-40 lg:z-20 pointer-events-auto border border-slate-700/80 flex flex-col justify-between overflow-y-auto transition-all duration-300 transform -translate-x-[120%] lg:translate-x-0 opacity-0 lg:opacity-100 pointer-events-none lg:pointer-events-auto">
     
     <!-- Top HUD: Processed Indices -->
     <div>
       <div class="flex items-center justify-between pb-2 border-b border-slate-800">
-        <span class="text-xs font-bold text-slate-300 tracking-wider flex items-center gap-1.5">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-xs lg:text-sm font-black text-slate-200 tracking-wider flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
           床邊即時監測儀數值 (Processed HUD)
         </span>
         <div class="flex items-center gap-2">
-          <span id="emg-badge" class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">
+          <span id="emg-badge" class="text-[10px] lg:text-xs px-2.5 py-0.5 rounded bg-slate-800 text-slate-300 font-mono border border-slate-700">
             EMG: 28 dB
           </span>
           <button onclick="toggleMobileHUD()" class="lg:hidden w-6 h-6 flex items-center justify-center text-slate-400 hover:text-white rounded-lg bg-slate-800 text-xs font-bold border border-slate-700">
@@ -187,49 +187,49 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-2 my-3">
+      <div class="grid grid-cols-2 gap-2.5 my-3">
         <!-- BIS Value Display Card -->
         <div id="bis-card" class="bg-slate-900/90 p-3 rounded-xl border border-slate-700 flex flex-col items-center justify-center transition-all duration-300">
-          <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">雙頻指數 (BIS)</span>
-          <span id="bis-value" class="text-3xl font-black font-mono text-cyan-400 my-0.5">46</span>
-          <span id="bis-status" class="text-[10px] font-medium text-emerald-400">適當麻醉深度</span>
+          <span class="text-[10px] lg:text-xs text-slate-400 font-bold uppercase tracking-wider">雙頻指數 (BIS)</span>
+          <span id="bis-value" class="text-3xl lg:text-4xl font-black font-mono text-cyan-400 my-0.5">46</span>
+          <span id="bis-status" class="text-[10px] lg:text-xs font-bold text-emerald-400">適當麻醉深度</span>
         </div>
 
         <!-- Suppression Ratio (SR) Card -->
         <div id="sr-card" class="bg-slate-900/90 p-3 rounded-xl border border-slate-700 flex flex-col items-center justify-center">
-          <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">抑制比 (SR %)</span>
-          <span id="sr-value" class="text-3xl font-black font-mono text-slate-300 my-0.5">0%</span>
-          <span id="sr-status" class="text-[10px] font-medium text-slate-400">無等電位抑制</span>
+          <span class="text-[10px] lg:text-xs text-slate-400 font-bold uppercase tracking-wider">抑制比 (SR %)</span>
+          <span id="sr-value" class="text-3xl lg:text-4xl font-black font-mono text-slate-300 my-0.5">0%</span>
+          <span id="sr-status" class="text-[10px] lg:text-xs font-medium text-slate-400">無等電位抑制</span>
         </div>
       </div>
 
       <!-- Raw EEG Live Waveform Canvas (1-Channel Oscilloscope) -->
-      <div class="bg-slate-950/90 rounded-xl p-2.5 border border-slate-800">
-        <div class="flex items-center justify-between mb-1">
-          <span class="text-[10px] font-bold text-slate-400 tracking-wide flex items-center gap-1">
+      <div class="bg-slate-950/90 rounded-xl p-3 border border-slate-800">
+        <div class="flex items-center justify-between mb-1.5">
+          <span class="text-[10px] lg:text-xs font-bold text-slate-300 tracking-wide flex items-center gap-1.5">
             <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> 原始腦波示波軌跡 (Raw EEG)
           </span>
-          <span class="text-[9px] font-mono text-slate-500">25 mm/s &middot; 50 &mu;V</span>
+          <span class="text-[9px] lg:text-[11px] font-mono text-slate-400">25 mm/s &middot; 50 &mu;V</span>
         </div>
-        <canvas id="raw-eeg-canvas" width="310" height="60" class="w-full h-15 rounded bg-black/80"></canvas>
-        <div id="eeg-pattern-desc" class="text-[10px] text-slate-400 mt-1 italic text-center">
+        <canvas id="raw-eeg-canvas" width="350" height="65" class="w-full h-16 rounded bg-black/80"></canvas>
+        <div id="eeg-pattern-desc" class="text-[10px] lg:text-xs text-slate-300 mt-1.5 italic text-center font-medium">
           典型 10 Hz Alpha 紡錘波 ＋ 慢波振盪
         </div>
       </div>
 
       <!-- 5-Second 3-Step Rapid Bedside Inspection Tool -->
-      <div class="mt-3 bg-slate-900/70 p-2.5 rounded-xl border border-slate-800">
-        <div class="text-[11px] font-bold text-amber-400 flex items-center justify-between mb-1.5">
+      <div class="mt-3 bg-slate-900/70 p-3 rounded-xl border border-slate-800">
+        <div class="text-xs lg:text-sm font-black text-amber-400 flex items-center justify-between mb-2">
           <span>⚡ 床邊 5 秒 DSA 判讀 3 口訣：</span>
         </div>
-        <div class="grid grid-cols-3 gap-1">
-          <button onclick="highlightFeature('alpha')" class="py-1 px-1.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-center">
+        <div class="grid grid-cols-3 gap-1.5">
+          <button onclick="highlightFeature('alpha')" class="py-1.5 px-2 rounded-lg text-[10px] lg:text-xs font-bold bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 text-center transition-all">
             1. 看 Alpha
           </button>
-          <button onclick="highlightFeature('arousal')" class="py-1 px-1.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 text-center">
+          <button onclick="highlightFeature('arousal')" class="py-1.5 px-2 rounded-lg text-[10px] lg:text-xs font-bold bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 text-center transition-all">
             2. 鑑別疼痛
           </button>
-          <button onclick="highlightFeature('burst')" class="py-1 px-1.5 rounded text-[10px] font-semibold bg-slate-800 hover:bg-slate-700 text-red-300 border border-slate-700 text-center">
+          <button onclick="highlightFeature('burst')" class="py-1.5 px-2 rounded-lg text-[10px] lg:text-xs font-bold bg-slate-800 hover:bg-slate-700 text-red-300 border border-slate-700 text-center transition-all">
             3. 看黑條過深
           </button>
         </div>
@@ -238,79 +238,79 @@
 
     <!-- Clinical Decision Support Box -->
     <div id="clinical-decision-box" class="mt-3 pt-3 border-t border-slate-800">
-      <div class="flex items-center gap-1.5 mb-1.5">
-        <span id="decision-icon" class="text-base">🟢</span>
-        <h3 id="decision-title" class="text-xs font-bold text-white">
+      <div class="flex items-center gap-2 mb-2">
+        <span id="decision-icon" class="text-lg">🟢</span>
+        <h3 id="decision-title" class="text-xs lg:text-sm font-black text-white">
           生理狀態：丘腦—皮質迴路充分契合
         </h3>
       </div>
-      <p id="decision-mechanism" class="text-[11px] text-slate-300 leading-relaxed mb-2">
+      <p id="decision-mechanism" class="text-[11px] lg:text-xs text-slate-200 leading-relaxed mb-2.5 font-normal">
         後腦 Alpha 節律前移至前額（Alpha Anteriorization），丘腦網狀核與皮質錐體細胞形成超同步封閉共振，感覺訊號阻斷。
       </p>
 
       <!-- Danger/Pitfall Alert Box -->
-      <div id="danger-alert-box" class="p-2 rounded-lg bg-emerald-950/40 border border-emerald-800/60 text-[11px] text-emerald-200">
+      <div id="danger-alert-box" class="p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-800/60 text-[11px] lg:text-xs text-emerald-200">
         <span class="font-bold">臨床指引：</span>
         <span id="danger-alert-text">維持目前 Propofol / 吸入氣體濃度，Alpha 功率飽滿，術後譫妄風險低。</span>
       </div>
     </div>
   </aside>
 
-  <!-- Right: Color Intensity Bar (dB) & Frequency Bands Legend (Compact on mobile) -->
-  <aside class="absolute right-2 md:right-4 bottom-2 md:bottom-4 panel-glass p-2 md:p-3 rounded-xl md:rounded-2xl shadow-2xl z-20 pointer-events-auto border border-slate-700/60 flex items-stretch gap-2.5">
+  <!-- Right: Color Intensity Bar (dB) & Frequency Bands Legend (Compact on mobile, readable on desktop) -->
+  <aside class="absolute right-2 md:right-4 bottom-2 md:bottom-4 panel-glass p-2 md:p-3 rounded-xl md:rounded-2xl shadow-2xl z-20 pointer-events-auto border border-slate-700/60 flex items-stretch gap-3">
     
     <!-- Frequency Bands Guide: Hidden on mobile to free up 3D screen space, visible on tablet/desktop -->
-    <div class="hidden md:flex flex-col justify-between py-1 text-right border-r border-slate-800 pr-3">
-      <span class="text-[10px] font-extrabold tracking-wider text-slate-300 uppercase">波形頻率範圍</span>
+    <div class="hidden md:flex flex-col justify-between py-1 text-right border-r border-slate-800 pr-3.5">
+      <span class="text-xs lg:text-sm font-black tracking-wider text-slate-200 uppercase mb-1">波形頻率範圍</span>
       
       <!-- Beta / Gamma -->
       <div class="flex flex-col items-end">
         <div class="flex items-center gap-1.5">
-          <span class="text-[11px] font-bold text-slate-300">Beta / Gamma</span>
-          <span class="w-2 h-2 rounded-full bg-slate-400"></span>
+          <span class="text-xs lg:text-sm font-bold text-slate-200">Beta / Gamma</span>
+          <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
         </div>
-        <span class="text-[9px] text-slate-400 font-mono">13 - 30+ Hz</span>
-        <span class="text-[8px] text-slate-500">清醒 &middot; 體表痛 &middot; Ketamine</span>
+        <span class="text-[10px] lg:text-xs text-slate-300 font-mono font-semibold">13 - 30+ Hz</span>
+        <span class="text-[9px] lg:text-[11px] text-slate-400">清醒 &middot; 體表痛 &middot; Ketamine</span>
       </div>
 
       <!-- Alpha -->
       <div class="flex flex-col items-end my-1">
         <div class="flex items-center gap-1.5">
-          <span class="text-[11px] font-bold text-amber-400">Alpha 帶</span>
-          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          <span class="text-xs lg:text-sm font-extrabold text-amber-400">Alpha 帶</span>
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
         </div>
-        <span class="text-[9px] text-amber-300/80 font-mono">8 - 12 Hz</span>
-        <span class="text-[8px] text-amber-400/80">丘腦皮質偶聯 (麻醉核心)</span>
+        <span class="text-[10px] lg:text-xs text-amber-300 font-mono font-semibold">8 - 12 Hz</span>
+        <span class="text-[9px] lg:text-[11px] text-amber-400/90">丘腦皮質偶聯 (麻醉核心)</span>
       </div>
 
       <!-- Theta -->
       <div class="flex flex-col items-end my-1">
         <div class="flex items-center gap-1.5">
-          <span class="text-[11px] font-bold text-emerald-400">Theta 帶</span>
-          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span class="text-xs lg:text-sm font-bold text-emerald-400">Theta 帶</span>
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
         </div>
-        <span class="text-[9px] text-emerald-300/80 font-mono">4 - 8 Hz</span>
-        <span class="text-[8px] text-emerald-500">Sevo 活化瀰散寬頻</span>
+        <span class="text-[10px] lg:text-xs text-emerald-300 font-mono font-semibold">4 - 8 Hz</span>
+        <span class="text-[9px] lg:text-[11px] text-emerald-400/90">Sevo 活化瀰散寬頻</span>
       </div>
 
       <!-- Slow-Delta -->
       <div class="flex flex-col items-end">
         <div class="flex items-center gap-1.5">
-          <span class="text-[11px] font-bold text-cyan-300">Slow-Delta 帶</span>
-          <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+          <span class="text-xs lg:text-sm font-bold text-cyan-300">Slow-Delta 帶</span>
+          <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
         </div>
-        <span class="text-[9px] text-cyan-200/80 font-mono">0.1 - 4 Hz</span>
-        <span class="text-[8px] text-cyan-500">皮質超極化 &middot; 深睡/深麻</span>
+        <span class="text-[10px] lg:text-xs text-cyan-200 font-mono font-semibold">0.1 - 4 Hz</span>
+        <span class="text-[9px] lg:text-[11px] text-cyan-400/90">皮質超極化 &middot; 深睡/深麻</span>
       </div>
     </div>
 
-    <!-- Power (dB) Colorbar (Ultra-compact on mobile) -->
-    <div class="flex flex-col items-center justify-between px-0.5 md:pl-1">
-      <span class="text-[9px] font-bold tracking-wider text-slate-300 writing-vertical">Power (dB)</span>
-      <span class="text-[9px] text-red-400 font-mono font-bold">+25</span>
-      <div class="w-2.5 md:w-3 h-24 md:h-36 rounded-full color-bar-gradient border border-slate-600 my-1"></div>
-      <span class="text-[9px] text-blue-400 font-mono font-bold">-10</span>
-      <span class="hidden md:block text-[8px] text-slate-400 text-center leading-tight mt-0.5">3D高度<br>➔ 色彩</span>
+    <!-- Power (dB) Colorbar (Ultra-compact on mobile, clear on desktop) -->
+    <div class="flex flex-col items-center justify-between px-1 md:pl-1">
+      <span class="text-[10px] lg:text-xs font-extrabold tracking-wider text-slate-200 writing-vertical">Power (dB)</span>
+      <span class="text-[10px] lg:text-xs text-red-400 font-mono font-bold">+25 dB</span>
+      <div class="w-3 lg:w-4 h-28 md:h-40 rounded-full color-bar-gradient border border-slate-600 my-1"></div>
+      <span class="text-[10px] lg:text-xs text-blue-400 font-mono font-bold">-10 dB</span>
+      <span class="hidden md:block text-[9px] lg:text-[10px] text-slate-300 text-center leading-tight mt-1 font-medium">3D高度<br>➔ 色彩</span>
     </div>
   </aside>
 
@@ -414,8 +414,8 @@
     grid.position.y = -0.1;
     scene.add(grid);
 
-    // --- Spatial 3D Labels & Axes ---
-    function makeTextSprite(text, color = "#94a3b8", size = 26) {
+    // --- Spatial 3D Labels & Axes (Enlarged fonts for Desktop and Presentation) ---
+    function makeTextSprite(text, color = "#94a3b8", size = 32) {
       const c = document.createElement('canvas');
       c.width = 512;
       c.height = 128;
@@ -428,27 +428,28 @@
       const texture = new THREE.CanvasTexture(c);
       const mat = new THREE.SpriteMaterial({ map: texture, transparent: true });
       const sp = new THREE.Sprite(mat);
-      sp.scale.set(22, 5.5, 1);
+      sp.scale.set(24, 6, 1);
       return sp;
     }
 
     // Time Axis Label on the OPPOSITE side (-DEPTH / 2 - 8)
-    const timeLabel = makeTextSprite("➔ 手術時程推進 (Time Axis ➔)", "#38bdf8", 30);
+    const timeLabel = makeTextSprite("➔ 手術時程推進 (Time Axis ➔)", "#38bdf8", 36);
     timeLabel.position.set(0, 0, -DEPTH / 2 - 8);
+    timeLabel.scale.set(28, 7, 1);
     scene.add(timeLabel);
 
     // --- Rightmost Edge: Most Recent Time Slice (最近時間點斷面標示) ---
     const RIGHT_EDGE_X = WIDTH / 2; // +47
 
     // "Recent Time Point" Header Sprite right above the slice
-    const sliceHeaderLabel = makeTextSprite("⏱️ 最近時間點 (當前即時切片)", "#38bdf8", 26);
-    sliceHeaderLabel.position.set(RIGHT_EDGE_X + 2, 18, -4);
-    sliceHeaderLabel.scale.set(24, 6, 1);
+    const sliceHeaderLabel = makeTextSprite("⏱️ 最近時間點 (當前即時切片)", "#38bdf8", 32);
+    sliceHeaderLabel.position.set(RIGHT_EDGE_X + 2, 19, -4);
+    sliceHeaderLabel.scale.set(28, 7, 1);
     scene.add(sliceHeaderLabel);
 
     // Anchor Pin helper to connect slice peak to label
     function createSliceAnchor(colorHex, x, y, z) {
-      const dotGeom = new THREE.SphereGeometry(0.5, 16, 16);
+      const dotGeom = new THREE.SphereGeometry(0.6, 16, 16);
       const dotMat = new THREE.MeshBasicMaterial({ color: colorHex });
       const dot = new THREE.Mesh(dotGeom, dotMat);
       dot.position.set(x, y, z);
@@ -457,35 +458,35 @@
     }
 
     // 1. Delta Band Label & Anchor (0.1 - 4 Hz: 靠近螢幕下方)
-    const deltaZ = DEPTH / 2 - (2.0 / 30) * DEPTH; // Near screen bottom (+Z side)
+    const deltaZ = DEPTH / 2 - (2.0 / 30) * DEPTH;
     createSliceAnchor(0x38bdf8, RIGHT_EDGE_X, 10.5, deltaZ);
-    const freq0 = makeTextSprite("◀ 0.1 - 4 Hz (Delta 慢波帶)", "#e2e8f0", 25);
-    freq0.position.set(RIGHT_EDGE_X + 11, 10.5, deltaZ);
-    freq0.scale.set(20, 5, 1);
+    const freq0 = makeTextSprite("◀ 0.1 - 4 Hz (Delta 慢波帶)", "#e2e8f0", 30);
+    freq0.position.set(RIGHT_EDGE_X + 13, 10.5, deltaZ);
+    freq0.scale.set(24, 6, 1);
     scene.add(freq0);
 
     // 2. Theta Band Label & Anchor (4 - 8 Hz)
     const thetaZ = DEPTH / 2 - (6.0 / 30) * DEPTH;
     createSliceAnchor(0x34d399, RIGHT_EDGE_X, 5.5, thetaZ);
-    const freqTheta = makeTextSprite("◀ 4 - 8 Hz (Theta 帶)", "#34d399", 24);
-    freqTheta.position.set(RIGHT_EDGE_X + 10, 5.5, thetaZ);
-    freqTheta.scale.set(18, 4.5, 1);
+    const freqTheta = makeTextSprite("◀ 4 - 8 Hz (Theta 帶)", "#34d399", 28);
+    freqTheta.position.set(RIGHT_EDGE_X + 12, 5.5, thetaZ);
+    freqTheta.scale.set(22, 5.5, 1);
     scene.add(freqTheta);
 
     // 3. Alpha Band Label & Anchor (8 - 12 Hz) - High Peak
     const alphaZ = DEPTH / 2 - (10.2 / 30) * DEPTH;
     createSliceAnchor(0xfbbf24, RIGHT_EDGE_X, 14.5, alphaZ);
-    const freqAlpha = makeTextSprite("◀ 8 - 12 Hz (Alpha 丘腦皮質)", "#fbbf24", 26);
-    freqAlpha.position.set(RIGHT_EDGE_X + 12, 14.8, alphaZ);
-    freqAlpha.scale.set(22, 5.5, 1);
+    const freqAlpha = makeTextSprite("◀ 8 - 12 Hz (Alpha 丘腦皮質)", "#fbbf24", 32);
+    freqAlpha.position.set(RIGHT_EDGE_X + 14, 14.8, alphaZ);
+    freqAlpha.scale.set(26, 6.5, 1);
     scene.add(freqAlpha);
 
     // 4. Beta Band Label & Anchor (13 - 30 Hz: 靠近螢幕上方)
-    const betaZ = DEPTH / 2 - (20.0 / 30) * DEPTH; // Near screen top (-Z side)
+    const betaZ = DEPTH / 2 - (20.0 / 30) * DEPTH;
     createSliceAnchor(0x94a3b8, RIGHT_EDGE_X, 3.5, betaZ);
-    const freqBeta = makeTextSprite("◀ 13 - 30 Hz (Beta / EMG)", "#94a3b8", 24);
-    freqBeta.position.set(RIGHT_EDGE_X + 11, 3.5, betaZ);
-    freqBeta.scale.set(20, 5, 1);
+    const freqBeta = makeTextSprite("◀ 13 - 30 Hz (Beta / EMG)", "#94a3b8", 28);
+    freqBeta.position.set(RIGHT_EDGE_X + 13, 3.5, betaZ);
+    freqBeta.scale.set(24, 6, 1);
     scene.add(freqBeta);
 
     // Feature Highlight Ring (for 5-Second Rapid Inspection)
