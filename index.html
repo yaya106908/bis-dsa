@@ -324,30 +324,33 @@
     const container = document.getElementById('canvas-container');
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x06090e);
-    scene.fog = new THREE.FogExp2(0x06090e, 0.007);
+    // REMOVED scene.fog to prevent darkening when zooming out (縮小拉遠時不再變暗)
 
-    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.shadowMap.enabled = true;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.25; // Boost overall vibrancy
     container.appendChild(renderer.domElement);
 
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
+    controls.minDistance = 20;
+    controls.maxDistance = 280; // Bound zoom range to prevent getting lost in space
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
+    // Lighting (Bright & Non-decaying for clear data inspection)
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.1); // High ambient light keeps colors vibrant from any distance
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
-    dirLight.position.set(40, 90, 50);
-    scene.add(dirLight);
+    const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.7);
+    dirLight1.position.set(50, 100, 60);
+    scene.add(dirLight1);
 
-    const pointLight = new THREE.PointLight(0x38bdf8, 1.2, 120);
-    pointLight.position.set(0, 35, 0);
-    scene.add(pointLight);
+    const dirLight2 = new THREE.DirectionalLight(0xffffff, 0.4);
+    dirLight2.position.set(-50, 80, -60);
+    scene.add(dirLight2);
 
     // --- Spectrogram Terrain Setup ---
     const TIME_SEGMENTS = 100;
@@ -390,11 +393,11 @@
       return color;
     }
 
-    // Material with Vertex Colors
+    // Material with Vertex Colors (Bright and vibrant at any viewing distance)
     const terrainMat = new THREE.MeshStandardMaterial({
       vertexColors: true,
-      roughness: 0.3,
-      metalness: 0.08,
+      roughness: 0.15,
+      metalness: 0.0,
       flatShading: false,
       side: THREE.DoubleSide
     });
