@@ -1049,7 +1049,7 @@
     // Material with Vertex Colors (Self-luminous Basic Material: 100% color fidelity, impervious to shadow washout)
     const spectrogramGroup = new THREE.Group();
     scene.add(spectrogramGroup);
-    // --- 3D SEF95 (Spectral Edge Frequency 95%) Laser Line & Real-Time Badge ---
+    // --- 3D SEF95 (Spectral Edge Frequency 95%) Laser Line & Zero-Occlusion Real-Time Badge ---
     let isSefLineVisible = true;
     const sefPointsCount = TIME_SEGMENTS;
     const currentSefPoints = new Float32Array(sefPointsCount * 3);
@@ -1058,40 +1058,62 @@
     const sefGeom = new THREE.BufferGeometry();
     sefGeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(sefPointsCount * 3), 3));
 
-    // Luminous glowing laser line (High-visibility neon gold/yellow)
+    // Core laser line: brilliant neon yellow, depthTest: false to GUARANTEE it is NEVER buried or occluded!
     const sefMat = new THREE.LineBasicMaterial({
-      color: 0xfacc15,
-      linewidth: 3,
+      color: 0xfef08a,
+      linewidth: 4,
       transparent: true,
-      opacity: 0.95
+      opacity: 1.0,
+      depthTest: false,
+      depthWrite: false
     });
     const sefLineMesh = new THREE.Line(sefGeom, sefMat);
+    sefLineMesh.renderOrder = 999;
 
-    // Glowing halo line
+    // Outer luminous golden halo line
     const sefGlowMat = new THREE.LineBasicMaterial({
-      color: 0xfbbf24,
-      linewidth: 6,
+      color: 0xf59e0b,
+      linewidth: 8,
       transparent: true,
-      opacity: 0.40
+      opacity: 0.65,
+      depthTest: false,
+      depthWrite: false
     });
     const sefGlowMesh = new THREE.Line(sefGeom, sefGlowMat);
+    sefGlowMesh.renderOrder = 998;
 
     const sefGroup = new THREE.Group();
     sefGroup.name = "sefGroup";
     sefGroup.add(sefLineMesh);
     sefGroup.add(sefGlowMesh);
 
-    // Dynamic 3D Tag Sprite
+    // Glowing waypoint beacons along the laser line
+    const beaconCount = 5;
+    const sefBeacons = [];
+    const beaconGeom = new THREE.SphereGeometry(0.48, 16, 16);
+    const beaconMat = new THREE.MeshBasicMaterial({
+      color: 0xfef08a,
+      depthTest: false,
+      depthWrite: false
+    });
+    for (let b = 0; b < beaconCount; b++) {
+      const bm = new THREE.Mesh(beaconGeom, beaconMat);
+      bm.renderOrder = 1000;
+      sefGroup.add(bm);
+      sefBeacons.push(bm);
+    }
+
+    // Dynamic 3D Tag Sprite (depthTest: false, renderOrder: 1001 so it is ALWAYS crisp, floating, and visible!)
     function makeSefSpriteTexture(valText) {
       const c = document.createElement('canvas');
-      c.width = 320;
-      c.height = 76;
+      c.width = 360;
+      c.height = 84;
       const ctx = c.getContext('2d');
-      ctx.fillStyle = "rgba(10, 15, 26, 0.92)";
+      ctx.fillStyle = "rgba(10, 15, 26, 0.95)";
       ctx.strokeStyle = "#facc15";
-      ctx.lineWidth = 3.5;
+      ctx.lineWidth = 4;
       ctx.beginPath();
-      const x = 4, y = 4, w = 312, h = 68, r = 16;
+      const x = 4, y = 4, w = 352, h = 76, r = 18;
       ctx.moveTo(x + r, y);
       ctx.lineTo(x + w - r, y);
       ctx.quadraticCurveTo(x + w, y, x + w, y + r);
@@ -1099,7 +1121,7 @@
       ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
       ctx.lineTo(x + r, y + h);
       ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-      ctx.lineTo(x + r, y + r);
+      ctx.lineTo(x, y + r);
       ctx.quadraticCurveTo(x, y, x + r, y);
       ctx.closePath();
       ctx.fill();
@@ -1109,14 +1131,20 @@
       ctx.font = 'bold 28px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(`⚡ SEF95: ${valText} Hz`, 160, 38);
+      ctx.fillText(`⚡ SEF95: ${valText} Hz`, 180, 42);
 
       return new THREE.CanvasTexture(c);
     }
 
-    const sefSpriteMat = new THREE.SpriteMaterial({ map: makeSefSpriteTexture("12.2"), transparent: true });
+    const sefSpriteMat = new THREE.SpriteMaterial({
+      map: makeSefSpriteTexture("12.2"),
+      transparent: true,
+      depthTest: false, // NEVER gets buried under 3D terrain!
+      depthWrite: false
+    });
     const sefTagSprite = new THREE.Sprite(sefSpriteMat);
-    sefTagSprite.scale.set(7.5, 1.8, 1);
+    sefTagSprite.scale.set(8.2, 1.9, 1);
+    sefTagSprite.renderOrder = 1001;
     sefGroup.add(sefTagSprite);
 
     spectrogramGroup.add(sefGroup);
@@ -2145,15 +2173,19 @@
         colorIndex += 3;
       }
 
-      // Compute SEF95 3D Line Path across Time
+      // Compute SEF95 3D Line Path across Time (Elevated +1.8 above terrain to guarantee zero submergence)
       const sefFn = cfg.sefFormula || ((t) => 12.0);
       for (let i = 0; i < TIME_SEGMENTS; i++) {
         const x = -WIDTH / 2 + (i / (TIME_SEGMENTS - 1)) * WIDTH;
         const normTime = i / (TIME_SEGMENTS - 1);
         const freqHz = Math.min(29.5, Math.max(0.5, sefFn(normTime)));
         const z = DEPTH / 2 - (freqHz / 30) * DEPTH;
+        
+        // Exact terrain height at this coordinate including microNoise
         const pwr = cfg.formula(normTime, freqHz);
-        const y = pwr * MAX_POWER_HEIGHT + 0.55; // Slightly elevated laser line above terrain
+        const microNoise = (Math.sin(x * 1.2) * Math.cos(z * 1.5) + Math.sin(x * 3.1 + z * 2.3)) * 0.035;
+        const terrainY = Math.max(0, (pwr + microNoise)) * MAX_POWER_HEIGHT;
+        const y = terrainY + 1.8; // Generous elevation prevents terrain poking through
 
         targetSefPoints[i * 3] = x;
         targetSefPoints[i * 3 + 1] = y;
@@ -2239,9 +2271,17 @@
       }
       sefPos.needsUpdate = true;
 
-      // Position SEF Tag Sprite at the latest time edge (last segment)
-      const last = sefPointsCount - 1;
-      sefTagSprite.position.set(sefPos.getX(last) + 0.5, sefPos.getY(last) + 3.2, sefPos.getZ(last));
+      // Position Glowing Waypoint Beacons along the line
+      if (typeof sefBeacons !== 'undefined' && sefBeacons.length > 0) {
+        for (let b = 0; b < sefBeacons.length; b++) {
+          const bIdx = Math.floor(b * (sefPointsCount - 1) / (sefBeacons.length - 1));
+          sefBeacons[b].position.set(sefPos.getX(bIdx), sefPos.getY(bIdx), sefPos.getZ(bIdx));
+        }
+      }
+
+      // Position SEF Tag Sprite in center of screen (midpoint), elevated +4.8 above line so it can NEVER be buried!
+      const mid = Math.floor(sefPointsCount / 2);
+      sefTagSprite.position.set(sefPos.getX(mid), sefPos.getY(mid) + 4.8, sefPos.getZ(mid));
     }
 
     // Switch Scenario Function
@@ -2715,6 +2755,24 @@
     }
     terrainGeom.setAttribute('color', new THREE.Float32BufferAttribute(initCol, 3));
     terrainGeom.computeVertexNormals();
+
+    // CRITICAL: Immediately populate SEF line, beacons, and sprite on initial load so it is NEVER at (0, 0, 0)!
+    currentSefPoints.set(targetSefPoints);
+    const sefPosInit = sefGeom.attributes.position;
+    for (let i = 0; i < sefPointsCount; i++) {
+      sefPosInit.setXYZ(i, targetSefPoints[i * 3], targetSefPoints[i * 3 + 1], targetSefPoints[i * 3 + 2]);
+    }
+    sefPosInit.needsUpdate = true;
+
+    if (typeof sefBeacons !== 'undefined') {
+      for (let b = 0; b < sefBeacons.length; b++) {
+        const bIdx = Math.floor(b * (sefPointsCount - 1) / (sefBeacons.length - 1));
+        sefBeacons[b].position.set(targetSefPoints[bIdx * 3], targetSefPoints[bIdx * 3 + 1], targetSefPoints[bIdx * 3 + 2]);
+      }
+    }
+
+    const midInit = Math.floor(sefPointsCount / 2);
+    sefTagSprite.position.set(targetSefPoints[midInit * 3], targetSefPoints[midInit * 3 + 1] + 4.8, targetSefPoints[midInit * 3 + 2]);
 
     window.addEventListener('resize', () => {
       camera.aspect = window.innerWidth / window.innerHeight;
