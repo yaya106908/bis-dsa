@@ -161,6 +161,11 @@
         <button id="scen-6" onclick="switchScenario(6)" class="px-2 py-1 md:px-2.5 md:py-1.5 lg:px-3.5 lg:py-2 rounded-lg text-[11px] md:text-xs lg:text-sm font-semibold transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 shrink-0">
           6. 高齡腦衰退
         </button>
+
+        <button id="scen-7" onclick="switchScenario(7)" class="px-2 py-1 md:px-2.5 md:py-1.5 lg:px-3.5 lg:py-2 rounded-lg text-[11px] md:text-xs lg:text-sm font-semibold transition-all duration-150 border border-slate-700/70 hover:bg-slate-800 text-slate-300 shrink-0 flex items-center gap-1">
+          <span>🌅</span>
+          <span>7. 丙泊酚甦醒期 (拉鍊模式)</span>
+        </button>
       </div>
     </nav>
   </div>
@@ -809,8 +814,8 @@
         name: "電極 1 (前額中央 Fpz+4cm)",
         shortName: "1. 前額",
         tag: "主信號輸入端",
-        pos: new THREE.Vector3(0.0, 4.35, 7.50),
-        normal: new THREE.Vector3(0.0, 0.15, 0.98).normalize(),
+        pos: new THREE.Vector3(0.0, 4.35, 7.55),
+        normal: new THREE.Vector3(0.0, 0.42, 0.91).normalize(),
         color: 0x38bdf8,
         badgeColor: "#38bdf8",
         landmark: "前額正中線，鼻樑（Fpz）上方約 4–5 公分處（眉毛正上方中心平坦處）。",
@@ -822,8 +827,8 @@
         name: "電極 2 (參考電極 Reference)",
         shortName: "2. 參考",
         tag: "基準參考端",
-        pos: new THREE.Vector3(0.0, 6.35, 5.75),
-        normal: new THREE.Vector3(0.0, 0.45, 0.89).normalize(),
+        pos: new THREE.Vector3(0.0, 6.35, 6.28),
+        normal: new THREE.Vector3(0.0, 0.64, 0.77).normalize(),
         color: 0x34d399,
         badgeColor: "#34d399",
         landmark: "電極 1 正上方約 3 公分處，靠近髮際線但仍在無毛髮皮膚上。",
@@ -835,8 +840,8 @@
         name: "電極 4 (顳部電極 FT9/FT10)",
         shortName: "4. 顳部",
         tag: "額顳導聯差分端",
-        pos: new THREE.Vector3(4.60, 2.30, 6.05),
-        normal: new THREE.Vector3(0.72, 0.15, 0.68).normalize(),
+        pos: new THREE.Vector3(4.50, 2.30, 6.18),
+        normal: new THREE.Vector3(0.74, 0.21, 0.64).normalize(),
         color: 0xfbbf24,
         badgeColor: "#fbbf24",
         landmark: "顳側太陽穴，外眼角與鬢角髮際線之間的平坦區域。",
@@ -848,8 +853,8 @@
         name: "電極 3 (地線與外眼角 Ground/EMG)",
         shortName: "3. 外眼角",
         tag: "系統接地 & EMG",
-        pos: new THREE.Vector3(4.40, 0.23, 6.25),
-        normal: new THREE.Vector3(0.68, -0.15, 0.71).normalize(),
+        pos: new THREE.Vector3(4.40, 0.25, 6.78),
+        normal: new THREE.Vector3(0.70, 0.06, 0.72).normalize(),
         color: 0xf43f5e,
         badgeColor: "#f43f5e",
         landmark: "外眼角（Outer canthus）與顴弓（Zygomatic arch）交界處，髫角前側。",
@@ -938,12 +943,12 @@
           v.z += bY * bX * 0.55;
         }
         
-        // Eye socket recession: smooth orbital sockets
+        // Eye socket recession: smooth, natural orbital relief (no deep dark hollow hole)
         if (v.z > 0 && v.y > 0.4 && v.y < 2.0) {
           const dL = Math.hypot(v.x - 2.4, v.y - 1.2);
           const dR = Math.hypot(v.x + 2.4, v.y - 1.2);
           const socket = Math.exp(-Math.pow(Math.min(dL, dR), 2) / 1.6);
-          v.z -= socket * 0.75;
+          v.z -= socket * 0.15;
         }
         
         // Realistic human nose: broad pyramid, soft dorsum, rounded tip (NO pointy beak!)
@@ -1074,57 +1079,17 @@
       const hairlineMat = new THREE.MeshBasicMaterial({ color: 0x334155 });
       group.add(new THREE.Mesh(hairlineGeom, hairlineMat));
 
-      // 7. BIS Quatro Flexible Sensor Strip (Conforms smoothly along forehead & temple)
-      const stripPoints = [
-        new THREE.Vector3(0.0, 6.35, 5.75),       // Electrode 2
-        new THREE.Vector3(0.0, 5.30, 6.75),       // Bridge 2 -> 1
-        new THREE.Vector3(0.0, 4.35, 7.50),       // Electrode 1
-        new THREE.Vector3(1.6, 3.65, 7.20),       // Diagonal arch over right brow
-        new THREE.Vector3(3.3, 3.00, 6.55),       // Brow-temple junction
-        new THREE.Vector3(4.6, 2.30, 6.05),       // Electrode 4
-        new THREE.Vector3(4.7, 1.25, 6.10),       // Downward turn
-        new THREE.Vector3(4.4, 0.23, 6.25),       // Electrode 3
-        new THREE.Vector3(5.5, -0.1, 5.0)         // Connector tail towards ear
-      ];
-      const stripCurve = new THREE.CatmullRomCurve3(stripPoints);
-      
-      // Main medical white flexible strip substrate
-      const stripGeom = new THREE.TubeGeometry(stripCurve, 64, 0.28, 12, false);
-      const stripMat = new THREE.MeshStandardMaterial({
-        color: 0xf8fafc,
-        roughness: 0.35,
-        metalness: 0.1
-      });
-      const stripMesh = new THREE.Mesh(stripGeom, stripMat);
-      group.add(stripMesh);
-
-      // Central cyan conductive printed trace
-      const traceGeom = new THREE.TubeGeometry(stripCurve, 64, 0.05, 8, false);
-      const traceMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
-      const traceMesh = new THREE.Mesh(traceGeom, traceMat);
-      traceMesh.position.y += 0.02;
-      group.add(traceMesh);
-
-      // Connector plug clip at ear tail (PIC interface)
-      const plugGeom = new THREE.BoxGeometry(0.65, 0.45, 0.85);
-      const plugMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4 });
-      const plugMesh = new THREE.Mesh(plugGeom, plugMat);
-      plugMesh.position.set(5.5, -0.1, 5.0);
-      plugMesh.rotation.set(0.2, 0.5, 0);
-      group.add(plugMesh);
-
-      // 8. The 4 Circular Sensor Electrodes (1, 2, 4, 3) - Directly Numbered On Disc!
+      // 7. Directly Attached Circular BIS Quatro Electrode Pads (1, 2, 4, 3)
+      // Placed directly on facial anatomical landmarks without blocking connector tubes
       electrodes.forEach(el => {
         const elGroup = new THREE.Group();
         elGroup.position.copy(el.pos);
         
-        // Orient electrode disc flush with skin surface normal
-        const rotMatrix = new THREE.Matrix4();
-        rotMatrix.lookAt(new THREE.Vector3(0, 0, 0), el.normal, new THREE.Vector3(0, 1, 0));
-        elGroup.quaternion.setFromRotationMatrix(rotMatrix);
+        // Orient electrode pad flat against the skull surface normal
+        elGroup.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), el.normal);
 
-        // Circular sensor pad with illuminated number printed directly inside
-        const discGeom = new THREE.CircleGeometry(0.78, 32);
+        // Circular medical sensor pad with illuminated number printed directly inside
+        const discGeom = new THREE.CircleGeometry(0.85, 32);
         const discTex = makeElectrodeDiscTexture(el.id, el.badgeColor);
         const discMat = new THREE.MeshBasicMaterial({
           map: discTex,
@@ -1132,21 +1097,21 @@
           side: THREE.DoubleSide
         });
         const discMesh = new THREE.Mesh(discGeom, discMat);
-        discMesh.position.z += 0.05;
+        discMesh.position.z += 0.04;
         discMesh.userData = { electrodeId: el.id };
         elGroup.add(discMesh);
         clickableElectrodeMeshes.push(discMesh);
 
         // Glowing pulsing beacon ring around electrode pad
-        const ringGeom = new THREE.RingGeometry(0.85, 1.25, 32);
+        const ringGeom = new THREE.RingGeometry(0.92, 1.32, 32);
         const ringMat = new THREE.MeshBasicMaterial({
           color: el.color,
           side: THREE.DoubleSide,
           transparent: true,
-          opacity: 0.65
+          opacity: 0.70
         });
         const beaconRing = new THREE.Mesh(ringGeom, ringMat);
-        beaconRing.position.z += 0.06;
+        beaconRing.position.z += 0.05;
         beaconRing.userData = { electrodeId: el.id };
         elGroup.add(beaconRing);
         electrodePulsingRings.push(beaconRing);
@@ -1154,7 +1119,7 @@
         group.add(elGroup);
       });
 
-      // 9. Side Leader-Lines & Compact Labels (Positioned FAR to the sides, NEVER blocking face!)
+      // 8. Side Leader-Lines & Compact Labels (Positioned FAR to the sides, NEVER blocking face!)
       const calloutsGroup = new THREE.Group();
       calloutsGroup.name = "calloutsGroup";
 
@@ -1171,15 +1136,15 @@
 
       function makeSidePillSprite(num, title, colorHex) {
         const c = document.createElement('canvas');
-        c.width = 256;
+        c.width = 300;
         c.height = 80;
         const ctx = c.getContext('2d');
         
-        ctx.fillStyle = "rgba(10, 15, 26, 0.85)";
+        ctx.fillStyle = "rgba(10, 15, 26, 0.90)";
         ctx.strokeStyle = colorHex;
         ctx.lineWidth = 4;
         ctx.beginPath();
-        const x = 4, y = 4, w = 248, h = 72, r = 18;
+        const x = 4, y = 4, w = 292, h = 72, r = 18;
         ctx.moveTo(x + r, y);
         ctx.lineTo(x + w - r, y);
         ctx.quadraticCurveTo(x + w, y, x + w, y + r);
@@ -1201,20 +1166,20 @@
 
         ctx.fillStyle = "#f1f5f9";
         ctx.font = 'bold 24px sans-serif';
-        ctx.fillText(title, 76, 40);
+        ctx.fillText(title, 82, 40);
 
         const texture = new THREE.CanvasTexture(c);
         const mat = new THREE.SpriteMaterial({ map: texture, transparent: true });
         const sp = new THREE.Sprite(mat);
-        sp.scale.set(3.8, 1.2, 1); // Compact size
+        sp.scale.set(4.2, 1.15, 1); // Compact size
         return sp;
       }
 
       const sideAnchors = [
-        { id: 2, name: "參考電極", color: "#34d399", lineEnd: new THREE.Vector3(-7.2, 7.0, 5.0), spritePos: new THREE.Vector3(-9.4, 7.0, 5.0) },
-        { id: 1, name: "前額中央", color: "#38bdf8", lineEnd: new THREE.Vector3(-7.5, 4.35, 6.5), spritePos: new THREE.Vector3(-9.7, 4.35, 6.5) },
-        { id: 4, name: "顳部眉外", color: "#fbbf24", lineEnd: new THREE.Vector3(8.5, 3.2, 5.0), spritePos: new THREE.Vector3(10.6, 3.2, 5.0) },
-        { id: 3, name: "外眼角/肌電", color: "#f43f5e", lineEnd: new THREE.Vector3(8.5, -0.6, 5.0), spritePos: new THREE.Vector3(10.6, -0.6, 5.0) }
+        { id: 2, name: "參考電極", color: "#34d399", lineEnd: new THREE.Vector3(-8.5, 6.35, 5.0), spritePos: new THREE.Vector3(-11.2, 6.35, 5.0) },
+        { id: 1, name: "前額中央", color: "#38bdf8", lineEnd: new THREE.Vector3(-8.5, 4.35, 6.0), spritePos: new THREE.Vector3(-11.2, 4.35, 6.0) },
+        { id: 4, name: "顳部眉外", color: "#fbbf24", lineEnd: new THREE.Vector3(8.5, 2.30, 5.0), spritePos: new THREE.Vector3(11.2, 2.30, 5.0) },
+        { id: 3, name: "外眼角/肌電", color: "#f43f5e", lineEnd: new THREE.Vector3(8.5, 0.25, 5.5), spritePos: new THREE.Vector3(11.2, 0.25, 5.5) }
       ];
 
       sideAnchors.forEach(sa => {
@@ -1428,6 +1393,44 @@
           const faintAlpha = Math.exp(-Math.pow((freqHz - 9.5) / 1.2, 2)) * 0.22; // very weak
           return Math.max(0, faintDelta + faintAlpha);
         }
+      },
+      7: {
+        name: "丙泊酚甦醒期 (拉鍊開啟模式)",
+        bis: 78,
+        sr: "0%",
+        emg: "38 dB",
+        bisStatus: "甦醒過渡期 (Emergence)",
+        bisStatusClass: "text-amber-400 font-bold",
+        bisCardClass: "border-amber-500",
+        eegDesc: "慢波消散、Alpha 消失，波形變平，出現低幅高頻 Beta/Gamma 快速活動",
+        icon: "🌅",
+        title: "全身麻醉甦醒期：Propofol 停藥與「拉鍊開啟」模式 (Zipper Pattern)",
+        mechanism: "【文獻依據：Purdon et al., Anesthesiology 2015 / PMC7581499】\n停止輸注 Propofol 後，丘腦皮質慢波（Delta）與 Alpha 振盪迅速消散，能量由紅轉黃；頻譜從 10 Hz 向上發散至 15–30 Hz Beta 與 Gamma 頻段，呈現經典【「拉鍊開啟」模式（Zipper-opening pattern）】！前額化現象逆轉（額葉 Alpha 消失，清醒時枕葉 Alpha 恢復）。",
+        alertType: "warning",
+        alertText: "【臨床照護決策】腦幹與皮質功能正遵循尾側至頭側（延髓呼吸/作嘔 ➔ 橋腦/中腦角膜反射 ➔ 丘腦皮質意識）依序恢復。維持氣道通暢，密切觀察自主呼吸潮氣量；預防甦醒期躁動（Emergence Agitation）與拔管刺激。",
+        formula: (normTime, freqHz) => {
+          if (normTime < 0.28) {
+            // Early: Deep surgical anesthesia with clear Alpha + Delta
+            const delta = Math.exp(-Math.pow((freqHz - 2.0) / 1.6, 2)) * 0.95;
+            const alpha = Math.exp(-Math.pow((freqHz - 10.2) / 1.4, 2)) * 1.0;
+            return Math.max(0, delta + alpha);
+          } else if (normTime < 0.75) {
+            // Mid: Zipper opening transition! Delta decays, Alpha sweeps up into Beta/Gamma
+            const t = (normTime - 0.28) / 0.47;
+            const delta = Math.exp(-Math.pow((freqHz - 2.0) / 1.8, 2)) * (0.95 * (1.0 - t * 0.8));
+            // Center frequency sweeps from 10.2 Hz up to 22.5 Hz (Zipper opening V-shape)
+            const centerFreq = 10.2 + t * 12.3;
+            const spread = 1.4 + t * 3.6;
+            const power = 1.0 - t * 0.35; // Red turns to yellow/amber
+            const zipperSweep = Math.exp(-Math.pow((freqHz - centerFreq) / spread, 2)) * power;
+            return Math.max(0, delta + zipperSweep);
+          } else {
+            // Late: Awake/Emergence approaching: Alpha completely vanished, low-amplitude broadband fast activity
+            const background = 0.08;
+            const betaGamma = Math.exp(-Math.pow((freqHz - 22) / 6.5, 2)) * 0.42;
+            return Math.max(0, background + betaGamma);
+          }
+        }
       }
     };
 
@@ -1538,8 +1541,9 @@
       currentScenarioId = id;
 
       // Update Nav Buttons
-      for (let i = 1; i <= 6; i++) {
+      for (let i = 1; i <= 7; i++) {
         const btn = document.getElementById(`scen-${i}`);
+        if (!btn) continue;
         if (i === id) {
           btn.classList.add('btn-active-scenario');
         } else {
@@ -1859,11 +1863,11 @@
         document.getElementById('auto-cycle-text').textContent = "自動巡迴演示";
       } else {
         document.getElementById('auto-cycle-text').textContent = "暫停自動巡迴";
-        let nextScen = currentScenarioId >= 6 ? 1 : currentScenarioId + 1;
+        let nextScen = currentScenarioId >= 7 ? 1 : currentScenarioId + 1;
         switchScenario(nextScen);
 
         autoCycleTimer = setInterval(() => {
-          nextScen = currentScenarioId >= 6 ? 1 : currentScenarioId + 1;
+          nextScen = currentScenarioId >= 7 ? 1 : currentScenarioId + 1;
           switchScenario(nextScen);
         }, 5500);
       }
@@ -1940,6 +1944,9 @@
         } else if (currentScenarioId === 6) {
           // Geriatric: Low amplitude faint wave
           yOffset = Math.sin(t * 1.6) * 6 + Math.sin(t * 9.5) * 3;
+        } else if (currentScenarioId === 7) {
+          // Propofol Emergence: Desynchronized low-voltage fast beta/gamma activity (waveform flattens, frequency speeds up)
+          yOffset = Math.sin(t * 19) * 5 + Math.sin(t * 27) * 3.5 + (Math.random() - 0.5) * 3;
         }
 
         const y = midY + yOffset;
