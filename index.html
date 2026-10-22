@@ -1107,6 +1107,180 @@
       const neckMesh = new THREE.Mesh(neckGeom, neckMat);
       neckMesh.position.set(0, -8.5, -0.6);
       group.add(neckMesh);
+      // 3. Clear, Recognizable 3D Eyes (Both Left & Right)
+      function createRealisticEye(isRight) {
+        const eyeGroup = new THREE.Group();
+        const sign = isRight ? 1 : -1;
+        eyeGroup.position.set(sign * 2.35, 0.90, 7.35);
+
+        // White Sclera
+        const scleraGeom = new THREE.SphereGeometry(0.72, 24, 16);
+        scleraGeom.scale(1.22, 0.65, 0.35);
+        const scleraMat = new THREE.MeshStandardMaterial({
+          color: 0xf1f5f9,
+          roughness: 0.2,
+          metalness: 0.1
+        });
+        const sclera = new THREE.Mesh(scleraGeom, scleraMat);
+        eyeGroup.add(sclera);
+
+        // Cyan/Slate Iris
+        const irisGeom = new THREE.CircleGeometry(0.38, 24);
+        const irisMat = new THREE.MeshBasicMaterial({ color: 0x0284c7 });
+        const iris = new THREE.Mesh(irisGeom, irisMat);
+        iris.position.set(0, 0, 0.26);
+        eyeGroup.add(iris);
+
+        // Deep Dark Pupil
+        const pupilGeom = new THREE.CircleGeometry(0.20, 16);
+        const pupilMat = new THREE.MeshBasicMaterial({ color: 0x020617 });
+        const pupil = new THREE.Mesh(pupilGeom, pupilMat);
+        pupil.position.set(0, 0, 0.28);
+        eyeGroup.add(pupil);
+
+        // White Light Glint
+        const glintGeom = new THREE.CircleGeometry(0.06, 8);
+        const glintMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const glint = new THREE.Mesh(glintGeom, glintMat);
+        glint.position.set(0.10, 0.10, 0.29);
+        eyeGroup.add(glint);
+
+        // Upper Eyelid Arch
+        const lidGeom = new THREE.TorusGeometry(0.85, 0.09, 8, 24, Math.PI * 0.95);
+        const lidMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5 });
+        const upperLid = new THREE.Mesh(lidGeom, lidMat);
+        upperLid.position.set(0, 0.08, 0.25);
+        upperLid.rotation.set(-0.25, sign * 0.15, Math.PI);
+        eyeGroup.add(upperLid);
+
+        return eyeGroup;
+      }
+      group.add(createRealisticEye(true));  // Right Eye
+      group.add(createRealisticEye(false)); // Left Eye
+
+      // 4. Prominent, Dark Arched Eyebrows (Essential for locating "directly above eyebrow")
+      function createEyebrow(isRight) {
+        const sign = isRight ? 1 : -1;
+        const browPoints = [
+          new THREE.Vector3(sign * 0.95, 1.85, 7.82),  // Medial start above glabella
+          new THREE.Vector3(sign * 2.30, 2.15, 7.78),  // Brow arch peak
+          new THREE.Vector3(sign * 3.65, 1.72, 7.20)   // Lateral tail toward temple
+        ];
+        const browCurve = new THREE.CatmullRomCurve3(browPoints);
+        const browGeom = new THREE.TubeGeometry(browCurve, 24, 0.16, 10, false);
+        const browMat = new THREE.MeshStandardMaterial({
+          color: 0x0f172a,
+          roughness: 0.8
+        });
+        return new THREE.Mesh(browGeom, browMat);
+      }
+      group.add(createEyebrow(true));  // Right Eyebrow
+      group.add(createEyebrow(false)); // Left Eyebrow
+
+      // 5. Distinct 3D Nose (Bridge, Dorsum, Tip, Alar Wings — Essential for "bridge of nose")
+      const noseGroup = new THREE.Group();
+      
+      // Nasal Bridge
+      const bridgePoints = [
+        new THREE.Vector3(0, 1.70, 7.85),  // Nasion (鼻樑基準點)
+        new THREE.Vector3(0, 0.70, 8.20),  // Dorsum midpoint
+        new THREE.Vector3(0, -0.35, 8.85)  // Nose tip
+      ];
+      const bridgeCurve = new THREE.CatmullRomCurve3(bridgePoints);
+      const bridgeGeom = new THREE.TubeGeometry(bridgeCurve, 20, 0.26, 12, false);
+      const noseMat = new THREE.MeshStandardMaterial({
+        color: 0x223246,
+        roughness: 0.55
+      });
+      noseGroup.add(new THREE.Mesh(bridgeGeom, noseMat));
+
+      // Rounded Nose Tip
+      const tipGeom = new THREE.SphereGeometry(0.55, 16, 16);
+      const tipMesh = new THREE.Mesh(tipGeom, noseMat);
+      tipMesh.position.set(0, -0.35, 8.85);
+      tipMesh.scale.set(1.0, 0.85, 1.0);
+      noseGroup.add(tipMesh);
+
+      // Left & Right Alar Wings
+      const wingGeom = new THREE.SphereGeometry(0.38, 12, 12);
+      const rightWing = new THREE.Mesh(wingGeom, noseMat);
+      rightWing.position.set(0.68, -0.45, 8.42);
+      noseGroup.add(rightWing);
+
+      const leftWing = new THREE.Mesh(wingGeom, noseMat);
+      leftWing.position.set(-0.68, -0.45, 8.42);
+      noseGroup.add(leftWing);
+
+      group.add(noseGroup);
+
+      // 6. Anatomical Ears (Essential for locating temple between corner of eye and ear/hairline)
+      function createRealisticEar(isRight) {
+        const earGroup = new THREE.Group();
+        const sign = isRight ? 1 : -1;
+        earGroup.position.set(sign * 6.70, 0.60, 0.50);
+        earGroup.rotation.set(0.1, sign * 0.45, sign * -0.15);
+
+        // Outer Helix Rim
+        const helixGeom = new THREE.TorusGeometry(1.25, 0.22, 12, 32, Math.PI * 1.35);
+        const earMat = new THREE.MeshStandardMaterial({
+          color: 0x223246,
+          roughness: 0.60
+        });
+        const helix = new THREE.Mesh(helixGeom, earMat);
+        helix.rotation.z = isRight ? 0.4 : -0.4;
+        earGroup.add(helix);
+
+        // Inner Concha Cavity
+        const conchaGeom = new THREE.SphereGeometry(0.65, 12, 12);
+        conchaGeom.scale(0.5, 1.1, 0.3);
+        const conchaMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
+        const concha = new THREE.Mesh(conchaGeom, conchaMat);
+        concha.position.set(sign * -0.1, 0.1, 0.1);
+        earGroup.add(concha);
+
+        // Earlobe
+        const lobeGeom = new THREE.SphereGeometry(0.42, 12, 12);
+        lobeGeom.scale(0.8, 1.2, 0.6);
+        const lobe = new THREE.Mesh(lobeGeom, earMat);
+        lobe.position.set(sign * -0.05, -1.15, 0);
+        earGroup.add(lobe);
+
+        return earGroup;
+      }
+      group.add(createRealisticEar(true));  // Right Ear
+      group.add(createRealisticEar(false)); // Left Ear
+
+      // 7. Mouth & Lips
+      const lipGroup = new THREE.Group();
+      const upperLipGeom = new THREE.CylinderGeometry(0.12, 0.12, 2.2, 16);
+      upperLipGeom.rotateZ(Math.PI / 2);
+      const lipMat = new THREE.MeshStandardMaterial({ color: 0x141e2e, roughness: 0.6 });
+      const upperLip = new THREE.Mesh(upperLipGeom, lipMat);
+      upperLip.position.set(0, -2.15, 7.82);
+      lipGroup.add(upperLip);
+
+      const lowerLipGeom = new THREE.CylinderGeometry(0.18, 0.18, 1.8, 16);
+      lowerLipGeom.rotateZ(Math.PI / 2);
+      const lowerLip = new THREE.Mesh(lowerLipGeom, lipMat);
+      lowerLip.position.set(0, -2.55, 7.65);
+      lipGroup.add(lowerLip);
+      group.add(lipGroup);
+
+      // 8. Hairline Demarcation
+      const hairlinePoints = [
+        new THREE.Vector3(-5.8, 1.8, 1.0),
+        new THREE.Vector3(-4.8, 3.8, 3.8),
+        new THREE.Vector3(-3.0, 6.2, 5.6),
+        new THREE.Vector3(0, 7.4, 5.8),
+        new THREE.Vector3(3.0, 6.2, 5.6),
+        new THREE.Vector3(4.8, 3.8, 3.8),
+        new THREE.Vector3(5.8, 1.8, 1.0)
+      ];
+      const hairlineCurve = new THREE.CatmullRomCurve3(hairlinePoints);
+      const hairlineGeom = new THREE.TubeGeometry(hairlineCurve, 40, 0.14, 8, false);
+      const hairlineMat = new THREE.MeshBasicMaterial({ color: 0x334155 });
+      group.add(new THREE.Mesh(hairlineGeom, hairlineMat));
+
 
       // 3. Official Covidien BIS Quatro Sensor Adhesive Strip (Conforming flexible backing band)
       // Follows exact physical path: 1 (Forehead center) -> 2 (Between 1 and 4) -> 4 (Above eyebrow) -> 3 (Temple) -> PIC Tab
