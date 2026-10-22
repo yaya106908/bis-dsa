@@ -365,34 +365,82 @@
         </button>
       </div>
 
-      <!-- 對準定位點（以最常見的 BIS Quatro 4點貼片為例） -->
-      <div class="bg-slate-900/95 p-2.5 rounded-xl border border-cyan-500/50 space-y-1.5 shadow-lg shadow-cyan-950/40">
-        <div class="text-[11px] lg:text-xs font-black text-amber-300 flex items-center justify-between">
+      <!-- Covidien / Medtronic BIS Quatro 原廠標準操作程序 (SOP) -->
+      <div class="bg-slate-900/95 p-2.5 rounded-xl border border-cyan-500/50 space-y-2 shadow-lg shadow-cyan-950/40">
+        <div class="text-[11px] lg:text-xs font-black text-amber-300 flex items-center justify-between border-b border-slate-800 pb-1.5">
           <span class="flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-            對準定位點（BIS Quatro 4點貼片）：
+            Covidien 原廠標準黏貼說明 (SOP)：
           </span>
+          <span class="text-[9px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 font-mono">Quatro 4點額顳</span>
         </div>
-        <div class="space-y-1 text-[11px] text-slate-200 leading-snug">
-          <div onclick="selectElectrode(1)" class="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 hover:border-cyan-500/50 cursor-pointer transition-all flex items-start gap-1.5">
-            <span class="text-cyan-400 font-bold shrink-0">• 1 號感應點：</span>
-            <span>貼於<strong class="text-white">前額正中央</strong>（眉心上方約 5 公分處）。</span>
+
+        <!-- 5 Steps SOP -->
+        <div class="space-y-1.5 text-[11px] text-slate-200 leading-snug">
+          <!-- Step 1 -->
+          <div class="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 flex items-start gap-1.5">
+            <span class="px-1.5 py-0.5 rounded bg-blue-900/60 text-cyan-300 font-bold text-[10px] shrink-0">步驟 1</span>
+            <div>
+              <strong class="text-white">酒精清潔與乾燥</strong>：以酒精棉片徹底擦拭黏貼區域皮膚並使其乾燥。<span class="text-[10px] text-slate-400 block">(1. Wipe skin with alcohol and dry)</span>
+            </div>
           </div>
-          <div onclick="selectElectrode(2)" class="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 hover:border-emerald-500/50 cursor-pointer transition-all flex items-start gap-1.5">
-            <span class="text-emerald-400 font-bold shrink-0">• 2 號感應點：</span>
-            <span>貼於<strong class="text-white"> 1 號點正上方</strong>約 2-3 公分處。</span>
+
+          <!-- Step 2 -->
+          <div class="p-1.5 rounded-lg bg-slate-950/90 border border-cyan-500/30 space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="px-1.5 py-0.5 rounded bg-cyan-900/60 text-cyan-300 font-bold text-[10px]">步驟 2</span>
+              <span class="text-[10px] text-cyan-400 font-bold">斜向對位黏貼 (Position sensor diagonally)</span>
+            </div>
+            
+            <div onclick="selectElectrode(1)" class="p-1 rounded bg-slate-900/90 border border-slate-800 hover:border-cyan-500/50 cursor-pointer transition-all flex items-start gap-1 text-[10px]">
+              <span class="text-cyan-400 font-bold shrink-0">① 號：</span>
+              <span>貼於<strong class="text-white">前額正中央</strong>，鼻樑（bridge of nose）上方約 <strong class="text-cyan-300">5 cm (2 吋)</strong> 處。</span>
+            </div>
+            <div onclick="selectElectrode(2)" class="p-1 rounded bg-slate-900/90 border border-slate-800 hover:border-emerald-500/50 cursor-pointer transition-all flex items-start gap-1 text-[10px]">
+              <span class="text-emerald-400 font-bold shrink-0">② 號：</span>
+              <span>基準參考點，位於 <strong class="text-white">① 號正上方</strong>約 2–3 公分處（避開毛髮）。</span>
+            </div>
+            <div onclick="selectElectrode(4)" class="p-1 rounded bg-slate-900/90 border border-slate-800 hover:border-amber-500/50 cursor-pointer transition-all flex items-start gap-1 text-[10px]">
+              <span class="text-amber-400 font-bold shrink-0">④ 號：</span>
+              <span>貼於<strong class="text-white">眉毛正上方</strong>（directly above eyebrow，避開眉毛）。</span>
+            </div>
+            <div onclick="selectElectrode(3)" class="p-1 rounded bg-slate-900/90 border border-slate-800 hover:border-rose-500/50 cursor-pointer transition-all flex items-start gap-1 text-[10px]">
+              <span class="text-rose-400 font-bold shrink-0">③ 號：</span>
+              <span>貼於同側<strong class="text-white">太陽穴</strong>（眼睛外側與髮際線之間）。</span>
+            </div>
           </div>
-          <div onclick="selectElectrode(4)" class="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 hover:border-amber-500/50 cursor-pointer transition-all flex items-start gap-1.5">
-            <span class="text-amber-400 font-bold shrink-0">• 4 號感應點：</span>
-            <span>貼於<strong class="text-white">右側眉毛上方</strong>（避開眉毛）。</span>
+
+          <!-- Step 3 -->
+          <div class="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 flex items-start gap-1.5">
+            <span class="px-1.5 py-0.5 rounded bg-blue-900/60 text-cyan-300 font-bold text-[10px] shrink-0">步驟 3</span>
+            <div>
+              <strong class="text-white">壓平貼片邊緣</strong>：沿感應器外緣確實按壓，確保黏合服貼無氣泡。<span class="text-[10px] text-slate-400 block">(3. Press edges of sensor to assure adhesion)</span>
+            </div>
           </div>
-          <div onclick="selectElectrode(3)" class="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 hover:border-rose-500/50 cursor-pointer transition-all flex items-start gap-1.5">
-            <span class="text-rose-400 font-bold shrink-0">• 3 號感應點：</span>
-            <span>貼於與 4 號同側的<strong class="text-white">太陽穴</strong>（眼睛外側與髮際線之間）。</span>
+
+          <!-- Step 4 -->
+          <div class="p-1.5 rounded-lg bg-slate-950/80 border border-amber-500/40 flex items-start gap-1.5">
+            <span class="px-1.5 py-0.5 rounded bg-amber-900/60 text-amber-300 font-bold text-[10px] shrink-0">步驟 4</span>
+            <div>
+              <strong class="text-amber-300">用力按壓 5 秒鐘</strong>：分別用力按壓 ①、②、③、④ 各點 5 秒，刺破角質層釋放濕凝膠。<span class="text-[10px] text-slate-400 block">(4. Press ① ② ③ and ④ firmly for 5 seconds)</span>
+            </div>
+          </div>
+
+          <!-- Step 5 -->
+          <div class="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 flex items-start gap-1.5">
+            <span class="px-1.5 py-0.5 rounded bg-blue-900/60 text-cyan-300 font-bold text-[10px] shrink-0">步驟 5</span>
+            <div>
+              <strong class="text-white">連接傳輸電纜</strong>：將感應器接頭（sensor tab）插入病人介面電纜（PIC）。<span class="text-[10px] text-slate-400 block">(5. Insert sensor tab into patient interface cable)</span>
+            </div>
+          </div>
+
+          <!-- Note -->
+          <div class="p-1.5 rounded-lg bg-slate-950/50 border border-slate-800/80 text-[10px] text-slate-400 flex items-center gap-1.5">
+            <span class="text-amber-400 text-xs">⚠️</span>
+            <span><strong class="text-slate-300">原廠備註：</strong>移除感應器後皮膚若有輕微發紅屬正常現象，通常於短時間內消退。</span>
           </div>
         </div>
       </div>
-
       <!-- Electrode Selection Tabs -->
       <div class="grid grid-cols-4 gap-1.5">
         <button onclick="selectElectrode(1)" id="el-tab-1" class="py-1.5 px-1 rounded-lg text-[11px] font-extrabold border transition-all text-center bg-cyan-500/20 text-cyan-300 border-cyan-500/60 shadow-lg shadow-cyan-500/20">
@@ -837,64 +885,69 @@
     const electrodePulsingRings = [];
 
     // ─────────────────────────────────────────────────────────────────────
-    // BIS Quatro 4 點對準定位點（嚴格依臨床標準設定）：
-    // • 1 號感應點：貼於前額正中央（眉心上方約 5 公分處）
-    // • 2 號感應點：貼於 1 號點正上方約 2-3 公分處
-    // • 4 號感應點：貼於右側眉毛上方（避開眉毛）
-    // • 3 號感應點：貼於與 4 號點同側的太陽穴（眼睛外側與髮際線之間）
+    // BIS™ Quatro 官方使用說明書（INSTRUCTIONS - Covidien / Medtronic）：
+    // Step 1: Wipe skin with alcohol and dry
+    // Step 2: Position sensor diagonally on the forehead as follows:
+    //   ① at center of forehead, approximately 2 inches (5cm) above bridge of nose
+    //   ② directly above 1 (Reference electrode)
+    //   ④ directly above eyebrow
+    //   ③ on temple, between corner of eye and hairline
+    // Step 3: Press edges of sensor to assure adhesion
+    // Step 4: Press ① ② ③ and ④ firmly for 5 seconds
+    // Step 5: Insert sensor tab into patient interface cable
     // ─────────────────────────────────────────────────────────────────────
     const electrodes = [
       {
         id: 1,
-        name: "電極 1 (前額正中央 · 眉心上約5cm)",
+        name: "電極 1 (① at center of forehead · 鼻樑上約 5cm / 2in)",
         shortName: "1. 前額",
-        tag: "主信號輸入端",
+        tag: "主信號輸入端 ①",
         pos: new THREE.Vector3(0.0, 4.80, 7.55),
         normal: new THREE.Vector3(0.0, 0.45, 0.89).normalize(),
         color: 0x38bdf8,
         badgeColor: "#38bdf8",
-        landmark: "貼於前額正中央（眉心上方約 5 公分處）。",
+        landmark: "【官方步驟 2-①】at center of forehead, approximately 2 inches (5cm) above bridge of nose（貼於前額正中央，鼻樑上方約 2 英吋 / 5 公分處）。",
         physiology: "捕捉由後枕部向前遷移的 Alpha 振盪（Alpha Anteriorization）；全身麻醉下丘腦皮質偶聯共振區，信噪比（SNR）最高！(Purdon 2015)",
-        clinical: "此點為主要信號輸入端。黏貼前需用酒精徹底擦拭額頭油脂；與眉心保持約 5 公分，避開眼動偽影（EOG）。"
+        clinical: "此點為主要信號輸入端。黏貼前需用酒精徹底擦拭皮膚並乾燥；定位時以鼻樑（bridge of nose）為基準向上量測約 5 公分。"
       },
       {
         id: 2,
-        name: "電極 2 (1號正上方約2-3cm)",
+        name: "電極 2 (② Reference · 1號正上方約2-3cm)",
         shortName: "2. 參考",
-        tag: "基準參考端",
+        tag: "基準參考端 ②",
         pos: new THREE.Vector3(0.0, 6.90, 6.10),
         normal: new THREE.Vector3(0.0, 0.68, 0.73).normalize(),
         color: 0x34d399,
         badgeColor: "#34d399",
-        landmark: "貼於 1 號點正上方約 2-3 公分處（靠近髮際線但仍在無毛髮皮膚上）。",
+        landmark: "【官方基準參考點】位於 1 號點正上方約 2-3 公分處（靠近髮際線但仍在無毛髮皮膚上）。",
         physiology: "作為基準參考電位（Reference），與電極 1、4 形成同側額葉電位差分計算。",
-        clinical: "務必貼在完全無毛髮處！若貼在髮際線內或毛囊上，接觸阻抗會急遽升高導致感應失敗或雜訊過高。"
+        clinical: "務必貼在完全無毛髮處！按壓 5 秒使濕性凝膠滲透，接觸阻抗需維持在小於 5 kΩ。"
       },
       {
         id: 4,
-        name: "電極 4 (眉毛上方 · 避開眉毛)",
+        name: "電極 4 (④ directly above eyebrow · 眉毛正上方)",
         shortName: "4. 眉上",
-        tag: "額葉差分端",
+        tag: "額葉差分端 ④",
         pos: new THREE.Vector3(2.80, 3.30, 7.25),
         normal: new THREE.Vector3(0.50, 0.32, 0.80).normalize(),
         color: 0xfbbf24,
         badgeColor: "#fbbf24",
-        landmark: "貼於右側眉毛上方（避開眉毛）。",
-        physiology: "位於右側額葉上方，與前額電極 1 形成額葉橫向空間電位差分，收錄大腦皮質去極化波。",
-        clinical: "注意避開眉毛毛囊！直接貼在眉毛上方平整無毛髮皮膚，確保導電凝膠與角質層緊密貼合。"
+        landmark: "【官方步驟 2-④】directly above eyebrow（貼於右側眉毛正上方，避開眉毛）。",
+        physiology: "位於右側額葉上方，與前額電極 1 形成額葉橫向空間電位差分，完整收錄大腦皮質去極化波。",
+        clinical: "注意避開眉毛毛囊！直接貼在眉毛上方平整無毛髮皮膚，確保貼片邊緣壓平服貼。"
       },
       {
         id: 3,
-        name: "電極 3 (同側太陽穴 · 眼外側與髮際線間)",
+        name: "電極 3 (③ on temple · 太陽穴眼角與髮際線間)",
         shortName: "3. 太陽穴",
-        tag: "系統接地 & EMG",
+        tag: "系統接地 & EMG ③",
         pos: new THREE.Vector3(5.20, 1.80, 5.75),
         normal: new THREE.Vector3(0.80, 0.12, 0.58).normalize(),
         color: 0xf43f5e,
         badgeColor: "#f43f5e",
-        landmark: "貼於與 4 號點同側的太陽穴（眼睛外側與髮際線之間）。",
-        physiology: "儀器系統接地保護（Ground），並橫跨顳肌，專責監測 30–300 Hz 高頻肌電活動（EMG）！",
-        clinical: "當患者受疼痛刺激即將甦醒或體動時，電極 3 捕捉的 EMG 數值常最先跳升，是麻醉照護人員防範非預期體動的重要防線。"
+        landmark: "【官方步驟 2-③】on temple, between corner of eye and hairline（貼於太陽穴，眼睛外角與髮際線之間）。",
+        physiology: "儀器系統接地保護（Ground），並緊密橫跨顳肌，專責監測 30–300 Hz 高頻肌電活動（EMG）！",
+        clinical: "外側接出傳輸接頭（sensor tab）連接病人傳輸電纜（PIC）。此處肌肉活動最先反映疼痛甦醒警訊。"
       }
     ];
 
@@ -939,7 +992,7 @@
     function createHumanHeadModel() {
       const group = new THREE.Group();
 
-      // 1. Anatomical Sculpted Head Base
+      // 1. Anatomical Sculpted Head Base (Sleek, Clean Medical Mannequin Base - No facial features added per user instruction)
       const headGeom = new THREE.SphereGeometry(8, 64, 48);
       const pos = headGeom.attributes.position;
       const v = new THREE.Vector3();
@@ -971,7 +1024,7 @@
           v.z += fhW * 0.45;
         }
         
-        // Brow ridge
+        // Subtle brow ridge
         if (v.z > 0 && v.y > 1.2 && v.y < 3.2) {
           const bY = Math.exp(-Math.pow(v.y - 2.2, 2) / 0.8);
           const bX = Math.exp(-Math.pow(v.x / 3.8, 2));
@@ -1036,195 +1089,60 @@
       neckMesh.position.set(0, -8.5, -0.6);
       group.add(neckMesh);
 
-      // 3. Clear, Recognizable 3D Eyes (Both Left & Right)
-      function createRealisticEye(isRight) {
-        const eyeGroup = new THREE.Group();
-        const sign = isRight ? 1 : -1;
-        eyeGroup.position.set(sign * 2.35, 0.90, 7.35);
-
-        // White Sclera
-        const scleraGeom = new THREE.SphereGeometry(0.72, 24, 16);
-        scleraGeom.scale(1.22, 0.65, 0.35);
-        const scleraMat = new THREE.MeshStandardMaterial({
-          color: 0xf1f5f9,
-          roughness: 0.2,
-          metalness: 0.1
-        });
-        const sclera = new THREE.Mesh(scleraGeom, scleraMat);
-        eyeGroup.add(sclera);
-
-        // Cyan/Slate Iris
-        const irisGeom = new THREE.CircleGeometry(0.38, 24);
-        const irisMat = new THREE.MeshBasicMaterial({ color: 0x0284c7 });
-        const iris = new THREE.Mesh(irisGeom, irisMat);
-        iris.position.set(0, 0, 0.26);
-        eyeGroup.add(iris);
-
-        // Deep Dark Pupil
-        const pupilGeom = new THREE.CircleGeometry(0.20, 16);
-        const pupilMat = new THREE.MeshBasicMaterial({ color: 0x020617 });
-        const pupil = new THREE.Mesh(pupilGeom, pupilMat);
-        pupil.position.set(0, 0, 0.28);
-        eyeGroup.add(pupil);
-
-        // White Light Glint
-        const glintGeom = new THREE.CircleGeometry(0.06, 8);
-        const glintMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-        const glint = new THREE.Mesh(glintGeom, glintMat);
-        glint.position.set(0.10, 0.10, 0.29);
-        eyeGroup.add(glint);
-
-        // Upper Eyelid Arch
-        const lidGeom = new THREE.TorusGeometry(0.85, 0.09, 8, 24, Math.PI * 0.95);
-        const lidMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5 });
-        const upperLid = new THREE.Mesh(lidGeom, lidMat);
-        upperLid.position.set(0, 0.08, 0.25);
-        upperLid.rotation.set(-0.25, sign * 0.15, Math.PI);
-        eyeGroup.add(upperLid);
-
-        return eyeGroup;
-      }
-      group.add(createRealisticEye(true));  // Right Eye
-      group.add(createRealisticEye(false)); // Left Eye
-
-      // 4. Prominent, Dark Arched Eyebrows (Crucial for identifying "眉毛上方")
-      function createEyebrow(isRight) {
-        const sign = isRight ? 1 : -1;
-        const browPoints = [
-          new THREE.Vector3(sign * 0.95, 1.85, 7.82),  // Medial start above glabella
-          new THREE.Vector3(sign * 2.30, 2.15, 7.78),  // Brow arch peak
-          new THREE.Vector3(sign * 3.65, 1.72, 7.20)   // Lateral tail toward temple
-        ];
-        const browCurve = new THREE.CatmullRomCurve3(browPoints);
-        const browGeom = new THREE.TubeGeometry(browCurve, 24, 0.16, 10, false);
-        const browMat = new THREE.MeshStandardMaterial({
-          color: 0x0f172a,
-          roughness: 0.8
-        });
-        return new THREE.Mesh(browGeom, browMat);
-      }
-      group.add(createEyebrow(true));  // Right Eyebrow
-      group.add(createEyebrow(false)); // Left Eyebrow
-
-      // 5. Distinct 3D Nose (Bridge, Dorsum, Tip, Alar Wings)
-      const noseGroup = new THREE.Group();
-      
-      // Nasal Bridge
-      const bridgePoints = [
-        new THREE.Vector3(0, 1.70, 7.85),  // Nasion (眉心凹槽)
-        new THREE.Vector3(0, 0.70, 8.20),  // Dorsum midpoint
-        new THREE.Vector3(0, -0.35, 8.85)  // Nose tip
+      // 3. Official Covidien BIS Quatro Sensor Adhesive Strip (Conforming flexible backing band)
+      // Connects: 2 (Midline top) -> 1 (Midline 5cm above nose) -> 4 (Above eyebrow) -> 3 (Temple) -> PIC Sensor Tab
+      const stripPoints = [
+        new THREE.Vector3(0.00, 7.10, 6.00),  // Upper edge above 2
+        new THREE.Vector3(0.00, 6.90, 6.18),  // Electrode 2
+        new THREE.Vector3(0.00, 5.85, 6.98),  // Midline connection
+        new THREE.Vector3(0.00, 4.80, 7.63),  // Electrode 1
+        new THREE.Vector3(1.35, 4.05, 7.50),  // Diagonal curve
+        new THREE.Vector3(2.80, 3.30, 7.32),  // Electrode 4 (above eyebrow)
+        new THREE.Vector3(4.05, 2.50, 6.62),  // Curving toward temple
+        new THREE.Vector3(5.20, 1.80, 5.82),  // Electrode 3 (temple)
+        new THREE.Vector3(6.15, 1.30, 4.90)   // Sensor tab extending toward PIC cable
       ];
-      const bridgeCurve = new THREE.CatmullRomCurve3(bridgePoints);
-      const bridgeGeom = new THREE.TubeGeometry(bridgeCurve, 20, 0.26, 12, false);
-      const noseMat = new THREE.MeshStandardMaterial({
-        color: 0x223246,
-        roughness: 0.55
+      const stripCurve = new THREE.CatmullRomCurve3(stripPoints);
+      const stripGeom = new THREE.TubeGeometry(stripCurve, 64, 0.26, 12, false);
+      const stripMat = new THREE.MeshStandardMaterial({
+        color: 0xf1f5f9,
+        roughness: 0.35,
+        metalness: 0.15,
+        polygonOffset: true,
+        polygonOffsetFactor: -3,
+        polygonOffsetUnits: -3
       });
-      noseGroup.add(new THREE.Mesh(bridgeGeom, noseMat));
+      const stripMesh = new THREE.Mesh(stripGeom, stripMat);
+      stripMesh.scale.set(1.0, 1.0, 0.5); // Flatten against cranial surface
+      group.add(stripMesh);
 
-      // Rounded Nose Tip
-      const tipGeom = new THREE.SphereGeometry(0.55, 16, 16);
-      const tipMesh = new THREE.Mesh(tipGeom, noseMat);
-      tipMesh.position.set(0, -0.35, 8.85);
-      tipMesh.scale.set(1.0, 0.85, 1.0);
-      noseGroup.add(tipMesh);
+      // PIC Connector Tab (Step 5: Insert sensor tab into patient interface cable)
+      const tabGeom = new THREE.BoxGeometry(0.35, 0.65, 0.15);
+      const tabMat = new THREE.MeshStandardMaterial({
+        color: 0x334155,
+        metalness: 0.6,
+        roughness: 0.3
+      });
+      const tabMesh = new THREE.Mesh(tabGeom, tabMat);
+      tabMesh.position.set(6.15, 1.30, 4.90);
+      tabMesh.rotation.set(0.2, 0.8, -0.4);
+      group.add(tabMesh);
 
-      // Left & Right Alar Wings (鼻翼)
-      const wingGeom = new THREE.SphereGeometry(0.38, 12, 12);
-      const rightWing = new THREE.Mesh(wingGeom, noseMat);
-      rightWing.position.set(0.68, -0.45, 8.42);
-      noseGroup.add(rightWing);
-
-      const leftWing = new THREE.Mesh(wingGeom, noseMat);
-      leftWing.position.set(-0.68, -0.45, 8.42);
-      noseGroup.add(leftWing);
-
-      group.add(noseGroup);
-
-      // 6. Anatomical Ears (Positioned on lateral sides at Eye-to-Nose level, visible in 3/4 view!)
-      function createRealisticEar(isRight) {
-        const earGroup = new THREE.Group();
-        const sign = isRight ? 1 : -1;
-        earGroup.position.set(sign * 6.70, 0.60, 0.50);
-        earGroup.rotation.set(0.1, sign * 0.45, sign * -0.15);
-
-        // Outer Helix Rim
-        const helixGeom = new THREE.TorusGeometry(1.25, 0.22, 12, 32, Math.PI * 1.35);
-        const earMat = new THREE.MeshStandardMaterial({
-          color: 0x223246,
-          roughness: 0.60
-        });
-        const helix = new THREE.Mesh(helixGeom, earMat);
-        helix.rotation.z = isRight ? 0.4 : -0.4;
-        earGroup.add(helix);
-
-        // Inner Concha Cavity
-        const conchaGeom = new THREE.SphereGeometry(0.65, 12, 12);
-        conchaGeom.scale(0.5, 1.1, 0.3);
-        const conchaMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
-        const concha = new THREE.Mesh(conchaGeom, conchaMat);
-        concha.position.set(sign * -0.1, 0.1, 0.1);
-        earGroup.add(concha);
-
-        // Earlobe
-        const lobeGeom = new THREE.SphereGeometry(0.42, 12, 12);
-        lobeGeom.scale(0.8, 1.2, 0.6);
-        const lobe = new THREE.Mesh(lobeGeom, earMat);
-        lobe.position.set(sign * -0.05, -1.15, 0);
-        earGroup.add(lobe);
-
-        return earGroup;
-      }
-      group.add(createRealisticEar(true));  // Right Ear
-      group.add(createRealisticEar(false)); // Left Ear
-
-      // 7. Mouth & Lips
-      const lipGroup = new THREE.Group();
-      const upperLipGeom = new THREE.CylinderGeometry(0.12, 0.12, 2.2, 16);
-      upperLipGeom.rotateZ(Math.PI / 2);
-      const lipMat = new THREE.MeshStandardMaterial({ color: 0x141e2e, roughness: 0.6 });
-      const upperLip = new THREE.Mesh(upperLipGeom, lipMat);
-      upperLip.position.set(0, -2.15, 7.82);
-      lipGroup.add(upperLip);
-
-      const lowerLipGeom = new THREE.CylinderGeometry(0.18, 0.18, 1.8, 16);
-      lowerLipGeom.rotateZ(Math.PI / 2);
-      const lowerLip = new THREE.Mesh(lowerLipGeom, lipMat);
-      lowerLip.position.set(0, -2.55, 7.65);
-      lipGroup.add(lowerLip);
-      group.add(lipGroup);
-
-      // 8. Hairline Demarcation
-      const hairlinePoints = [
-        new THREE.Vector3(-5.8, 1.8, 1.0),
-        new THREE.Vector3(-4.8, 3.8, 3.8),
-        new THREE.Vector3(-3.0, 6.2, 5.6),
-        new THREE.Vector3(0, 7.4, 5.8),
-        new THREE.Vector3(3.0, 6.2, 5.6),
-        new THREE.Vector3(4.8, 3.8, 3.8),
-        new THREE.Vector3(5.8, 1.8, 1.0)
-      ];
-      const hairlineCurve = new THREE.CatmullRomCurve3(hairlinePoints);
-      const hairlineGeom = new THREE.TubeGeometry(hairlineCurve, 40, 0.14, 8, false);
-      const hairlineMat = new THREE.MeshBasicMaterial({ color: 0x334155 });
-      group.add(new THREE.Mesh(hairlineGeom, hairlineMat));
-
-      // 9. Dotted Alignment Guidelines (對準定位點導引線)
-      // Visualizes: 眉心 ➔ [1] ➔ [2] and [1] ➔ [4] ➔ [3]
+      // 4. Dotted Alignment Guidelines (對準定位點導引線)
+      // Visualizes Step 2: 鼻樑基準點 -> 5cm -> [1] -> [2] & [1] -> [4] -> [3]
       const guideMat = new THREE.LineDashedMaterial({
         color: 0x38bdf8,
-        dashSize: 0.4,
-        gapSize: 0.25,
+        dashSize: 0.35,
+        gapSize: 0.20,
         linewidth: 2,
         transparent: true,
-        opacity: 0.8
+        opacity: 0.85
       });
 
-      // Vertical Midline Axis: 眉心 ➔ 1 號 ➔ 2 號
+      // Vertical Midline Axis: 鼻樑基準 -> 1 號 (5cm / 2in) -> 2 號 (Reference)
       const vPoints = [
-        new THREE.Vector3(0, 1.85, 7.95),  // 眉心 (Nasion)
-        new THREE.Vector3(0, 4.80, 7.72),  // 1 號 (眉心上約 5cm)
+        new THREE.Vector3(0, 1.85, 7.95),  // 鼻樑 (Bridge of nose)
+        new THREE.Vector3(0, 4.80, 7.72),  // 1 號 (眉心上約 5cm / 2in)
         new THREE.Vector3(0, 6.90, 6.28)   // 2 號 (1 號上約 2-3cm)
       ];
       const vGeom = new THREE.BufferGeometry().setFromPoints(vPoints);
@@ -1232,10 +1150,10 @@
       vLine.computeLineDistances();
       group.add(vLine);
 
-      // Lateral Brow-to-Temple Axis: 1 號 ➔ 4 號 ➔ 3 號
+      // Lateral Brow-to-Temple Axis: 1 號 -> 4 號 -> 3 號
       const lPoints = [
-        new THREE.Vector3(0, 4.80, 7.72),     // 1 號
-        new THREE.Vector3(2.80, 3.30, 7.42),  // 4 號 (眉毛上方)
+        new THREE.Vector3(0, 4.80, 7.72),     // 1 號 (前額中央)
+        new THREE.Vector3(2.80, 3.30, 7.42),  // 4 號 (眉毛正上方)
         new THREE.Vector3(5.20, 1.80, 5.92)   // 3 號 (太陽穴)
       ];
       const lGeom = new THREE.BufferGeometry().setFromPoints(lPoints);
@@ -1243,14 +1161,14 @@
       lLine.computeLineDistances();
       group.add(lLine);
 
-      // Glowing Nasion (眉心基準點) Marker Pin
+      // Glowing Nasion (鼻樑基準點 / Bridge of nose) Marker Pin
       const nasionGeom = new THREE.SphereGeometry(0.24, 16, 16);
       const nasionMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
       const nasionMarker = new THREE.Mesh(nasionGeom, nasionMat);
       nasionMarker.position.set(0, 1.85, 7.95);
       group.add(nasionMarker);
 
-      // 10. BIS Quatro Electrode Pads (1, 2, 4, 3) — Clean, Zero-Clipping Floating Discs
+      // 5. BIS Quatro 4 Electrode Pads (1, 2, 4, 3) - Clean, Zero-Clipping Floating Discs
       electrodes.forEach(el => {
         const elGroup = new THREE.Group();
         elGroup.position.copy(el.pos);
@@ -1271,7 +1189,7 @@
           polygonOffsetUnits: -6
         });
         const discMesh = new THREE.Mesh(discGeom, discMat);
-        discMesh.position.z += 0.16; // Generous offset completely eliminates mesh clipping
+        discMesh.position.z += 0.16; // Generous normal offset guarantees zero mesh penetration
         discMesh.userData = { electrodeId: el.id };
         elGroup.add(discMesh);
         clickableElectrodeMeshes.push(discMesh);
@@ -1296,7 +1214,7 @@
         group.add(elGroup);
       });
 
-      // 11. Side Leader-Lines & Descriptive Labels (Strictly Matching User's Rules)
+      // 6. Side Leader-Lines & Descriptive Labels (Strictly Matching Official Instructions)
       const calloutsGroup = new THREE.Group();
       calloutsGroup.name = "calloutsGroup";
 
@@ -1352,12 +1270,12 @@
         return sp;
       }
 
-      // Exact user-specified anchors & titles
+      // Exact official Covidien / Medtronic instruction anchors & titles
       const sideAnchors = [
-        { id: 2, name: "2 號：1號正上方約2-3cm", color: "#34d399", lineEnd: new THREE.Vector3(-8.5, 6.90, 5.5), spritePos: new THREE.Vector3(-11.8, 6.90, 5.5) },
-        { id: 1, name: "1 號：前額正中(眉心上5cm)", color: "#38bdf8", lineEnd: new THREE.Vector3(-8.5, 4.80, 6.5), spritePos: new THREE.Vector3(-11.8, 4.80, 6.5) },
-        { id: 4, name: "4 號：眉毛上方(避開眉毛)", color: "#fbbf24", lineEnd: new THREE.Vector3( 9.0, 3.30, 5.5), spritePos: new THREE.Vector3( 12.2, 3.30, 5.5) },
-        { id: 3, name: "3 號：太陽穴(眼外與髮際間)", color: "#f43f5e", lineEnd: new THREE.Vector3( 9.0, 1.80, 4.8), spritePos: new THREE.Vector3( 12.2, 1.80, 4.8) }
+        { id: 2, name: "② 基準參考 (directly above 1)", color: "#34d399", lineEnd: new THREE.Vector3(-8.5, 6.90, 5.5), spritePos: new THREE.Vector3(-11.8, 6.90, 5.5) },
+        { id: 1, name: "① 前額中央 (~5cm/2in above nose)", color: "#38bdf8", lineEnd: new THREE.Vector3(-8.5, 4.80, 6.5), spritePos: new THREE.Vector3(-11.8, 4.80, 6.5) },
+        { id: 4, name: "④ 眉毛正上方 (directly above eyebrow)", color: "#fbbf24", lineEnd: new THREE.Vector3( 9.0, 3.30, 5.5), spritePos: new THREE.Vector3( 12.2, 3.30, 5.5) },
+        { id: 3, name: "③ 太陽穴 (temple, eye to hairline)", color: "#f43f5e", lineEnd: new THREE.Vector3( 9.0, 1.80, 4.8), spritePos: new THREE.Vector3( 12.2, 1.80, 4.8) }
       ];
 
       sideAnchors.forEach(sa => {
@@ -1373,17 +1291,17 @@
         clickableElectrodeMeshes.push(sprite);
       });
 
-      // 眉心基準點 Pin Label
+      // 鼻樑基準點 (Bridge of nose) Pin Label
       const nasionLine = createLeaderLine(new THREE.Vector3(0, 1.85, 7.95), new THREE.Vector3(-8.5, 1.85, 7.0), "#38bdf8");
       calloutsGroup.add(nasionLine);
 
-      const nasionSprite = makeSidePillSprite("★", "眉心 (Nasion / Fpz 基準)", "#38bdf8");
+      const nasionSprite = makeSidePillSprite("★", "鼻樑基準 (Bridge of nose)", "#38bdf8");
       nasionSprite.position.set(-11.8, 1.85, 7.0);
       calloutsGroup.add(nasionSprite);
 
       group.add(calloutsGroup);
 
-      // 12. Balanced Studio Lighting for Crisp 3D Facial Anatomy
+      // 7. Balanced Studio Lighting for Crisp 3D Electrode Visibility
       const frontKeyLight = new THREE.DirectionalLight(0xffffff, 0.85);
       frontKeyLight.position.set(5, 12, 25);
       group.add(frontKeyLight);
@@ -1399,7 +1317,7 @@
       return group;
     }
 
-    const headGroup = createHumanHeadModel();
+        const headGroup = createHumanHeadModel();
     headGroup.visible = false;
     scene.add(headGroup);
 
