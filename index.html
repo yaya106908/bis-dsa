@@ -365,19 +365,47 @@
         </button>
       </div>
 
+      <!-- 對準定位點（以最常見的 BIS Quatro 4點貼片為例） -->
+      <div class="bg-slate-900/95 p-2.5 rounded-xl border border-cyan-500/50 space-y-1.5 shadow-lg shadow-cyan-950/40">
+        <div class="text-[11px] lg:text-xs font-black text-amber-300 flex items-center justify-between">
+          <span class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+            對準定位點（BIS Quatro 4點貼片）：
+          </span>
+        </div>
+        <div class="space-y-1 text-[11px] text-slate-200 leading-snug">
+          <div onclick="selectElectrode(1)" class="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 hover:border-cyan-500/50 cursor-pointer transition-all flex items-start gap-1.5">
+            <span class="text-cyan-400 font-bold shrink-0">• 1 號感應點：</span>
+            <span>貼於<strong class="text-white">前額正中央</strong>（眉心上方約 5 公分處）。</span>
+          </div>
+          <div onclick="selectElectrode(2)" class="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 hover:border-emerald-500/50 cursor-pointer transition-all flex items-start gap-1.5">
+            <span class="text-emerald-400 font-bold shrink-0">• 2 號感應點：</span>
+            <span>貼於<strong class="text-white"> 1 號點正上方</strong>約 2-3 公分處。</span>
+          </div>
+          <div onclick="selectElectrode(4)" class="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 hover:border-amber-500/50 cursor-pointer transition-all flex items-start gap-1.5">
+            <span class="text-amber-400 font-bold shrink-0">• 4 號感應點：</span>
+            <span>貼於<strong class="text-white">右側眉毛上方</strong>（避開眉毛）。</span>
+          </div>
+          <div onclick="selectElectrode(3)" class="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 hover:border-rose-500/50 cursor-pointer transition-all flex items-start gap-1.5">
+            <span class="text-rose-400 font-bold shrink-0">• 3 號感應點：</span>
+            <span>貼於與 4 號同側的<strong class="text-white">太陽穴</strong>（眼睛外側與髮際線之間）。</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Electrode Selection Tabs -->
       <div class="grid grid-cols-4 gap-1.5">
         <button onclick="selectElectrode(1)" id="el-tab-1" class="py-1.5 px-1 rounded-lg text-[11px] font-extrabold border transition-all text-center bg-cyan-500/20 text-cyan-300 border-cyan-500/60 shadow-lg shadow-cyan-500/20">
           [ 1 ] 前額
         </button>
         <button onclick="selectElectrode(2)" id="el-tab-2" class="py-1.5 px-1 rounded-lg text-[11px] font-extrabold border border-slate-700 bg-slate-900/80 text-slate-300 hover:text-white transition-all text-center">
-          [ 2 ] 參考
+          [ 2 ] 1號上方
         </button>
         <button onclick="selectElectrode(4)" id="el-tab-4" class="py-1.5 px-1 rounded-lg text-[11px] font-extrabold border border-slate-700 bg-slate-900/80 text-slate-300 hover:text-white transition-all text-center">
-          [ 4 ] 顳部
+          [ 4 ] 眉毛上方
         </button>
         <button onclick="selectElectrode(3)" id="el-tab-3" class="py-1.5 px-1 rounded-lg text-[11px] font-extrabold border border-slate-700 bg-slate-900/80 text-slate-300 hover:text-white transition-all text-center">
-          [ 3 ] 外眼角
+          [ 3 ] 太陽穴
         </button>
       </div>
 
@@ -809,66 +837,63 @@
     const electrodePulsingRings = [];
 
     // ─────────────────────────────────────────────────────────────────────
-    // BIS Quatro XP Electrode positions (per official packaging diagram)
-    //
-    // Face front view (+z toward camera), patient's RIGHT = +x (viewer's left)
-    //
-    //   [2] Reference  — midline forehead, near hairline (y≈5.8)
-    //   [1] Main EEG   — midline forehead center, ~4cm above nasion (y≈3.5)
-    //   [4] Temple     — right lateral forehead/temporal (x≈5, y≈2.8)
-    //   [3] Ground/EMG — right outer canthus/zygoma (x≈4.8, y≈0.0)
+    // BIS Quatro 4 點對準定位點（嚴格依臨床標準設定）：
+    // • 1 號感應點：貼於前額正中央（眉心上方約 5 公分處）
+    // • 2 號感應點：貼於 1 號點正上方約 2-3 公分處
+    // • 4 號感應點：貼於右側眉毛上方（避開眉毛）
+    // • 3 號感應點：貼於與 4 號點同側的太陽穴（眼睛外側與髮際線之間）
     // ─────────────────────────────────────────────────────────────────────
     const electrodes = [
       {
         id: 1,
-        name: "電極 1 (前額中央 Fpz+4cm)",
+        name: "電極 1 (前額正中央 · 眉心上約5cm)",
         shortName: "1. 前額",
         tag: "主信號輸入端",
-        pos: new THREE.Vector3(0.0, 3.50, 7.88),
-        normal: new THREE.Vector3(0.0, 0.24, 0.97).normalize(),
+        pos: new THREE.Vector3(0.0, 4.80, 7.55),
+        normal: new THREE.Vector3(0.0, 0.45, 0.89).normalize(),
         color: 0x38bdf8,
         badgeColor: "#38bdf8",
-        landmark: "前額正中線，鼻樑（Fpz）上方約 4–5 公分處（眉毛正上方中心平坦處）。",
+        landmark: "貼於前額正中央（眉心上方約 5 公分處）。",
         physiology: "捕捉由後枕部向前遷移的 Alpha 振盪（Alpha Anteriorization）；全身麻醉下丘腦皮質偶聯共振區，信噪比（SNR）最高！(Purdon 2015)",
-        clinical: "此點為主要信號輸入端。黏貼前需用酒精徹底擦拭額頭油脂；若貼太低靠近眼眶骨，易受眼動偽影（EOG）干擾。"
+        clinical: "此點為主要信號輸入端。黏貼前需用酒精徹底擦拭額頭油脂；與眉心保持約 5 公分，避開眼動偽影（EOG）。"
       },
       {
         id: 2,
-        name: "電極 2 (參考電極 Reference)",
+        name: "電極 2 (1號正上方約2-3cm)",
         shortName: "2. 參考",
         tag: "基準參考端",
-        pos: new THREE.Vector3(0.0, 5.80, 6.70),
-        normal: new THREE.Vector3(0.0, 0.50, 0.87).normalize(),
+        pos: new THREE.Vector3(0.0, 6.90, 6.10),
+        normal: new THREE.Vector3(0.0, 0.68, 0.73).normalize(),
         color: 0x34d399,
         badgeColor: "#34d399",
-        landmark: "電極 1 正上方約 3 公分處，靠近髮際線但仍在無毛髮皮膚上。",
+        landmark: "貼於 1 號點正上方約 2-3 公分處（靠近髮際線但仍在無毛髮皮膚上）。",
         physiology: "作為基準參考電位（Reference），與電極 1、4 形成同側額葉電位差分計算。",
         clinical: "務必貼在完全無毛髮處！若貼在髮際線內或毛囊上，接觸阻抗會急遽升高導致感應失敗或雜訊過高。"
       },
       {
         id: 4,
-        name: "電極 4 (顳部電極 FT9/FT10)",
-        shortName: "4. 顳部",
-        tag: "額顳導聯差分端",
-        pos: new THREE.Vector3(5.00, 2.80, 5.18),
-        normal: new THREE.Vector3(0.78, 0.14, 0.61).normalize(),
+        name: "電極 4 (眉毛上方 · 避開眉毛)",
+        shortName: "4. 眉上",
+        tag: "額葉差分端",
+        pos: new THREE.Vector3(2.80, 3.30, 7.25),
+        normal: new THREE.Vector3(0.50, 0.32, 0.80).normalize(),
         color: 0xfbbf24,
         badgeColor: "#fbbf24",
-        landmark: "顳側太陽穴，外眼角與鬢角髮際線之間的平坦區域。",
-        physiology: "與前額電極 1 形成跨越額葉至顳葉的「額顳差分對角軸線（Frontotemporal vector）」，完整收錄大腦皮質去極化波。",
-        clinical: "避開顳淺動脈（Superficial temporal artery）搏動點，避免動脈血管搏動（Arterial pulsation artifact）干擾腦波判讀。"
+        landmark: "貼於右側眉毛上方（避開眉毛）。",
+        physiology: "位於右側額葉上方，與前額電極 1 形成額葉橫向空間電位差分，收錄大腦皮質去極化波。",
+        clinical: "注意避開眉毛毛囊！直接貼在眉毛上方平整無毛髮皮膚，確保導電凝膠與角質層緊密貼合。"
       },
       {
         id: 3,
-        name: "電極 3 (地線與外眼角 Ground/EMG)",
-        shortName: "3. 外眼角",
+        name: "電極 3 (同側太陽穴 · 眼外側與髮際線間)",
+        shortName: "3. 太陽穴",
         tag: "系統接地 & EMG",
-        pos: new THREE.Vector3(4.80, -0.10, 6.28),
-        normal: new THREE.Vector3(0.67, -0.02, 0.74).normalize(),
+        pos: new THREE.Vector3(5.20, 1.80, 5.75),
+        normal: new THREE.Vector3(0.80, 0.12, 0.58).normalize(),
         color: 0xf43f5e,
         badgeColor: "#f43f5e",
-        landmark: "外眼角（Outer canthus）與顴弓（Zygomatic arch）交界處，髫角前側。",
-        physiology: "儀器系統接地保護（Ground），並緊密橫跨額肌與顳肌，專責監測 30–300 Hz 高頻肌電活動（EMG）！",
+        landmark: "貼於與 4 號點同側的太陽穴（眼睛外側與髮際線之間）。",
+        physiology: "儀器系統接地保護（Ground），並橫跨顳肌，專責監測 30–300 Hz 高頻肌電活動（EMG）！",
         clinical: "當患者受疼痛刺激即將甦醒或體動時，電極 3 捕捉的 EMG 數值常最先跳升，是麻醉照護人員防範非預期體動的重要防線。"
       }
     ];
@@ -914,7 +939,7 @@
     function createHumanHeadModel() {
       const group = new THREE.Group();
 
-      // 1. Anatomical Smooth Sculpted Head (Broad cranium, natural nose bridge, gentle chin, NO sharp wedge)
+      // 1. Anatomical Sculpted Head Base
       const headGeom = new THREE.SphereGeometry(8, 64, 48);
       const pos = headGeom.attributes.position;
       const v = new THREE.Vector3();
@@ -922,16 +947,16 @@
       for (let i = 0; i < pos.count; i++) {
         v.fromBufferAttribute(pos, i);
         
-        // Human proportions: height elongated, width slightly narrower
+        // Human cranium proportions: elongated height, slightly narrower width
         v.y *= 1.15;
         v.x *= 0.88;
         
-        // Occiput (back of head: rounded posterior cranium)
+        // Rounded posterior occiput
         if (v.z < 0 && v.y > -2.0) {
           v.z *= 1.12;
         }
         
-        // Lower jaw & chin gentle taper
+        // Tapered lower jaw & chin
         if (v.y < 0) {
           const jaw = Math.min(1.0, -v.y / 8.5);
           v.x *= (1.0 - jaw * 0.32);
@@ -940,42 +965,28 @@
           }
         }
         
-        // Forehead: smooth, broad, gently curved frontal plane
+        // Forehead: smooth, broad frontal plane
         if (v.z > 0 && v.y > 1.0 && v.y < 7.0) {
           const fhW = Math.exp(-Math.pow(v.x / 4.5, 2));
           v.z += fhW * 0.45;
         }
         
-        // Brow ridge: gentle natural arc
+        // Brow ridge
         if (v.z > 0 && v.y > 1.2 && v.y < 3.2) {
           const bY = Math.exp(-Math.pow(v.y - 2.2, 2) / 0.8);
           const bX = Math.exp(-Math.pow(v.x / 3.8, 2));
           v.z += bY * bX * 0.55;
         }
         
-        // Eye socket recession: smooth, natural orbital relief (no deep dark hollow hole)
-        if (v.z > 0 && v.y > 0.4 && v.y < 2.0) {
-          const dL = Math.hypot(v.x - 2.4, v.y - 1.2);
-          const dR = Math.hypot(v.x + 2.4, v.y - 1.2);
-          const socket = Math.exp(-Math.pow(Math.min(dL, dR), 2) / 1.6);
-          v.z -= socket * 0.15;
+        // Orbital eye socket recession
+        if (v.z > 0 && v.y > 0.4 && v.y < 1.8) {
+          const dL = Math.hypot(v.x - 2.4, v.y - 0.9);
+          const dR = Math.hypot(v.x + 2.4, v.y - 0.9);
+          const socket = Math.exp(-Math.pow(Math.min(dL, dR), 2) / 1.8);
+          v.z -= socket * 0.45;
         }
         
-        // Realistic human nose: broad pyramid, soft dorsum, rounded tip (NO pointy beak!)
-        if (v.z > 0 && v.y > -1.6 && v.y < 2.2) {
-          const noseW = Math.exp(-Math.pow(v.x / 1.35, 2));
-          let noseH = 0;
-          if (v.y > -0.3) {
-            const t = (v.y - (-0.3)) / 2.5;
-            noseH = 1.25 - 0.45 * t;
-          } else {
-            const t = (-0.3 - v.y) / 1.3;
-            noseH = 1.25 * Math.cos(t * Math.PI * 0.5);
-          }
-          v.z += noseW * Math.max(0.0, noseH);
-        }
-        
-        // Cheeks / Zygomatic arch: smooth lateral facial contour
+        // Cheekbone contour
         if (v.z > 0 && v.y > -0.8 && v.y < 1.0) {
           const dL = Math.hypot(v.x - 4.2, v.y - 0.1);
           const dR = Math.hypot(v.x + 4.2, v.y - 0.1);
@@ -983,14 +994,7 @@
           v.z += cheek * 0.5;
         }
         
-        // Mouth & Lips: subtle natural curvature
-        if (v.z > 0 && v.y > -3.2 && v.y < -1.4) {
-          const lipW = Math.exp(-Math.pow(v.x / 2.2, 2));
-          const lipH = Math.exp(-Math.pow(v.y + 2.3, 2) / 0.5);
-          v.z += lipW * lipH * 0.45;
-        }
-        
-        // Chin: rounded smooth mental protuberance
+        // Chin protuberance
         if (v.z > 0 && v.y < -3.5) {
           const cD = Math.hypot(v.x / 1.8, (v.y + 5.0) / 1.2);
           const chin = Math.exp(-Math.pow(cD, 2) / 2.0);
@@ -1001,23 +1005,23 @@
       }
       headGeom.computeVertexNormals();
 
-      // Soft matte medical slate skin (Zero blinding specular glare)
+      // Soft matte medical slate skin
       const headMat = new THREE.MeshStandardMaterial({
-        color: 0x1b2838,
-        roughness: 0.65,
+        color: 0x1e2b3c,
+        roughness: 0.60,
         metalness: 0.05,
         flatShading: false
       });
       const headMesh = new THREE.Mesh(headGeom, headMat);
       group.add(headMesh);
 
-      // Subtle wireframe hint (very low opacity so it never clutters)
+      // Subtle wireframe hint
       const headWireGeom = headGeom.clone();
       const headWireMat = new THREE.MeshBasicMaterial({
         color: 0x38bdf8,
         wireframe: true,
         transparent: true,
-        opacity: 0.03
+        opacity: 0.025
       });
       group.add(new THREE.Mesh(headWireGeom, headWireMat));
 
@@ -1032,54 +1036,171 @@
       neckMesh.position.set(0, -8.5, -0.6);
       group.add(neckMesh);
 
-      // 3. Ears
-      const earGeom = new THREE.TorusGeometry(1.05, 0.28, 12, 24, Math.PI * 1.3);
-      const earMat = new THREE.MeshStandardMaterial({ color: 0x1b2838, roughness: 0.65 });
+      // 3. Clear, Recognizable 3D Eyes (Both Left & Right)
+      function createRealisticEye(isRight) {
+        const eyeGroup = new THREE.Group();
+        const sign = isRight ? 1 : -1;
+        eyeGroup.position.set(sign * 2.35, 0.90, 7.35);
+
+        // White Sclera
+        const scleraGeom = new THREE.SphereGeometry(0.72, 24, 16);
+        scleraGeom.scale(1.22, 0.65, 0.35);
+        const scleraMat = new THREE.MeshStandardMaterial({
+          color: 0xf1f5f9,
+          roughness: 0.2,
+          metalness: 0.1
+        });
+        const sclera = new THREE.Mesh(scleraGeom, scleraMat);
+        eyeGroup.add(sclera);
+
+        // Cyan/Slate Iris
+        const irisGeom = new THREE.CircleGeometry(0.38, 24);
+        const irisMat = new THREE.MeshBasicMaterial({ color: 0x0284c7 });
+        const iris = new THREE.Mesh(irisGeom, irisMat);
+        iris.position.set(0, 0, 0.26);
+        eyeGroup.add(iris);
+
+        // Deep Dark Pupil
+        const pupilGeom = new THREE.CircleGeometry(0.20, 16);
+        const pupilMat = new THREE.MeshBasicMaterial({ color: 0x020617 });
+        const pupil = new THREE.Mesh(pupilGeom, pupilMat);
+        pupil.position.set(0, 0, 0.28);
+        eyeGroup.add(pupil);
+
+        // White Light Glint
+        const glintGeom = new THREE.CircleGeometry(0.06, 8);
+        const glintMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const glint = new THREE.Mesh(glintGeom, glintMat);
+        glint.position.set(0.10, 0.10, 0.29);
+        eyeGroup.add(glint);
+
+        // Upper Eyelid Arch
+        const lidGeom = new THREE.TorusGeometry(0.85, 0.09, 8, 24, Math.PI * 0.95);
+        const lidMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.5 });
+        const upperLid = new THREE.Mesh(lidGeom, lidMat);
+        upperLid.position.set(0, 0.08, 0.25);
+        upperLid.rotation.set(-0.25, sign * 0.15, Math.PI);
+        eyeGroup.add(upperLid);
+
+        return eyeGroup;
+      }
+      group.add(createRealisticEye(true));  // Right Eye
+      group.add(createRealisticEye(false)); // Left Eye
+
+      // 4. Prominent, Dark Arched Eyebrows (Crucial for identifying "眉毛上方")
+      function createEyebrow(isRight) {
+        const sign = isRight ? 1 : -1;
+        const browPoints = [
+          new THREE.Vector3(sign * 0.95, 1.85, 7.82),  // Medial start above glabella
+          new THREE.Vector3(sign * 2.30, 2.15, 7.78),  // Brow arch peak
+          new THREE.Vector3(sign * 3.65, 1.72, 7.20)   // Lateral tail toward temple
+        ];
+        const browCurve = new THREE.CatmullRomCurve3(browPoints);
+        const browGeom = new THREE.TubeGeometry(browCurve, 24, 0.16, 10, false);
+        const browMat = new THREE.MeshStandardMaterial({
+          color: 0x0f172a,
+          roughness: 0.8
+        });
+        return new THREE.Mesh(browGeom, browMat);
+      }
+      group.add(createEyebrow(true));  // Right Eyebrow
+      group.add(createEyebrow(false)); // Left Eyebrow
+
+      // 5. Distinct 3D Nose (Bridge, Dorsum, Tip, Alar Wings)
+      const noseGroup = new THREE.Group();
       
-      const rightEar = new THREE.Mesh(earGeom, earMat);
-      rightEar.position.set(6.4, 0.4, -0.8);
-      rightEar.rotation.set(0.2, 0.6, -0.2);
-      group.add(rightEar);
+      // Nasal Bridge
+      const bridgePoints = [
+        new THREE.Vector3(0, 1.70, 7.85),  // Nasion (眉心凹槽)
+        new THREE.Vector3(0, 0.70, 8.20),  // Dorsum midpoint
+        new THREE.Vector3(0, -0.35, 8.85)  // Nose tip
+      ];
+      const bridgeCurve = new THREE.CatmullRomCurve3(bridgePoints);
+      const bridgeGeom = new THREE.TubeGeometry(bridgeCurve, 20, 0.26, 12, false);
+      const noseMat = new THREE.MeshStandardMaterial({
+        color: 0x223246,
+        roughness: 0.55
+      });
+      noseGroup.add(new THREE.Mesh(bridgeGeom, noseMat));
 
-      const leftEar = new THREE.Mesh(earGeom, earMat);
-      leftEar.position.set(-6.4, 0.4, -0.8);
-      leftEar.rotation.set(0.2, -0.6, 0.2);
-      group.add(leftEar);
+      // Rounded Nose Tip
+      const tipGeom = new THREE.SphereGeometry(0.55, 16, 16);
+      const tipMesh = new THREE.Mesh(tipGeom, noseMat);
+      tipMesh.position.set(0, -0.35, 8.85);
+      tipMesh.scale.set(1.0, 0.85, 1.0);
+      noseGroup.add(tipMesh);
 
-      // 4. Closed Eyes (Subtle anatomical eye arcs)
-      const eyeArcGeom = new THREE.TorusGeometry(0.8, 0.10, 8, 20, Math.PI);
-      const eyeArcMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
-      
-      const rightEye = new THREE.Mesh(eyeArcGeom, eyeArcMat);
-      rightEye.position.set(2.4, 1.3, 6.35);
-      rightEye.rotation.set(-0.25, 0.2, Math.PI);
-      group.add(rightEye);
+      // Left & Right Alar Wings (鼻翼)
+      const wingGeom = new THREE.SphereGeometry(0.38, 12, 12);
+      const rightWing = new THREE.Mesh(wingGeom, noseMat);
+      rightWing.position.set(0.68, -0.45, 8.42);
+      noseGroup.add(rightWing);
 
-      const leftEye = new THREE.Mesh(eyeArcGeom, eyeArcMat);
-      leftEye.position.set(-2.4, 1.3, 6.35);
-      leftEye.rotation.set(-0.25, -0.2, Math.PI);
-      group.add(leftEye);
+      const leftWing = new THREE.Mesh(wingGeom, noseMat);
+      leftWing.position.set(-0.68, -0.45, 8.42);
+      noseGroup.add(leftWing);
 
-      // 5. Eyebrows
-      const browGeom = new THREE.TorusGeometry(1.2, 0.12, 8, 20, Math.PI * 0.7);
-      const browMat = new THREE.MeshBasicMaterial({ color: 0x64748b });
-      
-      const rightBrow = new THREE.Mesh(browGeom, browMat);
-      rightBrow.position.set(2.6, 2.5, 6.7);
-      rightBrow.rotation.set(0.1, 0.2, 2.8);
-      group.add(rightBrow);
+      group.add(noseGroup);
 
-      const leftBrow = new THREE.Mesh(browGeom, browMat);
-      leftBrow.position.set(-2.6, 2.5, 6.7);
-      leftBrow.rotation.set(0.1, -0.2, 0.35);
-      group.add(leftBrow);
+      // 6. Anatomical Ears (Positioned on lateral sides at Eye-to-Nose level, visible in 3/4 view!)
+      function createRealisticEar(isRight) {
+        const earGroup = new THREE.Group();
+        const sign = isRight ? 1 : -1;
+        earGroup.position.set(sign * 6.70, 0.60, 0.50);
+        earGroup.rotation.set(0.1, sign * 0.45, sign * -0.15);
 
-      // 6. Hairline Demarcation Contour (Demarcates hairless forehead from scalp)
+        // Outer Helix Rim
+        const helixGeom = new THREE.TorusGeometry(1.25, 0.22, 12, 32, Math.PI * 1.35);
+        const earMat = new THREE.MeshStandardMaterial({
+          color: 0x223246,
+          roughness: 0.60
+        });
+        const helix = new THREE.Mesh(helixGeom, earMat);
+        helix.rotation.z = isRight ? 0.4 : -0.4;
+        earGroup.add(helix);
+
+        // Inner Concha Cavity
+        const conchaGeom = new THREE.SphereGeometry(0.65, 12, 12);
+        conchaGeom.scale(0.5, 1.1, 0.3);
+        const conchaMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
+        const concha = new THREE.Mesh(conchaGeom, conchaMat);
+        concha.position.set(sign * -0.1, 0.1, 0.1);
+        earGroup.add(concha);
+
+        // Earlobe
+        const lobeGeom = new THREE.SphereGeometry(0.42, 12, 12);
+        lobeGeom.scale(0.8, 1.2, 0.6);
+        const lobe = new THREE.Mesh(lobeGeom, earMat);
+        lobe.position.set(sign * -0.05, -1.15, 0);
+        earGroup.add(lobe);
+
+        return earGroup;
+      }
+      group.add(createRealisticEar(true));  // Right Ear
+      group.add(createRealisticEar(false)); // Left Ear
+
+      // 7. Mouth & Lips
+      const lipGroup = new THREE.Group();
+      const upperLipGeom = new THREE.CylinderGeometry(0.12, 0.12, 2.2, 16);
+      upperLipGeom.rotateZ(Math.PI / 2);
+      const lipMat = new THREE.MeshStandardMaterial({ color: 0x141e2e, roughness: 0.6 });
+      const upperLip = new THREE.Mesh(upperLipGeom, lipMat);
+      upperLip.position.set(0, -2.15, 7.82);
+      lipGroup.add(upperLip);
+
+      const lowerLipGeom = new THREE.CylinderGeometry(0.18, 0.18, 1.8, 16);
+      lowerLipGeom.rotateZ(Math.PI / 2);
+      const lowerLip = new THREE.Mesh(lowerLipGeom, lipMat);
+      lowerLip.position.set(0, -2.55, 7.65);
+      lipGroup.add(lowerLip);
+      group.add(lipGroup);
+
+      // 8. Hairline Demarcation
       const hairlinePoints = [
         new THREE.Vector3(-5.8, 1.8, 1.0),
         new THREE.Vector3(-4.8, 3.8, 3.8),
         new THREE.Vector3(-3.0, 6.2, 5.6),
-        new THREE.Vector3(0, 7.2, 5.8),
+        new THREE.Vector3(0, 7.4, 5.8),
         new THREE.Vector3(3.0, 6.2, 5.6),
         new THREE.Vector3(4.8, 3.8, 3.8),
         new THREE.Vector3(5.8, 1.8, 1.0)
@@ -1089,40 +1210,85 @@
       const hairlineMat = new THREE.MeshBasicMaterial({ color: 0x334155 });
       group.add(new THREE.Mesh(hairlineGeom, hairlineMat));
 
-      // 7. BIS Quatro Electrode Pads — 4 circular discs placed directly on face surface
-      // Strip / tube removed per user request — pads only
+      // 9. Dotted Alignment Guidelines (對準定位點導引線)
+      // Visualizes: 眉心 ➔ [1] ➔ [2] and [1] ➔ [4] ➔ [3]
+      const guideMat = new THREE.LineDashedMaterial({
+        color: 0x38bdf8,
+        dashSize: 0.4,
+        gapSize: 0.25,
+        linewidth: 2,
+        transparent: true,
+        opacity: 0.8
+      });
+
+      // Vertical Midline Axis: 眉心 ➔ 1 號 ➔ 2 號
+      const vPoints = [
+        new THREE.Vector3(0, 1.85, 7.95),  // 眉心 (Nasion)
+        new THREE.Vector3(0, 4.80, 7.72),  // 1 號 (眉心上約 5cm)
+        new THREE.Vector3(0, 6.90, 6.28)   // 2 號 (1 號上約 2-3cm)
+      ];
+      const vGeom = new THREE.BufferGeometry().setFromPoints(vPoints);
+      const vLine = new THREE.Line(vGeom, guideMat);
+      vLine.computeLineDistances();
+      group.add(vLine);
+
+      // Lateral Brow-to-Temple Axis: 1 號 ➔ 4 號 ➔ 3 號
+      const lPoints = [
+        new THREE.Vector3(0, 4.80, 7.72),     // 1 號
+        new THREE.Vector3(2.80, 3.30, 7.42),  // 4 號 (眉毛上方)
+        new THREE.Vector3(5.20, 1.80, 5.92)   // 3 號 (太陽穴)
+      ];
+      const lGeom = new THREE.BufferGeometry().setFromPoints(lPoints);
+      const lLine = new THREE.Line(lGeom, guideMat);
+      lLine.computeLineDistances();
+      group.add(lLine);
+
+      // Glowing Nasion (眉心基準點) Marker Pin
+      const nasionGeom = new THREE.SphereGeometry(0.24, 16, 16);
+      const nasionMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+      const nasionMarker = new THREE.Mesh(nasionGeom, nasionMat);
+      nasionMarker.position.set(0, 1.85, 7.95);
+      group.add(nasionMarker);
+
+      // 10. BIS Quatro Electrode Pads (1, 2, 4, 3) — Clean, Zero-Clipping Floating Discs
       electrodes.forEach(el => {
         const elGroup = new THREE.Group();
         elGroup.position.copy(el.pos);
 
-        // Orient disc to face outward along the skin surface normal
+        // Orient disc flat against skull surface normal
         elGroup.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), el.normal);
 
-        // Medical sensor disc: white adhesive pad with coloured number
-        const discGeom = new THREE.CircleGeometry(0.82, 48);
+        // Medical sensor disc: white adhesive pad with high-contrast colored number
+        const discGeom = new THREE.CircleGeometry(0.85, 48);
         const discTex = makeElectrodeDiscTexture(el.id, el.badgeColor);
         const discMat = new THREE.MeshBasicMaterial({
           map: discTex,
           transparent: false,
           side: THREE.FrontSide,
-          depthWrite: true
+          depthWrite: true,
+          polygonOffset: true,
+          polygonOffsetFactor: -6,
+          polygonOffsetUnits: -6
         });
         const discMesh = new THREE.Mesh(discGeom, discMat);
-        discMesh.position.z += 0.06;          // push slightly off surface to avoid z-fight
+        discMesh.position.z += 0.16; // Generous offset completely eliminates mesh clipping
         discMesh.userData = { electrodeId: el.id };
         elGroup.add(discMesh);
         clickableElectrodeMeshes.push(discMesh);
 
-        // Thin glowing indicator ring — small enough that adjacent electrodes DON'T overlap
-        const ringGeom = new THREE.RingGeometry(0.85, 1.05, 48);
+        // Glowing pulsing indicator ring
+        const ringGeom = new THREE.RingGeometry(0.88, 1.15, 48);
         const ringMat = new THREE.MeshBasicMaterial({
           color: el.color,
           side: THREE.FrontSide,
           transparent: true,
-          opacity: 0.80
+          opacity: 0.85,
+          polygonOffset: true,
+          polygonOffsetFactor: -7,
+          polygonOffsetUnits: -7
         });
         const beaconRing = new THREE.Mesh(ringGeom, ringMat);
-        beaconRing.position.z += 0.07;
+        beaconRing.position.z += 0.18;
         beaconRing.userData = { electrodeId: el.id };
         elGroup.add(beaconRing);
         electrodePulsingRings.push(beaconRing);
@@ -1130,7 +1296,7 @@
         group.add(elGroup);
       });
 
-      // 8. Side Leader-Lines & Compact Labels (Positioned to the sides, NEVER blocking face!)
+      // 11. Side Leader-Lines & Descriptive Labels (Strictly Matching User's Rules)
       const calloutsGroup = new THREE.Group();
       calloutsGroup.name = "calloutsGroup";
 
@@ -1139,7 +1305,7 @@
         const mat = new THREE.LineBasicMaterial({
           color: colorHex,
           transparent: true,
-          opacity: 0.65,
+          opacity: 0.70,
           linewidth: 2
         });
         return new THREE.Line(geom, mat);
@@ -1147,15 +1313,15 @@
 
       function makeSidePillSprite(num, title, colorHex) {
         const c = document.createElement('canvas');
-        c.width = 300;
+        c.width = 340;
         c.height = 80;
         const ctx = c.getContext('2d');
         
-        ctx.fillStyle = "rgba(10, 15, 26, 0.90)";
+        ctx.fillStyle = "rgba(10, 15, 26, 0.92)";
         ctx.strokeStyle = colorHex;
         ctx.lineWidth = 4;
         ctx.beginPath();
-        const x = 4, y = 4, w = 292, h = 72, r = 18;
+        const x = 4, y = 4, w = 332, h = 72, r = 18;
         ctx.moveTo(x + r, y);
         ctx.lineTo(x + w - r, y);
         ctx.quadraticCurveTo(x + w, y, x + w, y + r);
@@ -1170,27 +1336,28 @@
         ctx.stroke();
 
         ctx.fillStyle = colorHex;
-        ctx.font = 'bold 34px sans-serif';
+        ctx.font = 'bold 32px sans-serif';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'middle';
-        ctx.fillText(`[${num}]`, 18, 40);
+        ctx.fillText(`[${num}]`, 16, 40);
 
         ctx.fillStyle = "#f1f5f9";
-        ctx.font = 'bold 24px sans-serif';
-        ctx.fillText(title, 82, 40);
+        ctx.font = 'bold 22px sans-serif';
+        ctx.fillText(title, 76, 40);
 
         const texture = new THREE.CanvasTexture(c);
         const mat = new THREE.SpriteMaterial({ map: texture, transparent: true });
         const sp = new THREE.Sprite(mat);
-        sp.scale.set(4.2, 1.15, 1); // Compact size
+        sp.scale.set(4.8, 1.15, 1);
         return sp;
       }
 
+      // Exact user-specified anchors & titles
       const sideAnchors = [
-        { id: 2, name: "參考電極",    color: "#34d399", lineEnd: new THREE.Vector3(-8.5, 5.80, 5.5),  spritePos: new THREE.Vector3(-11.5, 5.80, 5.5)  },
-        { id: 1, name: "前額中央",    color: "#38bdf8", lineEnd: new THREE.Vector3(-8.5, 3.50, 6.5),  spritePos: new THREE.Vector3(-11.5, 3.50, 6.5)  },
-        { id: 4, name: "顳部眉外",    color: "#fbbf24", lineEnd: new THREE.Vector3( 9.5, 2.80, 4.0),  spritePos: new THREE.Vector3( 12.5, 2.80, 4.0)  },
-        { id: 3, name: "外眼角/肌電", color: "#f43f5e", lineEnd: new THREE.Vector3( 9.5, -0.10, 5.0), spritePos: new THREE.Vector3( 12.5, -0.10, 5.0) }
+        { id: 2, name: "2 號：1號正上方約2-3cm", color: "#34d399", lineEnd: new THREE.Vector3(-8.5, 6.90, 5.5), spritePos: new THREE.Vector3(-11.8, 6.90, 5.5) },
+        { id: 1, name: "1 號：前額正中(眉心上5cm)", color: "#38bdf8", lineEnd: new THREE.Vector3(-8.5, 4.80, 6.5), spritePos: new THREE.Vector3(-11.8, 4.80, 6.5) },
+        { id: 4, name: "4 號：眉毛上方(避開眉毛)", color: "#fbbf24", lineEnd: new THREE.Vector3( 9.0, 3.30, 5.5), spritePos: new THREE.Vector3( 12.2, 3.30, 5.5) },
+        { id: 3, name: "3 號：太陽穴(眼外與髮際間)", color: "#f43f5e", lineEnd: new THREE.Vector3( 9.0, 1.80, 4.8), spritePos: new THREE.Vector3( 12.2, 1.80, 4.8) }
       ];
 
       sideAnchors.forEach(sa => {
@@ -1206,16 +1373,28 @@
         clickableElectrodeMeshes.push(sprite);
       });
 
+      // 眉心基準點 Pin Label
+      const nasionLine = createLeaderLine(new THREE.Vector3(0, 1.85, 7.95), new THREE.Vector3(-8.5, 1.85, 7.0), "#38bdf8");
+      calloutsGroup.add(nasionLine);
+
+      const nasionSprite = makeSidePillSprite("★", "眉心 (Nasion / Fpz 基準)", "#38bdf8");
+      nasionSprite.position.set(-11.8, 1.85, 7.0);
+      calloutsGroup.add(nasionSprite);
+
       group.add(calloutsGroup);
 
-      // 10. Soft Ambient Rim Lighting
-      const headLight1 = new THREE.DirectionalLight(0x38bdf8, 0.45);
-      headLight1.position.set(20, 25, 35);
-      group.add(headLight1);
+      // 12. Balanced Studio Lighting for Crisp 3D Facial Anatomy
+      const frontKeyLight = new THREE.DirectionalLight(0xffffff, 0.85);
+      frontKeyLight.position.set(5, 12, 25);
+      group.add(frontKeyLight);
 
-      const headLight2 = new THREE.DirectionalLight(0xfbbf24, 0.35);
-      headLight2.position.set(-20, 15, -25);
-      group.add(headLight2);
+      const templeFillLight = new THREE.DirectionalLight(0x38bdf8, 0.45);
+      templeFillLight.position.set(20, 10, 15);
+      group.add(templeFillLight);
+
+      const rimLight = new THREE.DirectionalLight(0xfbbf24, 0.35);
+      rimLight.position.set(-20, 15, -15);
+      group.add(rimLight);
 
       return group;
     }
