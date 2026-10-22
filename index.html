@@ -105,11 +105,11 @@
         <button id="view-2d-btn" onclick="setViewMode('2d')" class="px-2 py-1 md:px-3 md:py-1.5 lg:px-4 lg:py-2 rounded-lg text-[10px] md:text-xs lg:text-sm font-bold transition-all duration-200 border border-transparent hover:bg-slate-800 text-slate-300">
           📟 2D
         </button>
-        <!-- Sensor Placement & Neuroanatomy Explainer Button -->
-        <button id="sensor-modal-btn" onclick="toggleSensorModal()" class="px-2.5 py-1 md:px-3 md:py-1.5 lg:px-3.5 lg:py-2 rounded-lg text-[10px] md:text-xs lg:text-sm font-bold transition-all duration-200 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/50 flex items-center gap-1.5">
-          <span>📍</span>
-          <span class="hidden sm:inline">貼片位置機轉</span>
-          <span class="sm:hidden">貼片機轉</span>
+        <!-- 3D Human Face & Sensor Placement Button -->
+        <button id="view-head-btn" onclick="setViewMode('head')" class="px-2.5 py-1 md:px-3 md:py-1.5 lg:px-3.5 lg:py-2 rounded-lg text-[10px] md:text-xs lg:text-sm font-bold transition-all duration-200 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/50 flex items-center gap-1.5 shadow-lg shadow-amber-500/10">
+          <span>👤</span>
+          <span class="hidden sm:inline">3D 人臉貼片</span>
+          <span class="sm:hidden">人臉貼片</span>
         </button>
 
         <div class="h-4 w-[1px] bg-slate-700 mx-0.5 hidden sm:block"></div>
@@ -121,7 +121,7 @@
     </header>
 
     <!-- Row 2: Scenario Bar (Flows naturally right below Header, NO absolute collision) -->
-    <nav class="flex overflow-x-auto pb-1 pointer-events-none no-scrollbar">
+    <nav id="scenarios-nav" class="flex overflow-x-auto pb-1 pointer-events-none no-scrollbar transition-all duration-300">
       <div class="panel-glass p-1 md:p-1.5 lg:p-2 rounded-xl shadow-2xl flex items-center gap-1 md:gap-1.5 lg:gap-2 pointer-events-auto border border-slate-700/60 max-w-full overflow-x-auto">
         <span class="hidden sm:inline-flex text-xs lg:text-sm font-bold text-slate-400 px-2 uppercase tracking-wider shrink-0 items-center gap-1.5">
           <span class="inline-block w-2.5 h-2.5 rounded-full bg-cyan-400"></span> 臨床情境：
@@ -319,6 +319,137 @@
       <span class="text-[10px] lg:text-xs text-blue-400 font-mono font-bold">-10 dB</span>
       <span class="hidden md:block text-[9px] lg:text-[10px] text-slate-300 text-center leading-tight mt-1 font-medium">3D高度<br>➔ 色彩</span>
     </div>
+  </aside>
+
+  <!-- 3D Head & Sensor Placement HUD Panel -->
+  <aside id="head-hud-panel" class="hidden fixed lg:absolute left-2 md:left-4 top-16 lg:top-[120px] bottom-12 lg:bottom-4 w-[calc(100vw-1rem)] max-w-sm lg:w-[410px] panel-glass p-3 md:p-4 rounded-2xl shadow-2xl z-40 lg:z-20 pointer-events-auto border border-amber-500/50 flex flex-col justify-between overflow-y-auto transition-all duration-300">
+    
+    <div class="space-y-3">
+      <!-- Header -->
+      <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <span class="text-xl p-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40">👤</span>
+          <div>
+            <h3 class="text-xs lg:text-sm font-black text-white flex items-center gap-1.5">
+              <span>BIS Quatro 3D 貼片位置導覽</span>
+              <span class="text-[9px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 font-mono border border-cyan-800">4 點額顳導聯</span>
+            </h3>
+            <p class="text-[10px] text-slate-400 mt-0.5">滑鼠/觸控可 360° 旋轉人臉；點選電極看機轉</p>
+          </div>
+        </div>
+        <button onclick="setViewMode('3d')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-[11px] font-bold border border-slate-700 transition-all flex items-center gap-1">
+          <span>✕</span>
+          <span class="hidden sm:inline">關閉</span>
+        </button>
+      </div>
+
+      <!-- Quick 3D Camera Angles -->
+      <div class="flex items-center gap-1.5 bg-slate-900/90 p-1.5 rounded-xl border border-slate-800">
+        <span class="text-[10px] font-bold text-slate-400 px-1 shrink-0">視角：</span>
+        <button onclick="setHeadCameraAngle('oblique')" id="cam-oblique-btn" class="flex-1 py-1 rounded-lg text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition-all">
+          📐 右前斜 45°
+        </button>
+        <button onclick="setHeadCameraAngle('front')" id="cam-front-btn" class="flex-1 py-1 rounded-lg text-[10px] font-bold text-slate-400 hover:text-white border border-transparent transition-all">
+          👀 正面觀
+        </button>
+        <button onclick="setHeadCameraAngle('temple')" id="cam-temple-btn" class="flex-1 py-1 rounded-lg text-[10px] font-bold text-slate-400 hover:text-white border border-transparent transition-all">
+          🔍 顳側特寫
+        </button>
+      </div>
+
+      <!-- Electrode Selection Tabs -->
+      <div class="grid grid-cols-4 gap-1.5">
+        <button onclick="selectElectrode(1)" id="el-tab-1" class="py-1.5 px-1 rounded-lg text-[11px] font-extrabold border transition-all text-center bg-cyan-500/20 text-cyan-300 border-cyan-500/60 shadow-lg shadow-cyan-500/20">
+          [ 1 ] 前額
+        </button>
+        <button onclick="selectElectrode(2)" id="el-tab-2" class="py-1.5 px-1 rounded-lg text-[11px] font-extrabold border border-slate-700 bg-slate-900/80 text-slate-300 hover:text-white transition-all text-center">
+          [ 2 ] 參考
+        </button>
+        <button onclick="selectElectrode(4)" id="el-tab-4" class="py-1.5 px-1 rounded-lg text-[11px] font-extrabold border border-slate-700 bg-slate-900/80 text-slate-300 hover:text-white transition-all text-center">
+          [ 4 ] 顳部
+        </button>
+        <button onclick="selectElectrode(3)" id="el-tab-3" class="py-1.5 px-1 rounded-lg text-[11px] font-extrabold border border-slate-700 bg-slate-900/80 text-slate-300 hover:text-white transition-all text-center">
+          [ 3 ] 外眼角
+        </button>
+      </div>
+
+      <!-- Dynamic Electrode Detail Card -->
+      <div id="electrode-detail-card" class="bg-slate-900/95 p-3 rounded-xl border border-cyan-500/40 space-y-2 transition-all">
+        <div class="flex items-center justify-between pb-1.5 border-b border-slate-800">
+          <span id="el-detail-title" class="text-xs font-black text-white flex items-center gap-1.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+            電極 1 (前額中央 Fpz+4cm)
+          </span>
+          <span id="el-detail-tag" class="text-[9px] px-2 py-0.5 rounded font-mono bg-cyan-950 text-cyan-300 border border-cyan-800">
+            主信號輸入端
+          </span>
+        </div>
+
+        <div class="space-y-1.5 text-[11px] leading-relaxed">
+          <div class="flex items-start gap-1.5">
+            <span class="text-cyan-400 font-bold shrink-0">📍 解剖座標：</span>
+            <span id="el-detail-landmark" class="text-slate-300">
+              前額正中線，鼻樑（Fpz）上方約 4–5 公分處（眉毛正上方中心平坦處）。
+            </span>
+          </div>
+          <div class="flex items-start gap-1.5">
+            <span class="text-amber-400 font-bold shrink-0">⚡ 生理機轉：</span>
+            <span id="el-detail-physio" class="text-slate-300">
+              捕捉由後枕部向前遷移的 Alpha 振盪（Alpha Anteriorization）；全身麻醉下丘腦皮質偶聯共振區，信噪比（SNR）最高！(Purdon 2015)
+            </span>
+          </div>
+          <div class="flex items-start gap-1.5 p-2 rounded-lg bg-slate-950 border border-slate-800/80">
+            <span class="text-emerald-400 font-bold shrink-0">💡 照護要領：</span>
+            <span id="el-detail-clinical" class="text-slate-300">
+              黏貼前需用酒精徹底擦拭額頭油脂；若貼太低靠近眼眶骨，易受眼球轉動偽影（EOG）干擾。
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Core Neuroanatomical Reasons Summary Accordion -->
+      <div class="bg-slate-950/90 rounded-xl p-2.5 border border-slate-800 space-y-1.5">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-slate-300 flex items-center gap-1">
+            <span>🧠</span> 為何貼前額？四大核心機轉
+          </span>
+          <button onclick="toggleSensorModal()" class="text-[10px] text-cyan-400 hover:text-cyan-300 font-bold underline flex items-center gap-0.5">
+            完整文獻說明 ➔
+          </button>
+        </div>
+        <div class="grid grid-cols-2 gap-1 text-[10px] text-slate-400">
+          <div class="p-1 rounded bg-slate-900 border border-slate-800/80">
+            <strong class="text-slate-200 block mb-0.5">1. Alpha 前額化</strong>
+            枕部 Alpha 振盪向前聚焦前額
+          </div>
+          <div class="p-1 rounded bg-slate-900 border border-slate-800/80">
+            <strong class="text-slate-200 block mb-0.5">2. 仰臥無毛髮區</strong>
+            避開枕部受壓，前額阻抗極低
+          </div>
+          <div class="p-1 rounded bg-slate-900 border border-slate-800/80">
+            <strong class="text-slate-200 block mb-0.5">3. 額顳肌電 (EMG)</strong>
+            對角軸線同步捕捉 30-300Hz
+          </div>
+          <div class="p-1 rounded bg-slate-900 border border-slate-800/80">
+            <strong class="text-slate-200 block mb-0.5">4. 演算法資料庫</strong>
+            Aspect 訓練基準皆為 Fpz-At1
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Return to Spectrogram Button -->
+    <div class="pt-2.5 border-t border-slate-800/80 mt-2 flex items-center gap-2">
+      <button onclick="setViewMode('3d')" class="flex-1 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-xs shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-1.5 transition-all">
+        <span>📊</span>
+        <span>返回 3D 腦波頻譜</span>
+      </button>
+      <button onclick="toggleSensorModal()" class="px-2.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/40 font-bold text-xs transition-all" title="查看詳細文獻">
+        📖 文獻
+      </button>
+    </div>
+
   </aside>
 
   <!-- Interactive Modal: BIS Sensor Placement & Neuroanatomy Explainer -->
@@ -555,13 +686,16 @@
     }
 
     // Material with Vertex Colors (Self-luminous Basic Material: 100% color fidelity, impervious to shadow washout)
+    const spectrogramGroup = new THREE.Group();
+    scene.add(spectrogramGroup);
+
     const terrainMat = new THREE.MeshBasicMaterial({
       vertexColors: true,
       side: THREE.DoubleSide
     });
 
     const terrainMesh = new THREE.Mesh(terrainGeom, terrainMat);
-    scene.add(terrainMesh);
+    spectrogramGroup.add(terrainMesh);
 
     // Subtle Wireframe overlay for technical 3D topography feel
     const wireMat = new THREE.MeshBasicMaterial({
@@ -572,12 +706,12 @@
     });
     const wireMesh = new THREE.Mesh(terrainGeom, wireMat);
     wireMesh.position.y += 0.02;
-    scene.add(wireMesh);
+    spectrogramGroup.add(wireMesh);
 
     // Base Grid Floor
     const grid = new THREE.GridHelper(120, 30, 0x1e293b, 0x090d16);
     grid.position.y = -0.1;
-    scene.add(grid);
+    spectrogramGroup.add(grid);
 
     // --- Spatial 3D Labels & Axes (Enlarged fonts for Desktop and Presentation) ---
     function makeTextSprite(text, color = "#94a3b8", size = 32) {
@@ -601,7 +735,7 @@
     const timeLabel = makeTextSprite("➔ 手術時程推進 (Time Axis ➔)", "#38bdf8", 36);
     timeLabel.position.set(0, 0, -DEPTH / 2 - 8);
     timeLabel.scale.set(28, 7, 1);
-    scene.add(timeLabel);
+    spectrogramGroup.add(timeLabel);
 
     // --- Rightmost Edge: Most Recent Time Slice (最近時間點斷面標示) ---
     const RIGHT_EDGE_X = WIDTH / 2; // +47
@@ -610,7 +744,7 @@
     const sliceHeaderLabel = makeTextSprite("⏱️ 最近時間點 (當前即時切片)", "#38bdf8", 32);
     sliceHeaderLabel.position.set(RIGHT_EDGE_X + 2, 19, -4);
     sliceHeaderLabel.scale.set(28, 7, 1);
-    scene.add(sliceHeaderLabel);
+    spectrogramGroup.add(sliceHeaderLabel);
 
     // Anchor Pin helper to connect slice peak to label
     function createSliceAnchor(colorHex, x, y, z) {
@@ -618,7 +752,7 @@
       const dotMat = new THREE.MeshBasicMaterial({ color: colorHex });
       const dot = new THREE.Mesh(dotGeom, dotMat);
       dot.position.set(x, y, z);
-      scene.add(dot);
+      spectrogramGroup.add(dot);
       return dot;
     }
 
@@ -628,7 +762,7 @@
     const freq0 = makeTextSprite("◀ 0.1 - 4 Hz (Delta 慢波帶)", "#e2e8f0", 30);
     freq0.position.set(RIGHT_EDGE_X + 13, 10.5, deltaZ);
     freq0.scale.set(24, 6, 1);
-    scene.add(freq0);
+    spectrogramGroup.add(freq0);
 
     // 2. Theta Band Label & Anchor (4 - 8 Hz)
     const thetaZ = DEPTH / 2 - (6.0 / 30) * DEPTH;
@@ -636,7 +770,7 @@
     const freqTheta = makeTextSprite("◀ 4 - 8 Hz (Theta 帶)", "#34d399", 28);
     freqTheta.position.set(RIGHT_EDGE_X + 12, 5.5, thetaZ);
     freqTheta.scale.set(22, 5.5, 1);
-    scene.add(freqTheta);
+    spectrogramGroup.add(freqTheta);
 
     // 3. Alpha Band Label & Anchor (8 - 12 Hz) - High Peak
     const alphaZ = DEPTH / 2 - (10.2 / 30) * DEPTH;
@@ -644,7 +778,7 @@
     const freqAlpha = makeTextSprite("◀ 8 - 12 Hz (Alpha 丘腦皮質)", "#fbbf24", 32);
     freqAlpha.position.set(RIGHT_EDGE_X + 14, 14.8, alphaZ);
     freqAlpha.scale.set(26, 6.5, 1);
-    scene.add(freqAlpha);
+    spectrogramGroup.add(freqAlpha);
 
     // 4. Beta Band Label & Anchor (13 - 30 Hz: 靠近螢幕上方)
     const betaZ = DEPTH / 2 - (20.0 / 30) * DEPTH;
@@ -652,7 +786,7 @@
     const freqBeta = makeTextSprite("◀ 13 - 30 Hz (Beta / EMG)", "#94a3b8", 28);
     freqBeta.position.set(RIGHT_EDGE_X + 13, 3.5, betaZ);
     freqBeta.scale.set(24, 6, 1);
-    scene.add(freqBeta);
+    spectrogramGroup.add(freqBeta);
 
     // Feature Highlight Ring (for 5-Second Rapid Inspection)
     const highlightRingGeom = new THREE.RingGeometry(3, 3.6, 32);
@@ -660,7 +794,407 @@
     const highlightRingMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, side: THREE.DoubleSide, transparent: true, opacity: 0 });
     const highlightRing = new THREE.Mesh(highlightRingGeom, highlightRingMat);
     highlightRing.position.set(0, 8, 0);
-    scene.add(highlightRing);
+    spectrogramGroup.add(highlightRing);
+
+    // --- 3D Human Head & BIS Quatro Sensor Montage ---
+    const clickableElectrodeMeshes = [];
+    const electrodePulsingRings = [];
+
+    const electrodes = [
+      {
+        id: 1,
+        name: "電極 1 (前額中央 Fpz+4cm)",
+        shortName: "1. 前額",
+        tag: "主信號輸入端",
+        pos: new THREE.Vector3(0.0, 4.2, 7.35),
+        normal: new THREE.Vector3(0, 0.1, 1).normalize(),
+        color: 0x38bdf8,
+        badgeColor: "#38bdf8",
+        landmark: "前額正中線，鼻樑（Fpz）上方約 4–5 公分處（眉毛正上方中心平坦處）。",
+        physiology: "捕捉由後枕部向前遷移的 Alpha 振盪（Alpha Anteriorization）；全身麻醉下丘腦皮質偶聯共振區，信噪比（SNR）最高！(Purdon 2015)",
+        clinical: "此點為主要信號輸入端。黏貼前需用酒精徹底擦拭額頭油脂；若貼太低靠近眼眶骨，易受眼動偽影（EOG）干擾。"
+      },
+      {
+        id: 2,
+        name: "電極 2 (參考電極 Reference)",
+        shortName: "2. 參考",
+        tag: "基準參考端",
+        pos: new THREE.Vector3(0.0, 6.4, 5.8),
+        normal: new THREE.Vector3(0, 0.38, 0.92).normalize(),
+        color: 0x34d399,
+        badgeColor: "#34d399",
+        landmark: "電極 1 正上方約 3 公分處，靠近髮際線但仍在無毛髮皮膚上。",
+        physiology: "作為基準參考電位（Reference），與電極 1、4 形成同側額葉電位差分計算。",
+        clinical: "務必貼在完全無毛髮處！若貼在髮際線內或毛囊上，接觸阻抗會急遽升高導致感應失敗或雜訊過高。"
+      },
+      {
+        id: 4,
+        name: "電極 4 (顳部電極 FT9/FT10)",
+        shortName: "4. 顳部",
+        tag: "額顳導聯差分端",
+        pos: new THREE.Vector3(5.5, 2.0, 5.25),
+        normal: new THREE.Vector3(0.72, 0.12, 0.68).normalize(),
+        color: 0xfbbf24,
+        badgeColor: "#fbbf24",
+        landmark: "顳側太陽穴，外眼角與鬢角髮際線之間的平坦區域。",
+        physiology: "與前額電極 1 形成跨越額葉至顳葉的「額顳差分對角軸線（Frontotemporal vector）」，完整收錄大腦皮質去極化波。",
+        clinical: "避開顳淺動脈（Superficial temporal artery）搏動點，避免動脈血管搏動（Arterial pulsation artifact）干擾腦波判讀。"
+      },
+      {
+        id: 3,
+        name: "電極 3 (地線與外眼角 Ground/EMG)",
+        shortName: "3. 外眼角",
+        tag: "系統接地 & EMG",
+        pos: new THREE.Vector3(5.2, 0.1, 5.85),
+        normal: new THREE.Vector3(0.68, -0.2, 0.71).normalize(),
+        color: 0xf43f5e,
+        badgeColor: "#f43f5e",
+        landmark: "外眼角（Outer canthus）與顴弓（Zygomatic arch）交界處，髫角前側。",
+        physiology: "儀器系統接地保護（Ground），並緊密橫跨額肌與顳肌，專責監測 30–300 Hz 高頻肌電活動（EMG）！",
+        clinical: "當患者受疼痛刺激即將甦醒或體動時，電極 3 捕捉的 EMG 數值常最先跳升，是麻醉照護人員防範非預期體動的重要防線。"
+      }
+    ];
+
+    function makeElectrodeBadge(num, title, colorHex) {
+      const c = document.createElement('canvas');
+      c.width = 256;
+      c.height = 128;
+      const ctx = c.getContext('2d');
+      
+      // Rounded pill
+      ctx.fillStyle = "rgba(10, 15, 26, 0.9)";
+      ctx.strokeStyle = colorHex;
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      const x = 8, y = 8, w = 240, h = 112, r = 24;
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Number badge
+      ctx.fillStyle = colorHex;
+      ctx.font = 'bold 50px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`[ ${num} ]`, 128, 48);
+
+      // Title
+      ctx.fillStyle = "#f1f5f9";
+      ctx.font = 'bold 22px sans-serif';
+      ctx.fillText(title, 128, 88);
+
+      const texture = new THREE.CanvasTexture(c);
+      const mat = new THREE.SpriteMaterial({ map: texture, transparent: true });
+      const sp = new THREE.Sprite(mat);
+      sp.scale.set(6.5, 3.25, 1);
+      return sp;
+    }
+
+    function createHumanHeadModel() {
+      const group = new THREE.Group();
+
+      // 1. Sculpted Head Cranium & Face
+      const headGeom = new THREE.SphereGeometry(8, 64, 48);
+      const pos = headGeom.attributes.position;
+      const v = new THREE.Vector3();
+
+      for (let i = 0; i < pos.count; i++) {
+        v.fromBufferAttribute(pos, i);
+        
+        // Cranium proportions
+        v.y *= 1.18;
+        v.x *= 0.88;
+        
+        // Occiput (back of head)
+        if (v.z < 0 && v.y > -2.5) {
+          v.z *= 1.14;
+        }
+        
+        // Lower jaw & chin taper
+        if (v.y < 0) {
+          const jawFactor = Math.min(1.0, -v.y / 8.5);
+          v.x *= (1.0 - jawFactor * 0.36);
+          if (v.z > 0) {
+            v.z *= (1.0 - jawFactor * 0.12);
+          }
+        }
+        
+        // Forehead flattening (smooth vertical plane for sensor)
+        if (v.z > 0 && v.y > 1.2 && v.y < 7.2) {
+          const fhDist = Math.hypot(v.x, v.y - 4.2);
+          if (fhDist < 5.2) {
+            v.z = v.z * 0.93 + 0.55;
+          }
+        }
+        
+        // Brow ridge (眉骨)
+        if (v.z > 0) {
+          const browY = Math.exp(-Math.pow(v.y - 2.5, 2) / 0.9);
+          const browX = Math.max(0, 1.0 - Math.pow(Math.abs(v.x) / 4.4, 2));
+          v.z += browY * browX * 0.9;
+        }
+        
+        // Eye socket recession (眼眶凹陷)
+        if (v.z > 0) {
+          const eyeDistL = Math.hypot(v.x - 2.4, v.y - 1.4);
+          const eyeDistR = Math.hypot(v.x + 2.4, v.y - 1.4);
+          const eyeSocket = Math.exp(-Math.pow(Math.min(eyeDistL, eyeDistR), 2) / 1.6);
+          v.z -= eyeSocket * 1.15;
+        }
+        
+        // Nose bridge & projection (立體鼻樑與鼻尖)
+        if (v.z > 0) {
+          const noseWidth = Math.exp(-Math.pow(v.x / 0.85, 2));
+          if (v.y > -1.2 && v.y < 2.5) {
+            const noseHeight = Math.sin(((v.y + 1.2) / 3.7) * Math.PI);
+            v.z += noseWidth * noseHeight * 2.4;
+          }
+        }
+        
+        // Zygomatic arch / Cheeks (顴骨)
+        if (v.z > 0) {
+          const cheekDistL = Math.hypot(v.x - 4.4, v.y - 0.2);
+          const cheekDistR = Math.hypot(v.x + 4.4, v.y - 0.2);
+          const cheek = Math.exp(-Math.pow(Math.min(cheekDistL, cheekDistR), 2) / 3.0);
+          v.z += cheek * 0.65;
+          v.x += (v.x > 0 ? 1 : -1) * cheek * 0.35;
+        }
+        
+        // Mouth / Lips (嘴唇)
+        if (v.z > 0) {
+          const lipWidth = Math.exp(-Math.pow(v.x / 2.2, 2));
+          const lipHeight = Math.exp(-Math.pow(v.y + 2.4, 2) / 0.6);
+          v.z += lipWidth * lipHeight * 0.5;
+        }
+        
+        // Chin protrusion (下巴)
+        if (v.z > 0) {
+          const chinDist = Math.hypot(v.x, v.y + 5.2);
+          const chin = Math.exp(-Math.pow(chinDist, 2) / 2.8);
+          v.z += chin * 1.1;
+        }
+
+        pos.setXYZ(i, v.x, v.y, v.z);
+      }
+      headGeom.computeVertexNormals();
+
+      // Technical medical dark slate skin
+      const headMat = new THREE.MeshStandardMaterial({
+        color: 0x182438,
+        roughness: 0.42,
+        metalness: 0.22,
+        flatShading: false
+      });
+      const headMesh = new THREE.Mesh(headGeom, headMat);
+      group.add(headMesh);
+
+      // Subtle cyber wireframe on head
+      const headWireGeom = headGeom.clone();
+      const headWireMat = new THREE.MeshBasicMaterial({
+        color: 0x38bdf8,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.05
+      });
+      group.add(new THREE.Mesh(headWireGeom, headWireMat));
+
+      // 2. Neck
+      const neckGeom = new THREE.CylinderGeometry(3.8, 4.6, 6.0, 32);
+      const neckMat = new THREE.MeshStandardMaterial({
+        color: 0x141e2e,
+        roughness: 0.5,
+        metalness: 0.2
+      });
+      const neckMesh = new THREE.Mesh(neckGeom, neckMat);
+      neckMesh.position.set(0, -8.5, -0.6);
+      group.add(neckMesh);
+
+      // 3. Ears
+      const earGeom = new THREE.TorusGeometry(1.1, 0.32, 12, 24, Math.PI * 1.3);
+      const earMat = new THREE.MeshStandardMaterial({ color: 0x182438, roughness: 0.45 });
+      
+      const rightEar = new THREE.Mesh(earGeom, earMat);
+      rightEar.position.set(6.8, 0.4, -0.8);
+      rightEar.rotation.set(0.2, 0.6, -0.2);
+      group.add(rightEar);
+
+      const leftEar = new THREE.Mesh(earGeom, earMat);
+      leftEar.position.set(-6.8, 0.4, -0.8);
+      leftEar.rotation.set(0.2, -0.6, 0.2);
+      group.add(leftEar);
+
+      // 4. Closed Eyes (Stylized anatomical arcs)
+      const eyeArcGeom = new THREE.TorusGeometry(0.85, 0.12, 8, 20, Math.PI);
+      const eyeArcMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+      
+      const rightEye = new THREE.Mesh(eyeArcGeom, eyeArcMat);
+      rightEye.position.set(2.4, 1.4, 6.35);
+      rightEye.rotation.set(-0.25, 0.2, Math.PI);
+      group.add(rightEye);
+
+      const leftEye = new THREE.Mesh(eyeArcGeom, eyeArcMat);
+      leftEye.position.set(-2.4, 1.4, 6.35);
+      leftEye.rotation.set(-0.25, -0.2, Math.PI);
+      group.add(leftEye);
+
+      // 5. Eyebrows
+      const browGeom = new THREE.TorusGeometry(1.3, 0.14, 8, 20, Math.PI * 0.7);
+      const browMat = new THREE.MeshBasicMaterial({ color: 0x64748b });
+      
+      const rightBrow = new THREE.Mesh(browGeom, browMat);
+      rightBrow.position.set(2.6, 2.7, 6.7);
+      rightBrow.rotation.set(0.1, 0.2, 2.8);
+      group.add(rightBrow);
+
+      const leftBrow = new THREE.Mesh(browGeom, browMat);
+      leftBrow.position.set(-2.6, 2.7, 6.7);
+      leftBrow.rotation.set(0.1, -0.2, 0.35);
+      group.add(leftBrow);
+
+      // 6. Hairline Contour (Demarcates hairless forehead from scalp)
+      const hairlinePoints = [
+        new THREE.Vector3(-6.2, 1.8, 1.0),
+        new THREE.Vector3(-5.2, 3.8, 3.8),
+        new THREE.Vector3(-3.2, 6.2, 5.6),
+        new THREE.Vector3(0, 7.3, 5.8),
+        new THREE.Vector3(3.2, 6.2, 5.6),
+        new THREE.Vector3(5.2, 3.8, 3.8),
+        new THREE.Vector3(6.2, 1.8, 1.0)
+      ];
+      const hairlineCurve = new THREE.CatmullRomCurve3(hairlinePoints);
+      const hairlineGeom = new THREE.TubeGeometry(hairlineCurve, 40, 0.16, 8, false);
+      const hairlineMat = new THREE.MeshBasicMaterial({ color: 0x334155 });
+      group.add(new THREE.Mesh(hairlineGeom, hairlineMat));
+
+      const hairlineLabel = makeTextSprite("💇 髮際線 (Hairline) ➔ 後方濃密毛髮區", "#64748b", 22);
+      hairlineLabel.position.set(0, 8.8, 5.6);
+      hairlineLabel.scale.set(16, 4, 1);
+      group.add(hairlineLabel);
+
+      const foreheadLabel = makeTextSprite("✨ 平整無毛髮區 (仰臥直接可見 & 阻抗極低)", "#38bdf8", 22);
+      foreheadLabel.position.set(-4.2, 4.6, 7.1);
+      foreheadLabel.scale.set(19, 4.75, 1);
+      group.add(foreheadLabel);
+
+      // 7. BIS Quatro Flexible Sensor Strip
+      const stripPoints = [
+        new THREE.Vector3(0.0, 6.4, 5.85),       // Electrode 2
+        new THREE.Vector3(0.0, 5.3, 6.55),       // Bridge 2 -> 1
+        new THREE.Vector3(0.0, 4.2, 7.4),        // Electrode 1
+        new THREE.Vector3(1.6, 3.6, 7.0),        // Brow curve
+        new THREE.Vector3(3.6, 2.9, 6.3),        // Forehead-temple junction
+        new THREE.Vector3(5.5, 2.0, 5.25),       // Electrode 4
+        new THREE.Vector3(5.6, 1.0, 5.45),       // Curve down
+        new THREE.Vector3(5.2, 0.1, 5.85),       // Electrode 3
+        new THREE.Vector3(6.4, -0.2, 4.5)        // Connector tail towards ear
+      ];
+      const stripCurve = new THREE.CatmullRomCurve3(stripPoints);
+      
+      // Main medical white/silver flexible substrate
+      const stripGeom = new THREE.TubeGeometry(stripCurve, 64, 0.32, 12, false);
+      const stripMat = new THREE.MeshStandardMaterial({
+        color: 0xf1f5f9,
+        roughness: 0.25,
+        metalness: 0.15
+      });
+      const stripMesh = new THREE.Mesh(stripGeom, stripMat);
+      group.add(stripMesh);
+
+      // Glowing circuit trace
+      const traceGeom = new THREE.TubeGeometry(stripCurve, 64, 0.06, 8, false);
+      const traceMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+      const traceMesh = new THREE.Mesh(traceGeom, traceMat);
+      traceMesh.position.y += 0.02;
+      group.add(traceMesh);
+
+      // Connector plug clip at ear tail
+      const plugGeom = new THREE.BoxGeometry(0.7, 0.5, 0.9);
+      const plugMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.3 });
+      const plugMesh = new THREE.Mesh(plugGeom, plugMat);
+      plugMesh.position.set(6.4, -0.2, 4.4);
+      plugMesh.rotation.set(0.2, 0.5, 0);
+      group.add(plugMesh);
+
+      const plugLabel = makeTextSprite("➔ 至 BIS 病人導聯線 (PIC)", "#94a3b8", 20);
+      plugLabel.position.set(9.2, -0.6, 4.2);
+      plugLabel.scale.set(13, 3.25, 1);
+      group.add(plugLabel);
+
+      // 8. The 4 Electrodes (1, 2, 4, 3)
+      electrodes.forEach(el => {
+        const elGroup = new THREE.Group();
+        elGroup.position.copy(el.pos);
+        
+        // Orient electrode along surface normal
+        const rotMatrix = new THREE.Matrix4();
+        rotMatrix.lookAt(new THREE.Vector3(0, 0, 0), el.normal, new THREE.Vector3(0, 1, 0));
+        elGroup.quaternion.setFromRotationMatrix(rotMatrix);
+
+        // Adhesive white border ring
+        const borderGeom = new THREE.CircleGeometry(0.85, 24);
+        const borderMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.3, side: THREE.DoubleSide });
+        const borderMesh = new THREE.Mesh(borderGeom, borderMat);
+        borderMesh.userData = { electrodeId: el.id };
+        elGroup.add(borderMesh);
+        clickableElectrodeMeshes.push(borderMesh);
+
+        // Conductive Hydrogel Core
+        const gelGeom = new THREE.CircleGeometry(0.48, 24);
+        const gelMat = new THREE.MeshBasicMaterial({ color: el.color, side: THREE.DoubleSide });
+        const gelMesh = new THREE.Mesh(gelGeom, gelMat);
+        gelMesh.position.z += 0.02;
+        gelMesh.userData = { electrodeId: el.id };
+        elGroup.add(gelMesh);
+        clickableElectrodeMeshes.push(gelMesh);
+
+        // Glowing pulsing beacon ring
+        const ringGeom = new THREE.RingGeometry(0.9, 1.25, 32);
+        const ringMat = new THREE.MeshBasicMaterial({
+          color: el.color,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.6
+        });
+        const beaconRing = new THREE.Mesh(ringGeom, ringMat);
+        beaconRing.position.z += 0.03;
+        beaconRing.userData = { electrodeId: el.id };
+        elGroup.add(beaconRing);
+        electrodePulsingRings.push(beaconRing);
+
+        // 3D Floating Badge Sprite
+        const badgeSprite = makeElectrodeBadge(el.id, el.shortName, el.badgeColor);
+        badgeSprite.position.copy(el.pos).add(el.normal.clone().multiplyScalar(1.6));
+        badgeSprite.userData = { electrodeId: el.id };
+        group.add(badgeSprite);
+        clickableElectrodeMeshes.push(badgeSprite);
+
+        group.add(elGroup);
+      });
+
+      // 9. Dedicated Lighting for Head
+      const headLight1 = new THREE.DirectionalLight(0x38bdf8, 0.65);
+      headLight1.position.set(20, 25, 35);
+      group.add(headLight1);
+
+      const headLight2 = new THREE.DirectionalLight(0xfbbf24, 0.45);
+      headLight2.position.set(-20, 15, -25);
+      group.add(headLight2);
+
+      return group;
+    }
+
+    const headGroup = createHumanHeadModel();
+    headGroup.visible = false;
+    scene.add(headGroup);
 
     // --- Clinical Scenario Data & Spectral Generators ---
     let currentScenarioId = 1;
@@ -1021,6 +1555,10 @@
       '2d': {
         pos: { x: 6, y: 96, z: 0.001 },
         target: { x: 6, y: 0, z: 0 }
+      },
+      'head': {
+        pos: { x: 12, y: 6.5, z: 19 },
+        target: { x: 1.5, y: 2.5, z: 2.5 }
       }
     };
 
@@ -1032,9 +1570,49 @@
       document.getElementById('view-aerial-btn').classList.toggle('btn-active-view', mode === 'aerial');
       document.getElementById('view-2d-btn').classList.toggle('btn-active-view', mode === '2d');
 
+      const headBtn = document.getElementById('view-head-btn');
+      if (headBtn) {
+        headBtn.classList.toggle('btn-active-view', mode === 'head');
+        headBtn.classList.toggle('bg-amber-500/20', mode !== 'head');
+        headBtn.classList.toggle('text-amber-300', mode !== 'head');
+      }
+
+      const isHeadMode = (mode === 'head');
+
+      // Toggle 3D groups
+      if (typeof spectrogramGroup !== 'undefined') spectrogramGroup.visible = !isHeadMode;
+      if (typeof headGroup !== 'undefined') headGroup.visible = isHeadMode;
+
+      // Toggle UI Panels
+      const patientHud = document.getElementById('patient-hud-panel');
+      const headHud = document.getElementById('head-hud-panel');
+      const scenariosNav = document.getElementById('scenarios-nav');
+      const autoCycleBtn = document.getElementById('auto-cycle-btn');
+      const mobileToggleText = document.getElementById('mobile-toggle-text');
+
+      if (isHeadMode) {
+        if (patientHud) patientHud.classList.add('hidden');
+        if (headHud) {
+          headHud.classList.remove('hidden');
+          if (isMobileHUDOpen) {
+            headHud.classList.remove('-translate-x-[120%]', 'opacity-0', 'pointer-events-none');
+            headHud.classList.add('translate-x-0', 'opacity-100', 'pointer-events-auto');
+          }
+        }
+        if (scenariosNav) scenariosNav.classList.add('opacity-30', 'pointer-events-none');
+        if (autoCycleBtn) autoCycleBtn.classList.add('hidden');
+        if (mobileToggleText) mobileToggleText.textContent = "貼片導覽";
+      } else {
+        if (headHud) headHud.classList.add('hidden');
+        if (patientHud) patientHud.classList.remove('hidden');
+        if (scenariosNav) scenariosNav.classList.remove('opacity-30', 'pointer-events-none');
+        if (autoCycleBtn) autoCycleBtn.classList.remove('hidden');
+        if (mobileToggleText) mobileToggleText.textContent = "監測數據";
+      }
+
       const v = cameraViews[mode];
 
-      // Ensure 0 Hz (+Z) is ALWAYS at screen bottom and 30 Hz (-Z) at screen top
+      // Ensure 0 Hz (+Z) is ALWAYS at screen bottom and 30 Hz (-Z) at screen top for 2D/aerial
       if (mode === '2d' || mode === 'aerial') {
         camera.up.set(0, 0, -1);
       } else {
@@ -1053,24 +1631,140 @@
         .start();
     }
 
+    // Quick camera angles for 3D Head view
+    function setHeadCameraAngle(angle) {
+      if (activeViewMode !== 'head') return;
+      const bOblique = document.getElementById('cam-oblique-btn');
+      const bFront = document.getElementById('cam-front-btn');
+      const bTemple = document.getElementById('cam-temple-btn');
+
+      if (bOblique) {
+        bOblique.className = (angle === 'oblique')
+          ? 'flex-1 py-1 rounded-lg text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition-all'
+          : 'flex-1 py-1 rounded-lg text-[10px] font-bold text-slate-400 hover:text-white border border-transparent transition-all';
+      }
+      if (bFront) {
+        bFront.className = (angle === 'front')
+          ? 'flex-1 py-1 rounded-lg text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition-all'
+          : 'flex-1 py-1 rounded-lg text-[10px] font-bold text-slate-400 hover:text-white border border-transparent transition-all';
+      }
+      if (bTemple) {
+        bTemple.className = (angle === 'temple')
+          ? 'flex-1 py-1 rounded-lg text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition-all'
+          : 'flex-1 py-1 rounded-lg text-[10px] font-bold text-slate-400 hover:text-white border border-transparent transition-all';
+      }
+
+      let targetPos, targetLook;
+      if (angle === 'front') {
+        targetPos = { x: 0, y: 3.5, z: 22 };
+        targetLook = { x: 0, y: 2.5, z: 2.0 };
+      } else if (angle === 'temple') {
+        targetPos = { x: 18, y: 3.0, z: 10 };
+        targetLook = { x: 4.8, y: 1.5, z: 3.5 };
+      } else { // oblique
+        targetPos = { x: 12, y: 6.5, z: 19 };
+        targetLook = { x: 1.5, y: 2.5, z: 2.5 };
+      }
+
+      new TWEEN.Tween(camera.position)
+        .to(targetPos, 1100)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .start();
+
+      new TWEEN.Tween(controls.target)
+        .to(targetLook, 1100)
+        .easing(TWEEN.Easing.Cubic.InOut)
+        .onUpdate(() => controls.update())
+        .start();
+    }
+
+    // Select and highlight individual electrode
+    let selectedElectrodeId = 1;
+    function selectElectrode(id) {
+      selectedElectrodeId = id;
+      const el = electrodes.find(e => e.id === id);
+      if (!el) return;
+
+      // Update tabs
+      [1, 2, 4, 3].forEach(eid => {
+        const tab = document.getElementById(`el-tab-${eid}`);
+        if (!tab) return;
+        if (eid === id) {
+          tab.className = `py-1.5 px-1 rounded-lg text-[11px] font-extrabold border transition-all text-center bg-cyan-500/20 text-cyan-300 border-cyan-500/60 shadow-lg shadow-cyan-500/20`;
+        } else {
+          tab.className = `py-1.5 px-1 rounded-lg text-[11px] font-extrabold border border-slate-700 bg-slate-900/80 text-slate-300 hover:text-white transition-all text-center`;
+        }
+      });
+
+      // Update detail card
+      const titleEl = document.getElementById('el-detail-title');
+      const tagEl = document.getElementById('el-detail-tag');
+      const landmarkEl = document.getElementById('el-detail-landmark');
+      const physioEl = document.getElementById('el-detail-physio');
+      const clinicalEl = document.getElementById('el-detail-clinical');
+
+      if (titleEl) {
+        titleEl.innerHTML = `<span class="w-2.5 h-2.5 rounded-full" style="background-color: ${el.badgeColor}"></span>${el.name}`;
+      }
+      if (tagEl) tagEl.textContent = el.tag;
+      if (landmarkEl) landmarkEl.textContent = el.landmark;
+      if (physioEl) physioEl.textContent = el.physiology;
+      if (clinicalEl) clinicalEl.textContent = el.clinical;
+
+      // Pulse ring feedback
+      electrodePulsingRings.forEach(r => {
+        if (r.userData.electrodeId === id) {
+          r.scale.set(1.4, 1.4, 1.4);
+        }
+      });
+    }
+
+    // Raycaster for clicking electrodes on the 3D Head
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+
+    renderer.domElement.addEventListener('pointerdown', (e) => {
+      if (activeViewMode !== 'head') return;
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(clickableElectrodeMeshes, true);
+      if (intersects.length > 0) {
+        let obj = intersects[0].object;
+        while (obj && !obj.userData.electrodeId && obj.parent) {
+          obj = obj.parent;
+        }
+        if (obj && obj.userData.electrodeId) {
+          selectElectrode(obj.userData.electrodeId);
+        }
+      }
+    });
+
     // Mobile HUD Drawer Toggle
     let isMobileHUDOpen = false;
     function toggleMobileHUD() {
-      const panel = document.getElementById('patient-hud-panel');
+      isMobileHUDOpen = !isMobileHUDOpen;
+      const targetPanel = (activeViewMode === 'head')
+        ? document.getElementById('head-hud-panel')
+        : document.getElementById('patient-hud-panel');
+
       const icon = document.getElementById('mobile-toggle-icon');
       const text = document.getElementById('mobile-toggle-text');
-      isMobileHUDOpen = !isMobileHUDOpen;
+
+      if (!targetPanel) return;
 
       if (isMobileHUDOpen) {
-        panel.classList.remove('-translate-x-[120%]', 'opacity-0', 'pointer-events-none');
-        panel.classList.add('translate-x-0', 'opacity-100', 'pointer-events-auto');
-        icon.textContent = "✕";
-        text.textContent = "收起監測面板";
+        targetPanel.classList.remove('-translate-x-[120%]', 'opacity-0', 'pointer-events-none');
+        targetPanel.classList.add('translate-x-0', 'opacity-100', 'pointer-events-auto');
+        if (icon) icon.textContent = "✕";
+        if (text) text.textContent = (activeViewMode === 'head') ? "收起貼片導覽" : "收起監測面板";
       } else {
-        panel.classList.add('-translate-x-[120%]', 'opacity-0', 'pointer-events-none');
-        panel.classList.remove('translate-x-0', 'opacity-100', 'pointer-events-auto');
-        icon.textContent = "📊";
-        text.textContent = "監測數據與決策";
+        targetPanel.classList.add('-translate-x-[120%]', 'opacity-0', 'pointer-events-none');
+        targetPanel.classList.remove('translate-x-0', 'opacity-100', 'pointer-events-auto');
+        if (icon) icon.textContent = (activeViewMode === 'head') ? "👤" : "📊";
+        if (text) text.textContent = (activeViewMode === 'head') ? "貼片導覽" : "監測數據";
       }
     }
 
@@ -1220,6 +1914,21 @@
       TWEEN.update();
       updateTerrainMorph();
       controls.update();
+
+      // Pulse electrode beacon rings in 3D Head mode
+      if (activeViewMode === 'head' && electrodePulsingRings.length > 0) {
+        const time = Date.now() * 0.003;
+        electrodePulsingRings.forEach((ring, idx) => {
+          const isSelected = (ring.userData.electrodeId === selectedElectrodeId);
+          const pulseSpeed = isSelected ? 3.5 : 2.0;
+          const scale = (isSelected ? 1.15 : 1.0) + 0.15 * Math.sin(time * pulseSpeed + idx * 1.2);
+          ring.scale.set(scale, scale, scale);
+          ring.material.opacity = isSelected 
+            ? (0.7 + 0.3 * Math.sin(time * pulseSpeed)) 
+            : (0.35 + 0.15 * Math.sin(time + idx));
+        });
+      }
+
       renderer.render(scene, camera);
       renderRawEEG();
     }
