@@ -112,6 +112,16 @@
           <span class="sm:hidden">人臉貼片</span>
         </button>
 
+        <!-- 3D SEF95 Laser Line Toggle & Clinical Guide Buttons -->
+        <button id="sef-toggle-btn" onclick="toggleSEF95Line()" class="px-2 py-1 md:px-2.5 md:py-1.5 lg:px-3 lg:py-2 rounded-lg text-[10px] md:text-xs lg:text-sm font-bold transition-all duration-200 border border-amber-500/60 bg-amber-500/20 text-amber-300 shadow-md shadow-amber-500/20 flex items-center gap-1" title="開啟/關閉 3D 頻譜邊緣頻率 (SEF95) 軌跡線">
+          <span>⚡</span>
+          <span>SEF95 軌跡</span>
+        </button>
+        <button onclick="openSefModal()" class="px-2 py-1 md:px-2.5 md:py-1.5 rounded-lg text-[10px] md:text-xs font-bold transition-all duration-200 border border-slate-700 bg-slate-900/80 text-amber-300 hover:text-white hover:bg-slate-800 flex items-center gap-1 hidden md:flex" title="深入了解 SEF95 臨床應用">
+          <span>📖</span>
+          <span>剖析</span>
+        </button>
+
         <div class="h-4 w-[1px] bg-slate-700 mx-0.5 hidden sm:block"></div>
         <button id="auto-cycle-btn" onclick="toggleAutoCycle()" class="hidden sm:flex px-2 py-1 md:px-3 md:py-1.5 lg:px-4 lg:py-2 rounded-lg text-[10px] md:text-xs lg:text-sm font-bold transition-all duration-200 bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 border border-cyan-500/40 items-center gap-1">
           <svg id="play-icon" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"></path></svg>
@@ -199,19 +209,34 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-2.5 my-3">
-        <!-- BIS Value Display Card -->
-        <div id="bis-card" class="bg-slate-900/90 p-3 rounded-xl border border-slate-700 flex flex-col items-center justify-center transition-all duration-300">
-          <span class="text-[10px] lg:text-xs text-slate-400 font-bold uppercase tracking-wider">雙頻指數 (BIS)</span>
-          <span id="bis-value" class="text-3xl lg:text-4xl font-black font-mono text-cyan-400 my-0.5">46</span>
-          <span id="bis-status" class="text-[10px] lg:text-xs font-bold text-emerald-400">適當麻醉深度</span>
+      <!-- Key Clinical Metrics Display: BIS, SR %, and SEF95 (Click SEF95 for Clinical Tour) -->
+      <div class="grid grid-cols-3 gap-1.5 lg:gap-2 my-3">
+        <!-- BIS Card -->
+        <div id="bis-card" class="bg-slate-900/90 p-2 lg:p-2.5 rounded-xl border border-slate-700 flex flex-col items-center justify-center transition-all duration-300">
+          <span class="text-[9px] lg:text-[11px] text-slate-400 font-bold uppercase tracking-wider">雙頻指數</span>
+          <span id="bis-value" class="text-2xl lg:text-3xl font-black font-mono text-cyan-400 my-0.5">46</span>
+          <span id="bis-status" class="text-[8.5px] lg:text-[10px] font-bold text-emerald-400 text-center leading-tight">適當麻醉</span>
         </div>
 
         <!-- Suppression Ratio (SR) Card -->
-        <div id="sr-card" class="bg-slate-900/90 p-3 rounded-xl border border-slate-700 flex flex-col items-center justify-center">
-          <span class="text-[10px] lg:text-xs text-slate-400 font-bold uppercase tracking-wider">抑制比 (SR %)</span>
-          <span id="sr-value" class="text-3xl lg:text-4xl font-black font-mono text-slate-300 my-0.5">0%</span>
-          <span id="sr-status" class="text-[10px] lg:text-xs font-medium text-slate-400">無等電位抑制</span>
+        <div id="sr-card" class="bg-slate-900/90 p-2 lg:p-2.5 rounded-xl border border-slate-700 flex flex-col items-center justify-center">
+          <span class="text-[9px] lg:text-[11px] text-slate-400 font-bold uppercase tracking-wider">抑制比 (SR)</span>
+          <span id="sr-value" class="text-2xl lg:text-3xl font-black font-mono text-slate-300 my-0.5">0%</span>
+          <span id="sr-status" class="text-[8.5px] lg:text-[10px] font-medium text-slate-400 text-center leading-tight">無抑制</span>
+        </div>
+
+        <!-- SEF95 (Spectral Edge Frequency 95%) Card -->
+        <div id="sef-card" onclick="openSefModal()" class="bg-slate-900/90 p-2 lg:p-2.5 rounded-xl border border-amber-500/50 hover:border-amber-400 hover:bg-slate-800/90 cursor-pointer flex flex-col items-center justify-center transition-all duration-200 group relative shadow-lg shadow-amber-500/10" title="點擊查看 SEF95 臨床意義與 3D 解讀">
+          <div class="flex items-center gap-1 text-[9px] lg:text-[11px] text-amber-400 font-bold uppercase tracking-wider">
+            <span>SEF95</span>
+            <span class="text-[9px] bg-amber-500/20 px-1 py-0.2 rounded text-amber-300 font-mono">💡</span>
+          </div>
+          <div class="flex items-baseline gap-0.5 my-0.5">
+            <span id="sef-value" class="text-2xl lg:text-3xl font-black font-mono text-amber-300 group-hover:scale-105 transition-transform">12.2</span>
+            <span class="text-[10px] text-amber-400 font-bold font-mono">Hz</span>
+          </div>
+          <span id="sef-status" class="text-[8.5px] lg:text-[10px] font-bold text-amber-400 text-center leading-tight">Alpha 上緣</span>
+          <span class="absolute -top-1.5 -right-1 text-[8px] bg-amber-500 text-slate-950 font-black px-1 rounded-full animate-pulse">剖析</span>
         </div>
       </div>
 
@@ -714,6 +739,239 @@
 
     </div>
   </div>
+
+  <!-- ========================================== -->
+  <!-- SEF95 (Spectral Edge Frequency 95%) Modal -->
+  <!-- ========================================== -->
+  <div id="sef-modal" class="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-6 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+    <div class="panel-glass border border-amber-500/50 w-full max-w-4xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden transform scale-95 transition-all duration-300" id="sef-modal-card">
+      
+      <!-- Modal Header -->
+      <div class="px-5 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/80 shrink-0">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl p-2 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40">⚡</span>
+          <div>
+            <h2 class="text-base md:text-lg font-black text-white flex items-center gap-2">
+              <span>頻譜邊緣頻率 (SEF95) 3D 剖析與臨床應用指南</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono">Spectral Edge Frequency 95%</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-0.5">麻醉照護監測之核心指標 · 破解黑盒子單一數值盲點</p>
+          </div>
+        </div>
+        <button onclick="closeSefModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center text-sm font-bold border border-slate-700 transition-all">
+          ✕
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-4 md:p-6 space-y-5 overflow-y-auto custom-scrollbar text-xs md:text-sm text-slate-300 leading-relaxed">
+        
+        <!-- 1. Definition & 3D DSA Interpretation -->
+        <div class="p-4 rounded-2xl bg-slate-900/90 border border-amber-500/30 space-y-3">
+          <h3 class="text-xs md:text-sm font-black text-amber-300 flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+            一、什麼是 SEF95？在 3D DSA 頻譜圖上如何解讀？
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+              <strong class="text-cyan-300 block text-xs">📐 數學與幾何定義：</strong>
+              <p class="text-slate-300">
+                腦波經快速傅立葉轉換（FFT）分解為 0–30 Hz 頻率功率後，<strong>由 0 Hz 開始由低往高累積能量積分，達到總能量 95% 時的臨界頻率點</strong>，即為 SEF95。留下的 5% 通常為高頻殘餘噪訊。
+              </p>
+              <div class="p-1.5 rounded bg-slate-900 font-mono text-[11px] text-amber-300 border border-slate-800 text-center">
+                ∫₀ˢᴱᶠ⁹⁵ P(f) df = 0.95 × ∫₀³⁰ʰᶻ P(f) df
+              </div>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-950/80 border border-slate-800 space-y-1.5">
+              <strong class="text-emerald-300 block text-xs">⛰️ 3D DSA 山脈「金色天際線」：</strong>
+              <p class="text-slate-300">
+                在 3D 頻譜山脈中，SEF95 就是綿延在山脊上的<strong>「金色雷射雪線（Snowline）」</strong>。
+              </p>
+              <ul class="space-y-1 text-slate-400 text-[11px]">
+                <li>• <strong class="text-slate-200">線下方（低頻區）</strong>：涵蓋了 95% 的大腦皮質去極化電能。</li>
+                <li>• <strong class="text-slate-200">線上⽅（高頻區）</strong>：僅存 5% 背景肌電或儀器雜訊。</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Four Core Clinical Applications -->
+        <div class="space-y-3">
+          <h3 class="text-xs md:text-sm font-black text-white flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+            二、四大核心臨床應用（麻醉照護人員實務判讀指引）
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- App 1: Depth & Emergence -->
+            <div class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
+              <div class="flex items-center gap-2 text-cyan-400 font-bold text-xs md:text-sm">
+                <span>1️⃣</span>
+                <span>麻醉深度連續追蹤 ＆ 甦醒拉鍊開啟</span>
+              </div>
+              <p class="text-slate-300 text-xs">
+                清醒狀態下皮質去同步化，高頻 Beta/Gamma 活躍，SEF95 高達 <strong>22–28 Hz</strong>。
+              </p>
+              <p class="text-slate-300 text-xs">
+                給予 Propofol 進入適當全身麻醉時，高頻迅速受抑，丘腦—皮質形成慢波與 Alpha 偶聯，SEF95 下降並穩定鎖定在 <strong>10–13 Hz（剛好貼在 Alpha 峰頂）</strong>。
+              </p>
+              <div class="p-2 rounded-lg bg-cyan-950/50 border border-cyan-800 text-[11px] text-cyan-200">
+                💡 <strong>甦醒期特徵（場景 7）</strong>：停止給藥後，出現「拉鍊開啟（Zipper Opening）」模式，SEF95 由 12 Hz 快速爬升至 25+ Hz，是皮質復甦之客觀指針。
+              </div>
+            </div>
+
+            <!-- App 2: Noxious Stimulation -->
+            <div class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
+              <div class="flex items-center gap-2 text-amber-400 font-bold text-xs md:text-sm">
+                <span>2️⃣</span>
+                <span>手術刺激與麻醉變淺之「超前警訊」</span>
+              </div>
+              <p class="text-slate-300 text-xs">
+                當手術切皮或強烈牽拉、鎮痛不足時，皮質喚醒波（Arousal）或顳肌肌電（EMG）搶先活化。
+              </p>
+              <p class="text-slate-300 text-xs">
+                SEF95 會率先由 12 Hz <strong>驟增飆升至 > 18–22 Hz</strong>。這項變化<strong>常早於心跳增快與血壓升高 30–60 秒</strong>，麻醉照護人員可提早追加鴉片類藥物，防患於未然。
+              </p>
+              <div class="p-2 rounded-lg bg-amber-950/50 border border-amber-800 text-[11px] text-amber-200">
+                ⚡ <strong>實務要點</strong>：若 BIS 仍顯示 48，但 SEF95 已經飆高至 20 Hz，需高度懷疑即將變淺或疼痛刺激！
+              </div>
+            </div>
+
+            <!-- App 3: Brain Ischemia -->
+            <div class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
+              <div class="flex items-center gap-2 text-rose-400 font-bold text-xs md:text-sm">
+                <span>3️⃣</span>
+                <span>術中急性腦缺血警示（Delta Drop 崩跌）</span>
+              </div>
+              <p class="text-slate-300 text-xs">
+                在頸動脈內膜切除術（CEA）試夾閉或心臟大血管手術中，若單側大腦側枝循環不足導致缺血，該側快速波（Alpha/Beta）瞬間消失。
+              </p>
+              <p class="text-slate-300 text-xs">
+                頻譜僅剩瀰漫性慢波，導致 SEF95 發生<strong>「急遽崩跌至 < 4 Hz（Delta Drop）」</strong>。此指標比體感誘發電位（SSEP）更靈敏，提示必須立即放置分流管（Shunt）或調高灌注壓。
+              </p>
+              <div class="p-2 rounded-lg bg-rose-950/50 border border-rose-800 text-[11px] text-rose-200">
+                🚨 <strong>雙側不對稱警報</strong>：若單側 SEF95 驟降超過 50%，即高度懷疑同側急性腦血流不足！
+              </div>
+            </div>
+
+            <!-- App 4: Paradoxical BIS & Ketamine -->
+            <div class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
+              <div class="flex items-center gap-2 text-purple-400 font-bold text-xs md:text-sm">
+                <span>4️⃣</span>
+                <span>破解 BIS 單一數字黑盒子盲點</span>
+              </div>
+              <p class="text-slate-300 text-xs">
+                • <strong class="text-white">Ketamine 解離（場景 5）</strong>：阻斷 NMDA 造成前額葉高頻 (25–32 Hz) 振盪，BIS 假性偏高至 65–75。看 SEF95 衝至 26.5 Hz，即可斷定是藥物特徵而非甦醒，避免盲目加深麻醉造成循環崩潰。
+              </p>
+              <p class="text-slate-300 text-xs">
+                • <strong class="text-white">內臟痛陷阱（場景 3）</strong>：強烈內臟刺激引發 Delta Arousal，BIS 假性降到 34（看似過深）；但 SEF95 能量下沉至慢波，提示需給予鎮痛而非減淺！
+              </p>
+              <div class="p-2 rounded-lg bg-purple-950/50 border border-purple-800 text-[11px] text-purple-200">
+                🧠 <strong>黑盒子破解</strong>：單看 BIS 容易被誤導；搭配 3D DSA 與 SEF95，方能看透真實大腦皮質狀態。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Comparison Table across 7 Scenarios -->
+        <div class="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
+          <h3 class="text-xs md:text-sm font-black text-amber-300 flex items-center justify-between">
+            <span class="flex items-center gap-2">
+              <span>📊</span> 7 大臨床情境 SEF95 快速查對表
+            </span>
+            <span class="text-[10px] text-slate-400 font-normal">可於主畫面切換各場景觀察 3D 雷射線變化</span>
+          </h3>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-[11px] text-left border-collapse">
+              <thead>
+                <tr class="border-b border-slate-700 bg-slate-950 text-slate-300 font-bold">
+                  <th class="p-2">場景編號與名稱</th>
+                  <th class="p-2">預期 SEF95</th>
+                  <th class="p-2">BIS 指數</th>
+                  <th class="p-2">頻譜生理特徵</th>
+                  <th class="p-2">麻醉照護決策指引</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 text-slate-300">
+                <tr class="hover:bg-slate-800/40">
+                  <td class="p-2 font-bold text-white">1. Propofol 常規全麻</td>
+                  <td class="p-2 font-mono text-emerald-400 font-bold">11.5–12.5 Hz</td>
+                  <td class="p-2 font-mono text-cyan-400">40–55</td>
+                  <td class="p-2">Delta ＋ 10 Hz Alpha 雙軌偶聯，Theta 谷底</td>
+                  <td class="p-2 text-emerald-300">維持現有劑量，丘腦—皮質阻斷完善</td>
+                </tr>
+                <tr class="hover:bg-slate-800/40">
+                  <td class="p-2 font-bold text-white">1. Sevoflurane 吸入</td>
+                  <td class="p-2 font-mono text-teal-300 font-bold">13.0–14.0 Hz</td>
+                  <td class="p-2 font-mono text-cyan-400">40–50</td>
+                  <td class="p-2">Alpha 寬頻並混雜 4–7 Hz Theta 鋸齒波</td>
+                  <td class="p-2 text-teal-300">維持 MAC 0.8–1.0，波峰較寬屬正常</td>
+                </tr>
+                <tr class="hover:bg-slate-800/40">
+                  <td class="p-2 font-bold text-white">2. 體表疼痛刺激</td>
+                  <td class="p-2 font-mono text-amber-400 font-bold">20.0–25.0 Hz ⬆️</td>
+                  <td class="p-2 font-mono text-amber-400">70–85</td>
+                  <td class="p-2">高頻 Beta/Gamma 喚醒 ＋ EMG 雜訊滲入</td>
+                  <td class="p-2 text-amber-300">追加 Opioid/局麻；早於血壓心跳示警！</td>
+                </tr>
+                <tr class="hover:bg-slate-800/40">
+                  <td class="p-2 font-bold text-white">3. 內臟痛陷阱 🚨</td>
+                  <td class="p-2 font-mono text-red-400 font-bold">7.0–9.0 Hz ⬇️</td>
+                  <td class="p-2 font-mono text-red-400">30–35 (偽深)</td>
+                  <td class="p-2">迷走慢波活化，Alpha 散逸，大慢波湧現</td>
+                  <td class="p-2 text-red-300">切勿減淺麻醉！應給予內臟止痛劑</td>
+                </tr>
+                <tr class="hover:bg-slate-800/40">
+                  <td class="p-2 font-bold text-white">4. 爆發抑制 (過深)</td>
+                  <td class="p-2 font-mono text-purple-400 font-bold">3.0–5.0 Hz ⬇️</td>
+                  <td class="p-2 font-mono text-purple-400">10–25</td>
+                  <td class="p-2">等電位寂靜，僅剩微弱零星低頻慢波 (SR>50%)</td>
+                  <td class="p-2 text-purple-300">立即減低麻醉藥物濃度，避免術後譫妄</td>
+                </tr>
+                <tr class="hover:bg-slate-800/40">
+                  <td class="p-2 font-bold text-white">5. Ketamine 解離</td>
+                  <td class="p-2 font-mono text-blue-400 font-bold">25.0–28.0 Hz ⬆️</td>
+                  <td class="p-2 font-mono text-blue-400">65–75 (假高)</td>
+                  <td class="p-2">NMDA 阻斷引發 25–32 Hz 高頻振盪與慢波交替</td>
+                  <td class="p-2 text-blue-300">知曉為藥物指紋，切勿盲目大幅加深藥物</td>
+                </tr>
+                <tr class="hover:bg-slate-800/40">
+                  <td class="p-2 font-bold text-white">6. 高齡長者大腦</td>
+                  <td class="p-2 font-mono text-amber-300 font-bold">8.0–9.5 Hz</td>
+                  <td class="p-2 font-mono text-amber-300">60–65 (假高)</td>
+                  <td class="p-2">神經元突觸衰退，Alpha 缺失，背景慢波化</td>
+                  <td class="p-2 text-amber-200">下調給藥目標（年長者需藥量降低 30–50%）</td>
+                </tr>
+                <tr class="hover:bg-slate-800/40">
+                  <td class="p-2 font-bold text-white">7. 丙泊酚甦醒期</td>
+                  <td class="p-2 font-mono text-cyan-400 font-bold">12 ➔ 25 Hz 📈</td>
+                  <td class="p-2 font-mono text-cyan-400">70–90</td>
+                  <td class="p-2">拉鍊開啟模式：慢波消散，Beta/Gamma 恢復</td>
+                  <td class="p-2 text-cyan-300">評估自主呼吸與保護性反射，準備拔管</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-5 py-3 border-t border-slate-800 bg-slate-900/60 flex items-center justify-between shrink-0">
+        <span class="text-xs text-slate-400">
+          💡 提示：在 3D 頻譜主畫面可隨時點選右上角 <span class="text-amber-400 font-bold">⚡ SEF95 軌跡</span> 切換雷射線顯示。
+        </span>
+        <button onclick="closeSefModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20 transition-all">
+          返回 3D 頻譜觀察 SEF95
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
   <script>
     // --- Global Variables & Scene Setup ---
     const container = document.getElementById('canvas-container');
@@ -791,6 +1049,96 @@
     // Material with Vertex Colors (Self-luminous Basic Material: 100% color fidelity, impervious to shadow washout)
     const spectrogramGroup = new THREE.Group();
     scene.add(spectrogramGroup);
+    // --- 3D SEF95 (Spectral Edge Frequency 95%) Laser Line & Real-Time Badge ---
+    let isSefLineVisible = true;
+    const sefPointsCount = TIME_SEGMENTS;
+    const currentSefPoints = new Float32Array(sefPointsCount * 3);
+    const targetSefPoints = new Float32Array(sefPointsCount * 3);
+
+    const sefGeom = new THREE.BufferGeometry();
+    sefGeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(sefPointsCount * 3), 3));
+
+    // Luminous glowing laser line (High-visibility neon gold/yellow)
+    const sefMat = new THREE.LineBasicMaterial({
+      color: 0xfacc15,
+      linewidth: 3,
+      transparent: true,
+      opacity: 0.95
+    });
+    const sefLineMesh = new THREE.Line(sefGeom, sefMat);
+
+    // Glowing halo line
+    const sefGlowMat = new THREE.LineBasicMaterial({
+      color: 0xfbbf24,
+      linewidth: 6,
+      transparent: true,
+      opacity: 0.40
+    });
+    const sefGlowMesh = new THREE.Line(sefGeom, sefGlowMat);
+
+    const sefGroup = new THREE.Group();
+    sefGroup.name = "sefGroup";
+    sefGroup.add(sefLineMesh);
+    sefGroup.add(sefGlowMesh);
+
+    // Dynamic 3D Tag Sprite
+    function makeSefSpriteTexture(valText) {
+      const c = document.createElement('canvas');
+      c.width = 320;
+      c.height = 76;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = "rgba(10, 15, 26, 0.92)";
+      ctx.strokeStyle = "#facc15";
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      const x = 4, y = 4, w = 312, h = 68, r = 16;
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + w - r, y);
+      ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+      ctx.lineTo(x + w, y + h - r);
+      ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      ctx.lineTo(x + r, y + h);
+      ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+      ctx.lineTo(x + r, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = "#facc15";
+      ctx.font = 'bold 28px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`⚡ SEF95: ${valText} Hz`, 160, 38);
+
+      return new THREE.CanvasTexture(c);
+    }
+
+    const sefSpriteMat = new THREE.SpriteMaterial({ map: makeSefSpriteTexture("12.2"), transparent: true });
+    const sefTagSprite = new THREE.Sprite(sefSpriteMat);
+    sefTagSprite.scale.set(7.5, 1.8, 1);
+    sefGroup.add(sefTagSprite);
+
+    spectrogramGroup.add(sefGroup);
+
+    function updateSefTagSprite(valText) {
+      sefTagSprite.material.map = makeSefSpriteTexture(valText);
+      sefTagSprite.material.needsUpdate = true;
+    }
+
+    function toggleSEF95Line() {
+      isSefLineVisible = !isSefLineVisible;
+      sefGroup.visible = isSefLineVisible;
+      const btn = document.getElementById('sef-toggle-btn');
+      if (btn) {
+        if (isSefLineVisible) {
+          btn.className = "px-2 py-1 md:px-2.5 md:py-1.5 lg:px-3 lg:py-2 rounded-lg text-[10px] md:text-xs lg:text-sm font-bold transition-all duration-200 border border-amber-500/60 bg-amber-500/20 text-amber-300 shadow-md shadow-amber-500/20 flex items-center gap-1";
+        } else {
+          btn.className = "px-2 py-1 md:px-2.5 md:py-1.5 lg:px-3 lg:py-2 rounded-lg text-[10px] md:text-xs lg:text-sm font-bold transition-all duration-200 border border-slate-700 bg-slate-900/80 text-slate-400 hover:text-white flex items-center gap-1";
+        }
+      }
+    }
+
 
     const terrainMat = new THREE.MeshBasicMaterial({
       vertexColors: true,
@@ -957,16 +1305,16 @@
       },
       {
         id: 3,
-        name: "3 (on temple, between corner of eye and hairline)",
+        name: "3 (on temple · 與眼平行等高 · corner of eye to hairline)",
         shortName: "3. 太陽穴",
-        tag: "Step 2 · 太陽穴基準",
-        pos: new THREE.Vector3(5.30, 1.80, 5.75),
-        normal: new THREE.Vector3(0.80, 0.12, 0.58).normalize(),
+        tag: "Step 2 · 太陽穴基準 (眼平行)",
+        pos: new THREE.Vector3(5.65, 0.90, 5.25),
+        normal: new THREE.Vector3(0.74, 0.08, 0.67).normalize(),
         color: 0xf43f5e,
         badgeColor: "#f43f5e",
-        landmark: "【原廠 Step 2】3 on temple, between corner of eye and hairline（貼於太陽穴，眼睛外角與髮際線之間）。",
+        landmark: "【原廠 Step 2】3 on temple, between corner of eye and hairline（貼於太陽穴，高度與眼睛等高平行，位於外眼角與耳前髮際線之間）。",
         physiology: "儀器系統接地保護（Ground），並緊密橫跨顳肌，專責監測 30–300 Hz 高頻肌電活動（EMG）！",
-        clinical: "原廠外側定位點：位於外眼角與髮際線間之平坦太陽穴；外端 sensor tab 連接 PIC 電纜。"
+        clinical: "原廠外側定位點：高度精準與眼睛水平等高（Y=0.90），位於外眼角與耳前髮際線平坦處；外端 sensor tab 連接 PIC 電纜。"
       }
     ];
 
@@ -1289,9 +1637,9 @@
         new THREE.Vector3( 0.00, 4.80, 7.63), // Electrode 1
         new THREE.Vector3( 1.65, 4.25, 7.50), // Electrode 2 (between 1 and 4)
         new THREE.Vector3( 3.30, 3.40, 7.18), // Electrode 4 (above eyebrow)
-        new THREE.Vector3( 4.35, 2.60, 6.55), // Curving toward temple
-        new THREE.Vector3( 5.30, 1.80, 5.82), // Electrode 3 (temple)
-        new THREE.Vector3( 6.25, 1.30, 4.88)  // Sensor tab extending toward PIC cable
+        new THREE.Vector3( 4.60, 2.10, 6.40), // Curving down along temple
+        new THREE.Vector3( 5.65, 0.90, 5.30), // Electrode 3 (Parallel with eye level Y=0.90!)
+        new THREE.Vector3( 6.35, 0.50, 4.30)  // PIC sensor tab extending toward ear
       ];
       const stripCurve = new THREE.CatmullRomCurve3(stripPoints);
       const stripGeom = new THREE.TubeGeometry(stripCurve, 64, 0.26, 12, false);
@@ -1315,8 +1663,8 @@
         roughness: 0.3
       });
       const tabMesh = new THREE.Mesh(tabGeom, tabMat);
-      tabMesh.position.set(6.25, 1.30, 4.88);
-      tabMesh.rotation.set(0.2, 0.8, -0.4);
+      tabMesh.position.set(6.35, 0.50, 4.30);
+      tabMesh.rotation.set(0.1, 0.8, -0.3);
       group.add(tabMesh);
 
       // 4. Dotted Alignment Guidelines (對準定位點導引線)
@@ -1344,7 +1692,7 @@
         new THREE.Vector3(0.00, 4.80, 7.72),  // 1 號
         new THREE.Vector3(1.65, 4.25, 7.58),  // 2 號 (1 與 4 中間)
         new THREE.Vector3(3.30, 3.40, 7.26),  // 4 號 (眉毛上方)
-        new THREE.Vector3(5.30, 1.80, 5.92)   // 3 號 (太陽穴)
+        new THREE.Vector3(5.65, 0.90, 5.42)   // 3 號 (與眼睛平行等高 Y=0.90)
       ];
       const dGeom = new THREE.BufferGeometry().setFromPoints(dPoints);
       const dLine = new THREE.Line(dGeom, guideMat);
@@ -1465,7 +1813,7 @@
         { id: 1, name: "1 at center of forehead (~2in/5cm above nose)", color: "#38bdf8", lineEnd: new THREE.Vector3(-8.5, 4.80, 6.5), spritePos: new THREE.Vector3(-12.5, 4.80, 6.5) },
         { id: 2, name: "2 (between 1 & 4 · Press in Step 4)", color: "#34d399", lineEnd: new THREE.Vector3(-8.0, 6.80, 6.0), spritePos: new THREE.Vector3(-12.0, 6.80, 6.0) },
         { id: 4, name: "4 directly above eyebrow", color: "#fbbf24", lineEnd: new THREE.Vector3( 9.0, 3.40, 5.5), spritePos: new THREE.Vector3( 12.2, 3.40, 5.5) },
-        { id: 3, name: "3 on temple, between corner of eye and hairline", color: "#f43f5e", lineEnd: new THREE.Vector3( 9.0, 1.80, 4.8), spritePos: new THREE.Vector3( 12.2, 1.80, 4.8) }
+        { id: 3, name: "3 on temple (level with eyes, corner to hairline)", color: "#f43f5e", lineEnd: new THREE.Vector3( 9.0, 0.90, 4.5), spritePos: new THREE.Vector3( 12.2, 0.90, 4.5) }
       ];
 
       sideAnchors.forEach(sa => {
@@ -1524,6 +1872,10 @@
         name: "正常全身麻醉",
         propofol: {
           name: "正常全身麻醉 (Propofol TIVA)",
+          sef: "12.2",
+          sefStatus: "Alpha 上緣 · 深度穩定",
+          sefClass: "text-emerald-400",
+          sefFormula: (t) => 12.2 + Math.sin(t * 8.0) * 0.25,
           bis: 46,
           sr: "0%",
           emg: "26 dB",
@@ -1546,6 +1898,10 @@
         },
         sevo: {
           name: "正常全身麻醉 (Sevoflurane 吸入)",
+          sef: "13.4",
+          sefStatus: "Theta/Alpha 上緣",
+          sefClass: "text-teal-300",
+          sefFormula: (t) => 13.4 + Math.cos(t * 8.0) * 0.3,
           bis: 42,
           sr: "0%",
           emg: "24 dB",
@@ -1571,6 +1927,10 @@
       },
       2: {
         name: "體表疼痛刺激 (Beta Arousal)",
+        sef: "22.8",
+        sefStatus: "痛覺喚醒 · 顯著上揚 (>18Hz)",
+        sefClass: "text-amber-400 font-bold",
+        sefFormula: (t) => 22.8 + Math.sin(t * 12.0) * 0.8,
         bis: 78,
         sr: "0%",
         emg: "48 dB (高)",
@@ -1598,6 +1958,10 @@
       },
       3: {
         name: "內臟痛陷阱 (Delta Arousal) 🚨",
+        sef: "8.5",
+        sefStatus: "慢波主導 · 能量下沉",
+        sefClass: "text-red-400 font-black",
+        sefFormula: (t) => 8.5 + Math.sin(t * 8.0) * 0.4,
         bis: 34,
         sr: "0%",
         emg: "30 dB",
@@ -1623,6 +1987,10 @@
       },
       4: {
         name: "麻醉過深 (Burst Suppression)",
+        sef: "4.2",
+        sefStatus: "危急：重度偏低 (<5Hz)",
+        sefClass: "text-purple-400 font-black",
+        sefFormula: (t) => 4.2 + Math.sin(t * 6.0) * 0.3,
         bis: 18,
         sr: "65%",
         emg: "18 dB",
@@ -1651,6 +2019,10 @@
       },
       5: {
         name: "多模式藥物指紋 (Ketamine 解離)",
+        sef: "26.5",
+        sefStatus: "高頻解離 (Beta/Gamma)",
+        sefClass: "text-blue-400 font-bold",
+        sefFormula: (t) => 26.5 + Math.cos(t * 10.0) * 0.6,
         bis: 72,
         sr: "0%",
         emg: "32 dB",
@@ -1673,6 +2045,10 @@
       },
       6: {
         name: "高齡長者脆弱大腦 (Alpha 衰退)",
+        sef: "8.8",
+        sefStatus: "Alpha 缺失 · 慢波主導",
+        sefClass: "text-amber-300 font-bold",
+        sefFormula: (t) => 8.8 + Math.sin(t * 6.0) * 0.3,
         bis: 62,
         sr: "0%",
         emg: "22 dB",
@@ -1694,6 +2070,10 @@
       },
       7: {
         name: "丙泊酚甦醒期 (拉鍊開啟模式)",
+        sef: "12.0➔24.5",
+        sefStatus: "拉鍊開啟 · 甦醒攀升",
+        sefClass: "text-cyan-400 font-bold",
+        sefFormula: (t) => 12.0 + t * 12.5 + Math.sin(t * 10.0) * 0.4,
         bis: 78,
         sr: "0%",
         emg: "38 dB",
@@ -1764,6 +2144,21 @@
         targetColors[colorIndex + 2] = c.b;
         colorIndex += 3;
       }
+
+      // Compute SEF95 3D Line Path across Time
+      const sefFn = cfg.sefFormula || ((t) => 12.0);
+      for (let i = 0; i < TIME_SEGMENTS; i++) {
+        const x = -WIDTH / 2 + (i / (TIME_SEGMENTS - 1)) * WIDTH;
+        const normTime = i / (TIME_SEGMENTS - 1);
+        const freqHz = Math.min(29.5, Math.max(0.5, sefFn(normTime)));
+        const z = DEPTH / 2 - (freqHz / 30) * DEPTH;
+        const pwr = cfg.formula(normTime, freqHz);
+        const y = pwr * MAX_POWER_HEIGHT + 0.55; // Slightly elevated laser line above terrain
+
+        targetSefPoints[i * 3] = x;
+        targetSefPoints[i * 3 + 1] = y;
+        targetSefPoints[i * 3 + 2] = z;
+      }
     }
 
     // Switch between Propofol and Sevoflurane inside Scenario 1
@@ -1812,6 +2207,7 @@
       if (t >= 1.0) {
         t = 1.0;
         isMorphing = false;
+        currentSefPoints.set(targetSefPoints);
       }
 
       // Smooth Cubic Ease
@@ -1832,6 +2228,20 @@
       pos.needsUpdate = true;
       col.needsUpdate = true;
       terrainGeom.computeVertexNormals();
+
+      // Morph SEF95 3D Line Positions
+      const sefPos = sefGeom.attributes.position;
+      for (let i = 0; i < sefPointsCount; i++) {
+        const sx = currentSefPoints[i * 3] + (targetSefPoints[i * 3] - currentSefPoints[i * 3]) * ease;
+        const sy = currentSefPoints[i * 3 + 1] + (targetSefPoints[i * 3 + 1] - currentSefPoints[i * 3 + 1]) * ease;
+        const sz = currentSefPoints[i * 3 + 2] + (targetSefPoints[i * 3 + 2] - currentSefPoints[i * 3 + 2]) * ease;
+        sefPos.setXYZ(i, sx, sy, sz);
+      }
+      sefPos.needsUpdate = true;
+
+      // Position SEF Tag Sprite at the latest time edge (last segment)
+      const last = sefPointsCount - 1;
+      sefTagSprite.position.set(sefPos.getX(last) + 0.5, sefPos.getY(last) + 3.2, sefPos.getZ(last));
     }
 
     // Switch Scenario Function
@@ -1867,6 +2277,16 @@
       document.getElementById('bis-value').textContent = cfg.bis;
       document.getElementById('sr-value').textContent = cfg.sr;
       document.getElementById('emg-badge').textContent = `EMG: ${cfg.emg}`;
+
+      // Update SEF95 HUD & 3D Sprite
+      const sefValEl = document.getElementById('sef-value');
+      const sefStatusEl = document.getElementById('sef-status');
+      if (sefValEl && cfg.sef) sefValEl.textContent = cfg.sef;
+      if (sefStatusEl && cfg.sefStatus) {
+        sefStatusEl.textContent = cfg.sefStatus;
+        sefStatusEl.className = `text-[8.5px] lg:text-[10px] text-center leading-tight ${cfg.sefClass || 'text-amber-400'}`;
+      }
+      updateSefTagSprite(cfg.sef || "12.2");
 
       const bisStatus = document.getElementById('bis-status');
       bisStatus.textContent = cfg.bisStatus;
@@ -2137,6 +2557,28 @@
     }
 
     // Sensor Placement Modal Toggle
+    
+    // --- SEF95 Clinical Modal Open / Close Handlers ---
+    function openSefModal() {
+      const modal = document.getElementById('sef-modal');
+      const card = document.getElementById('sef-modal-card');
+      if (!modal || !card) return;
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      modal.classList.add('opacity-100', 'pointer-events-auto');
+      card.classList.remove('scale-95');
+      card.classList.add('scale-100');
+    }
+
+    function closeSefModal() {
+      const modal = document.getElementById('sef-modal');
+      const card = document.getElementById('sef-modal-card');
+      if (!modal || !card) return;
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      modal.classList.remove('opacity-100', 'pointer-events-auto');
+      card.classList.add('scale-95');
+      card.classList.remove('scale-100');
+    }
+
     function toggleSensorModal() {
       const modal = document.getElementById('sensor-modal');
       const card = document.getElementById('sensor-modal-card');
