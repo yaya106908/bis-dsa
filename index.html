@@ -365,89 +365,106 @@
         </button>
       </div>
 
-      <!-- Covidien / Medtronic BIS Quatro 原廠標準操作程序 (SOP) -->
-      <div class="bg-slate-900/95 p-2.5 rounded-xl border border-cyan-500/50 space-y-2 shadow-lg shadow-cyan-950/40">
-        <div class="text-[11px] lg:text-xs font-black text-amber-300 flex items-center justify-between border-b border-slate-800 pb-1.5">
-          <span class="flex items-center gap-1.5">
+      <!-- Covidien 原廠使用說明 (Official Instructions per Product Manual) -->
+      <div class="bg-slate-900/95 p-3 rounded-xl border border-cyan-500/50 space-y-2.5 shadow-lg shadow-cyan-950/40">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+          <span class="text-xs font-black text-amber-300 flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-            Covidien 原廠標準黏貼說明 (SOP)：
+            INSTRUCTIONS（Covidien 原廠操作指引）
           </span>
-          <span class="text-[9px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 font-mono">Quatro 4點額顳</span>
+          <span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">BIS™ Quatro Sensor</span>
         </div>
 
-        <!-- 5 Steps SOP -->
-        <div class="space-y-1.5 text-[11px] text-slate-200 leading-snug">
+        <div class="space-y-2 text-[11px] text-slate-200 leading-snug">
           <!-- Step 1 -->
-          <div class="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 flex items-start gap-1.5">
-            <span class="px-1.5 py-0.5 rounded bg-blue-900/60 text-cyan-300 font-bold text-[10px] shrink-0">步驟 1</span>
-            <div>
-              <strong class="text-white">酒精清潔與乾燥</strong>：以酒精棉片徹底擦拭黏貼區域皮膚並使其乾燥。<span class="text-[10px] text-slate-400 block">(1. Wipe skin with alcohol and dry)</span>
+          <div class="p-2 rounded-lg bg-slate-950/80 border border-slate-800 space-y-0.5">
+            <div class="text-cyan-300 font-bold text-[10.5px] flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded-full bg-cyan-500/20 text-cyan-300 flex items-center justify-center font-bold text-[10px] border border-cyan-500/40 shrink-0">1</span>
+              <span>Wipe skin with alcohol and dry</span>
             </div>
+            <p class="text-slate-300 pl-5 text-[10.5px]">用酒精擦拭皮膚並使其乾燥。</p>
           </div>
 
           <!-- Step 2 -->
-          <div class="p-1.5 rounded-lg bg-slate-950/90 border border-cyan-500/30 space-y-1">
-            <div class="flex items-center justify-between">
-              <span class="px-1.5 py-0.5 rounded bg-cyan-900/60 text-cyan-300 font-bold text-[10px]">步驟 2</span>
-              <span class="text-[10px] text-cyan-400 font-bold">斜向對位黏貼 (Position sensor diagonally)</span>
+          <div class="p-2 rounded-lg bg-slate-950/90 border border-cyan-500/40 space-y-1.5">
+            <div class="text-cyan-300 font-bold text-[10.5px] flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded-full bg-cyan-500/20 text-cyan-300 flex items-center justify-center font-bold text-[10px] border border-cyan-500/40 shrink-0">2</span>
+              <span>Position sensor diagonally on the forehead as follows:</span>
             </div>
+            <p class="text-slate-300 pl-5 text-[10px]">將感應器依下列基準斜向貼於額頭：</p>
             
-            <div onclick="selectElectrode(1)" class="p-1 rounded bg-slate-900/90 border border-slate-800 hover:border-cyan-500/50 cursor-pointer transition-all flex items-start gap-1 text-[10px]">
-              <span class="text-cyan-400 font-bold shrink-0">① 號：</span>
-              <span>貼於<strong class="text-white">前額正中央</strong>，鼻樑（bridge of nose）上方約 <strong class="text-cyan-300">5 cm (2 吋)</strong> 處。</span>
-            </div>
-            <div onclick="selectElectrode(2)" class="p-1 rounded bg-slate-900/90 border border-slate-800 hover:border-emerald-500/50 cursor-pointer transition-all flex items-start gap-1 text-[10px]">
-              <span class="text-emerald-400 font-bold shrink-0">② 號：</span>
-              <span>基準參考點，位於 <strong class="text-white">① 號正上方</strong>約 2–3 公分處（避開毛髮）。</span>
-            </div>
-            <div onclick="selectElectrode(4)" class="p-1 rounded bg-slate-900/90 border border-slate-800 hover:border-amber-500/50 cursor-pointer transition-all flex items-start gap-1 text-[10px]">
-              <span class="text-amber-400 font-bold shrink-0">④ 號：</span>
-              <span>貼於<strong class="text-white">眉毛正上方</strong>（directly above eyebrow，避開眉毛）。</span>
-            </div>
-            <div onclick="selectElectrode(3)" class="p-1 rounded bg-slate-900/90 border border-slate-800 hover:border-rose-500/50 cursor-pointer transition-all flex items-start gap-1 text-[10px]">
-              <span class="text-rose-400 font-bold shrink-0">③ 號：</span>
-              <span>貼於同側<strong class="text-white">太陽穴</strong>（眼睛外側與髮際線之間）。</span>
+            <div class="pl-5 space-y-1">
+              <!-- 1 -->
+              <div onclick="selectElectrode(1)" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-cyan-500/50 cursor-pointer transition-all">
+                <div class="font-bold text-cyan-400 text-[10.5px] flex items-center gap-1">
+                  <span>• 1</span>
+                  <span class="text-slate-200">at center of forehead, approximately 2 inches (5cm) above bridge of nose</span>
+                </div>
+                <div class="text-slate-400 text-[10px] mt-0.5">貼於前額正中央，鼻樑上方約 2 英吋（5 公分）處。</div>
+              </div>
+
+              <!-- 4 -->
+              <div onclick="selectElectrode(4)" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-amber-500/50 cursor-pointer transition-all">
+                <div class="font-bold text-amber-400 text-[10.5px] flex items-center gap-1">
+                  <span>• 4</span>
+                  <span class="text-slate-200">directly above eyebrow</span>
+                </div>
+                <div class="text-slate-400 text-[10px] mt-0.5">貼於眉毛正上方。</div>
+              </div>
+
+              <!-- 3 -->
+              <div onclick="selectElectrode(3)" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/50 cursor-pointer transition-all">
+                <div class="font-bold text-rose-400 text-[10.5px] flex items-center gap-1">
+                  <span>• 3</span>
+                  <span class="text-slate-200">on temple, between corner of eye and hairline</span>
+                </div>
+                <div class="text-slate-400 text-[10px] mt-0.5">貼於太陽穴，眼睛外角與髮際線之間。</div>
+              </div>
             </div>
           </div>
 
           <!-- Step 3 -->
-          <div class="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 flex items-start gap-1.5">
-            <span class="px-1.5 py-0.5 rounded bg-blue-900/60 text-cyan-300 font-bold text-[10px] shrink-0">步驟 3</span>
-            <div>
-              <strong class="text-white">壓平貼片邊緣</strong>：沿感應器外緣確實按壓，確保黏合服貼無氣泡。<span class="text-[10px] text-slate-400 block">(3. Press edges of sensor to assure adhesion)</span>
+          <div class="p-2 rounded-lg bg-slate-950/80 border border-slate-800 space-y-0.5">
+            <div class="text-cyan-300 font-bold text-[10.5px] flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded-full bg-cyan-500/20 text-cyan-300 flex items-center justify-center font-bold text-[10px] border border-cyan-500/40 shrink-0">3</span>
+              <span>Press edges of sensor to assure adhesion</span>
             </div>
+            <p class="text-slate-300 pl-5 text-[10.5px]">按壓感應器邊緣以確保黏貼牢固。</p>
           </div>
 
           <!-- Step 4 -->
-          <div class="p-1.5 rounded-lg bg-slate-950/80 border border-amber-500/40 flex items-start gap-1.5">
-            <span class="px-1.5 py-0.5 rounded bg-amber-900/60 text-amber-300 font-bold text-[10px] shrink-0">步驟 4</span>
-            <div>
-              <strong class="text-amber-300">用力按壓 5 秒鐘</strong>：分別用力按壓 ①、②、③、④ 各點 5 秒，刺破角質層釋放濕凝膠。<span class="text-[10px] text-slate-400 block">(4. Press ① ② ③ and ④ firmly for 5 seconds)</span>
+          <div onclick="selectElectrode(2)" class="p-2 rounded-lg bg-slate-950/80 border border-amber-500/40 space-y-0.5 cursor-pointer hover:border-amber-400 transition-all">
+            <div class="text-amber-300 font-bold text-[10.5px] flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center font-bold text-[10px] border border-amber-500/40 shrink-0">4</span>
+              <span>Press 1 2 3 and 4 firmly for 5 seconds</span>
             </div>
+            <p class="text-slate-300 pl-5 text-[10.5px]">用力按壓 1、2、3、4 各點 5 秒鐘（啟動微針與濕性凝膠）。</p>
           </div>
 
           <!-- Step 5 -->
-          <div class="p-1.5 rounded-lg bg-slate-950/80 border border-slate-800 flex items-start gap-1.5">
-            <span class="px-1.5 py-0.5 rounded bg-blue-900/60 text-cyan-300 font-bold text-[10px] shrink-0">步驟 5</span>
-            <div>
-              <strong class="text-white">連接傳輸電纜</strong>：將感應器接頭（sensor tab）插入病人介面電纜（PIC）。<span class="text-[10px] text-slate-400 block">(5. Insert sensor tab into patient interface cable)</span>
+          <div class="p-2 rounded-lg bg-slate-950/80 border border-slate-800 space-y-0.5">
+            <div class="text-cyan-300 font-bold text-[10.5px] flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded-full bg-cyan-500/20 text-cyan-300 flex items-center justify-center font-bold text-[10px] border border-cyan-500/40 shrink-0">5</span>
+              <span>Insert sensor tab into patient interface cable</span>
             </div>
+            <p class="text-slate-300 pl-5 text-[10.5px]">將感應器接頭插入病人介面電纜（PIC）。</p>
           </div>
 
           <!-- Note -->
-          <div class="p-1.5 rounded-lg bg-slate-950/50 border border-slate-800/80 text-[10px] text-slate-400 flex items-center gap-1.5">
-            <span class="text-amber-400 text-xs">⚠️</span>
-            <span><strong class="text-slate-300">原廠備註：</strong>移除感應器後皮膚若有輕微發紅屬正常現象，通常於短時間內消退。</span>
+          <div class="p-2 rounded-lg bg-slate-950/60 border border-slate-800/80 text-[10px] text-slate-400">
+            <div class="text-amber-400 font-bold flex items-center gap-1 mb-0.5">
+              <span>⚠️</span>
+              <span>NOTE:</span>
+            </div>
+            <div>Upon removal, slight redness of skin may be seen and is typically resolved within a short period of time.</div>
+            <div class="text-slate-500 mt-0.5">（移除感應器後，皮膚可能出現輕微泛紅，通常於短時間內自行消退。）</div>
           </div>
         </div>
       </div>
-      <!-- Electrode Selection Tabs -->
+      <!-- Electrode Selection Tabs (1, 4, 3 per Step 2, and 2 per Step 4) -->
       <div class="grid grid-cols-4 gap-1.5">
         <button onclick="selectElectrode(1)" id="el-tab-1" class="py-1.5 px-1 rounded-lg text-[11px] font-extrabold border transition-all text-center bg-cyan-500/20 text-cyan-300 border-cyan-500/60 shadow-lg shadow-cyan-500/20">
-          [ 1 ] 前額
-        </button>
-        <button onclick="selectElectrode(2)" id="el-tab-2" class="py-1.5 px-1 rounded-lg text-[11px] font-extrabold border border-slate-700 bg-slate-900/80 text-slate-300 hover:text-white transition-all text-center">
-          [ 2 ] 1號上方
+          [ 1 ] 前額中央
         </button>
         <button onclick="selectElectrode(4)" id="el-tab-4" class="py-1.5 px-1 rounded-lg text-[11px] font-extrabold border border-slate-700 bg-slate-900/80 text-slate-300 hover:text-white transition-all text-center">
           [ 4 ] 眉毛上方
@@ -455,8 +472,10 @@
         <button onclick="selectElectrode(3)" id="el-tab-3" class="py-1.5 px-1 rounded-lg text-[11px] font-extrabold border border-slate-700 bg-slate-900/80 text-slate-300 hover:text-white transition-all text-center">
           [ 3 ] 太陽穴
         </button>
+        <button onclick="selectElectrode(2)" id="el-tab-2" class="py-1.5 px-1 rounded-lg text-[11px] font-extrabold border border-slate-700 bg-slate-900/80 text-slate-300 hover:text-white transition-all text-center">
+          [ 2 ] 按壓點
+        </button>
       </div>
-
       <!-- Dynamic Electrode Detail Card -->
       <div id="electrode-detail-card" class="bg-slate-900/95 p-3 rounded-xl border border-cyan-500/40 space-y-2 transition-all">
         <div class="flex items-center justify-between pb-1.5 border-b border-slate-800">
@@ -899,55 +918,55 @@
     const electrodes = [
       {
         id: 1,
-        name: "電極 1 (① at center of forehead · 鼻樑上約 5cm / 2in)",
-        shortName: "1. 前額",
-        tag: "主信號輸入端 ①",
+        name: "1 (at center of forehead · ~2 in / 5cm above bridge of nose)",
+        shortName: "1. 前額中央",
+        tag: "Step 2 · 前額基準",
         pos: new THREE.Vector3(0.0, 4.80, 7.55),
         normal: new THREE.Vector3(0.0, 0.45, 0.89).normalize(),
         color: 0x38bdf8,
         badgeColor: "#38bdf8",
-        landmark: "【官方步驟 2-①】at center of forehead, approximately 2 inches (5cm) above bridge of nose（貼於前額正中央，鼻樑上方約 2 英吋 / 5 公分處）。",
+        landmark: "【原廠 Step 2】1 at center of forehead, approximately 2 inches (5cm) above bridge of nose（貼於前額正中央，鼻樑上方約 2 英吋 / 5 公分處）。",
         physiology: "捕捉由後枕部向前遷移的 Alpha 振盪（Alpha Anteriorization）；全身麻醉下丘腦皮質偶聯共振區，信噪比（SNR）最高！(Purdon 2015)",
-        clinical: "此點為主要信號輸入端。黏貼前需用酒精徹底擦拭皮膚並乾燥；定位時以鼻樑（bridge of nose）為基準向上量測約 5 公分。"
-      },
-      {
-        id: 2,
-        name: "電極 2 (② Reference · 1號正上方約2-3cm)",
-        shortName: "2. 參考",
-        tag: "基準參考端 ②",
-        pos: new THREE.Vector3(0.0, 6.90, 6.10),
-        normal: new THREE.Vector3(0.0, 0.68, 0.73).normalize(),
-        color: 0x34d399,
-        badgeColor: "#34d399",
-        landmark: "【官方基準參考點】位於 1 號點正上方約 2-3 公分處（靠近髮際線但仍在無毛髮皮膚上）。",
-        physiology: "作為基準參考電位（Reference），與電極 1、4 形成同側額葉電位差分計算。",
-        clinical: "務必貼在完全無毛髮處！按壓 5 秒使濕性凝膠滲透，接觸阻抗需維持在小於 5 kΩ。"
+        clinical: "原廠定位基準點：以鼻樑（bridge of nose）為基準向上量測 2 英吋（約 5 公分）。"
       },
       {
         id: 4,
-        name: "電極 4 (④ directly above eyebrow · 眉毛正上方)",
-        shortName: "4. 眉上",
-        tag: "額葉差分端 ④",
+        name: "4 (directly above eyebrow)",
+        shortName: "4. 眉毛上方",
+        tag: "Step 2 · 眉上基準",
         pos: new THREE.Vector3(2.80, 3.30, 7.25),
         normal: new THREE.Vector3(0.50, 0.32, 0.80).normalize(),
         color: 0xfbbf24,
         badgeColor: "#fbbf24",
-        landmark: "【官方步驟 2-④】directly above eyebrow（貼於右側眉毛正上方，避開眉毛）。",
+        landmark: "【原廠 Step 2】4 directly above eyebrow（貼於眉毛正上方）。",
         physiology: "位於右側額葉上方，與前額電極 1 形成額葉橫向空間電位差分，完整收錄大腦皮質去極化波。",
-        clinical: "注意避開眉毛毛囊！直接貼在眉毛上方平整無毛髮皮膚，確保貼片邊緣壓平服貼。"
+        clinical: "原廠斜向定位要點：貼片順著額頭弧度斜貼，使 4 號感應點端正坐落於眉毛正上方。"
       },
       {
         id: 3,
-        name: "電極 3 (③ on temple · 太陽穴眼角與髮際線間)",
+        name: "3 (on temple, between corner of eye and hairline)",
         shortName: "3. 太陽穴",
-        tag: "系統接地 & EMG ③",
+        tag: "Step 2 · 太陽穴基準",
         pos: new THREE.Vector3(5.20, 1.80, 5.75),
         normal: new THREE.Vector3(0.80, 0.12, 0.58).normalize(),
         color: 0xf43f5e,
         badgeColor: "#f43f5e",
-        landmark: "【官方步驟 2-③】on temple, between corner of eye and hairline（貼於太陽穴，眼睛外角與髮際線之間）。",
+        landmark: "【原廠 Step 2】3 on temple, between corner of eye and hairline（貼於太陽穴，眼睛外角與髮際線之間）。",
         physiology: "儀器系統接地保護（Ground），並緊密橫跨顳肌，專責監測 30–300 Hz 高頻肌電活動（EMG）！",
-        clinical: "外側接出傳輸接頭（sensor tab）連接病人傳輸電纜（PIC）。此處肌肉活動最先反映疼痛甦醒警訊。"
+        clinical: "原廠外側定位點：位於外眼角與髮際線間之平坦太陽穴；外端 sensor tab 連接 PIC 電纜。"
+      },
+      {
+        id: 2,
+        name: "2 (Press firmly for 5 seconds)",
+        shortName: "2. 按壓啟用",
+        tag: "Step 4 · 按壓啟用",
+        pos: new THREE.Vector3(0.0, 6.90, 6.10),
+        normal: new THREE.Vector3(0.0, 0.68, 0.73).normalize(),
+        color: 0x34d399,
+        badgeColor: "#34d399",
+        landmark: "【原廠 Step 4】Press 1 2 3 and 4 firmly for 5 seconds（感應器上一體成型之電極點，步驟 4 用力按壓 5 秒啟用濕性凝膠）。",
+        physiology: "作為基準參考電位（Reference），與電極 1、4 形成同側額葉電位差分計算。",
+        clinical: "於步驟 4 與其他電極同時用力按壓 5 秒鐘，使微針穿刺角質層釋放導電凝膠。"
       }
     ];
 
@@ -1270,12 +1289,12 @@
         return sp;
       }
 
-      // Exact official Covidien / Medtronic instruction anchors & titles
+      // Exact official Covidien / Medtronic instruction anchors & titles (Strictly following Step 2: 1, 4, 3 + Bridge of nose)
       const sideAnchors = [
-        { id: 2, name: "② 基準參考 (directly above 1)", color: "#34d399", lineEnd: new THREE.Vector3(-8.5, 6.90, 5.5), spritePos: new THREE.Vector3(-11.8, 6.90, 5.5) },
-        { id: 1, name: "① 前額中央 (~5cm/2in above nose)", color: "#38bdf8", lineEnd: new THREE.Vector3(-8.5, 4.80, 6.5), spritePos: new THREE.Vector3(-11.8, 4.80, 6.5) },
-        { id: 4, name: "④ 眉毛正上方 (directly above eyebrow)", color: "#fbbf24", lineEnd: new THREE.Vector3( 9.0, 3.30, 5.5), spritePos: new THREE.Vector3( 12.2, 3.30, 5.5) },
-        { id: 3, name: "③ 太陽穴 (temple, eye to hairline)", color: "#f43f5e", lineEnd: new THREE.Vector3( 9.0, 1.80, 4.8), spritePos: new THREE.Vector3( 12.2, 1.80, 4.8) }
+        { id: 1, name: "1 at center of forehead (~2in/5cm above nose)", color: "#38bdf8", lineEnd: new THREE.Vector3(-8.5, 4.80, 6.5), spritePos: new THREE.Vector3(-12.5, 4.80, 6.5) },
+        { id: 4, name: "4 directly above eyebrow", color: "#fbbf24", lineEnd: new THREE.Vector3( 9.0, 3.30, 5.5), spritePos: new THREE.Vector3( 12.2, 3.30, 5.5) },
+        { id: 3, name: "3 on temple, between corner of eye and hairline", color: "#f43f5e", lineEnd: new THREE.Vector3( 9.0, 1.80, 4.8), spritePos: new THREE.Vector3( 12.2, 1.80, 4.8) },
+        { id: 2, name: "2 (Press firmly in Step 4)", color: "#34d399", lineEnd: new THREE.Vector3(-8.5, 6.90, 5.5), spritePos: new THREE.Vector3(-12.5, 6.90, 5.5) }
       ];
 
       sideAnchors.forEach(sa => {
