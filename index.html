@@ -105,7 +105,14 @@
         <button id="view-2d-btn" onclick="setViewMode('2d')" class="px-2 py-1 md:px-3 md:py-1.5 lg:px-4 lg:py-2 rounded-lg text-[10px] md:text-xs lg:text-sm font-bold transition-all duration-200 border border-transparent hover:bg-slate-800 text-slate-300">
           📟 2D
         </button>
-        <div class="h-4 w-[1px] bg-slate-700 mx-1 hidden sm:block"></div>
+        <!-- Sensor Placement & Neuroanatomy Explainer Button -->
+        <button id="sensor-modal-btn" onclick="toggleSensorModal()" class="px-2.5 py-1 md:px-3 md:py-1.5 lg:px-3.5 lg:py-2 rounded-lg text-[10px] md:text-xs lg:text-sm font-bold transition-all duration-200 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 border border-amber-500/50 flex items-center gap-1.5">
+          <span>📍</span>
+          <span class="hidden sm:inline">貼片位置機轉</span>
+          <span class="sm:hidden">貼片機轉</span>
+        </button>
+
+        <div class="h-4 w-[1px] bg-slate-700 mx-0.5 hidden sm:block"></div>
         <button id="auto-cycle-btn" onclick="toggleAutoCycle()" class="hidden sm:flex px-2 py-1 md:px-3 md:py-1.5 lg:px-4 lg:py-2 rounded-lg text-[10px] md:text-xs lg:text-sm font-bold transition-all duration-200 bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 border border-cyan-500/40 items-center gap-1">
           <svg id="play-icon" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"></path></svg>
           <span id="auto-cycle-text">自動演示</span>
@@ -314,7 +321,165 @@
     </div>
   </aside>
 
-  <!-- Interactive 3D Spectrogram Core Script -->
+  <!-- Interactive Modal: BIS Sensor Placement & Neuroanatomy Explainer -->
+  <div id="sensor-modal" class="fixed inset-0 z-50 flex items-center justify-center p-3 md:p-6 bg-black/75 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300">
+    <div class="panel-glass border border-cyan-500/40 w-full max-w-4xl max-h-[90vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden transform scale-95 transition-all duration-300" id="sensor-modal-card">
+      
+      <!-- Modal Header -->
+      <div class="px-5 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/60 shrink-0">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl p-2 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40">📍</span>
+          <div>
+            <h2 class="text-base md:text-xl font-black text-white flex items-center gap-2">
+              <span>為何 BIS 傳感器設定黏貼在前額？</span>
+              <span class="text-xs px-2.5 py-0.5 rounded-full bg-cyan-950 text-cyan-300 font-mono border border-cyan-800/60">
+                神經解剖學 &middot; 臨床工程解析
+              </span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-0.5">
+              文獻依據：Purdon et al., <em class="text-slate-300">Anesthesiology</em> (2015) &middot; Mulvey & Klepsch, <em class="text-slate-300">Curr Anesthesiol Rep</em> (2020, PMC7581499)
+            </p>
+          </div>
+        </div>
+        <button onclick="toggleSensorModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center font-bold text-sm border border-slate-700 transition-all">
+          ✕
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-5 md:p-6 overflow-y-auto space-y-6 text-slate-200 text-xs md:text-sm leading-relaxed">
+        
+        <!-- Section 1: Sensor Montage Anatomy Map -->
+        <div class="bg-slate-950/80 p-4 rounded-2xl border border-slate-800 flex flex-col md:flex-row items-center gap-5">
+          <!-- Visual Sensor Schematic -->
+          <div class="shrink-0 w-full md:w-64 bg-slate-900 p-4 rounded-xl border border-cyan-500/30 flex flex-col items-center">
+            <span class="text-xs font-extrabold text-cyan-300 mb-2">BIS Quatro 4 點電極佈局</span>
+            
+            <!-- Simplified Forehead Diagram -->
+            <div class="relative w-48 h-32 bg-slate-800/80 rounded-t-full border border-slate-700 flex flex-col justify-end p-2 overflow-hidden shadow-inner">
+              <span class="absolute top-2 left-1/2 -translate-x-1/2 text-[9px] text-slate-400 font-mono">前額頂部 (髮際線)</span>
+              
+              <!-- Electrode 1 -->
+              <div class="absolute top-7 left-1/2 -translate-x-1/2 flex flex-col items-center">
+                <span class="w-6 h-6 rounded-full bg-cyan-500 text-black font-black text-xs flex items-center justify-center shadow-lg">1</span>
+                <span class="text-[9px] text-cyan-200 mt-0.5 font-bold">Fpz (中央)</span>
+              </div>
+
+              <!-- Electrode 2 -->
+              <div class="absolute bottom-5 left-14 flex flex-col items-center">
+                <span class="w-5 h-5 rounded-full bg-emerald-500 text-black font-black text-[10px] flex items-center justify-center">2</span>
+                <span class="text-[8px] text-emerald-200">接地/參考</span>
+              </div>
+
+              <!-- Electrode 4 (Near Temple) -->
+              <div class="absolute bottom-4 right-10 flex flex-col items-center">
+                <span class="w-5 h-5 rounded-full bg-amber-500 text-black font-black text-[10px] flex items-center justify-center">4</span>
+                <span class="text-[8px] text-amber-200">外眥旁</span>
+              </div>
+
+              <!-- Electrode 3 (Temple) -->
+              <div class="absolute top-10 right-3 flex flex-col items-center">
+                <span class="w-5 h-5 rounded-full bg-purple-500 text-white font-black text-[10px] flex items-center justify-center">3</span>
+                <span class="text-[8px] text-purple-200">FT9 顳區</span>
+              </div>
+            </div>
+            <span class="text-[10px] text-slate-400 mt-2 text-center">雙極導聯斜向跨越額葉與額顳葉</span>
+          </div>
+
+          <!-- Anatomical Montage Explanation -->
+          <div class="space-y-2">
+            <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
+              <span class="text-cyan-400 font-mono">#01</span> 傳感器解剖點位與國際 10-20 腦電系統對應
+            </h3>
+            <p class="text-slate-300 text-xs leading-relaxed">
+              標準 BIS 貼片（如 BIS Quatro）採用<strong>非對稱額顳斜向佈局</strong>：
+            </p>
+            <ul class="text-xs space-y-1 text-slate-300 list-disc list-inside">
+              <li><strong class="text-cyan-300">電極 1 (Fpz)</strong>：黏貼於眉心上方約 5 cm 之額極正中，採集主要額葉皮質電位。</li>
+              <li><strong class="text-emerald-300">電極 2 (Reference/Ground)</strong>：眉毛上方中央，消除環境共模電氣雜訊。</li>
+              <li><strong class="text-purple-300">電極 3 (FT9 / FT10)</strong>：顳部（外眥與髮際線之間），構成主差分導聯軸線。</li>
+              <li><strong class="text-amber-300">電極 4 (Outer Canthus)</strong>：眼角外側，偵測眼球運動偽影與前額肌電活動（EMG）。</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Section 2: Four Core Reasons Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <!-- Reason 1: Alpha Anteriorization -->
+          <div class="bg-slate-900/90 p-4 rounded-2xl border border-cyan-800/50 space-y-2">
+            <div class="flex items-center gap-2">
+              <span class="text-base p-1.5 rounded-lg bg-cyan-950 text-cyan-400 font-bold border border-cyan-700/50">🧠</span>
+              <h4 class="text-sm font-bold text-white">1. 神經電生理關鍵：Alpha 前移現象</h4>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              <strong>清醒閉眼時</strong>，人類大腦最強的 8~12 Hz Alpha 波集中於<strong>後腦枕葉（Occipital cortex）</strong>；<br>
+              <strong>全身麻醉給予 GABA 藥物後</strong>，丘腦網狀核（TRN）超極化阻斷外界感覺傳遞，整組 Alpha 振盪<strong>「向前遷移」聚焦於前額葉皮質（Alpha Anteriorization）</strong>。<br>
+              因此，前額葉正是麻醉深度下<strong>信噪比（SNR）最高、丘腦皮質偶聯最劇烈</strong>的神經觀測窗口！(Purdon et al., 2015)
+            </p>
+          </div>
+
+          <!-- Reason 2: Surgical Accessibility & Hair-free -->
+          <div class="bg-slate-900/90 p-4 rounded-2xl border border-emerald-800/50 space-y-2">
+            <div class="flex items-center gap-2">
+              <span class="text-base p-1.5 rounded-lg bg-emerald-950 text-emerald-400 font-bold border border-emerald-700/50">💇‍♂️</span>
+              <h4 class="text-sm font-bold text-white">2. 手術仰臥體位與無毛髮區便利性</h4>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              手術患者絕大多數採取<strong>仰臥位（Supine position）</strong>，枕部頭皮完全被手術床頭墊壓迫，根本無法黏貼電極；<br>
+              頭頂與後腦均被濃密毛髮覆蓋，傳統 EEG 需塗抹磨砂膏與導電膠，耗時繁瑣；<br>
+              <strong>前額完全無毛髮、皮膚平整、接觸阻抗低</strong>，且位於頭部手術鋪單外側，麻醉照護人員能隨時目視檢查貼片是否脫落。(PMC7581499)
+            </p>
+          </div>
+
+          <!-- Reason 3: Frontotemporal Montage & EMG Monitoring -->
+          <div class="bg-slate-900/90 p-4 rounded-2xl border border-amber-800/50 space-y-2">
+            <div class="flex items-center gap-2">
+              <span class="text-base p-1.5 rounded-lg bg-amber-950 text-amber-400 font-bold border border-amber-700/50">⚡</span>
+              <h4 class="text-sm font-bold text-white">3. 額顳差分軸線與肌電（EMG）監測</h4>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              從前額正中（電極 1）延伸至顳部（電極 3/4）的對角線跨度，剛好橫跨<strong>額葉皮質</strong>與<strong>額肌／顳肌（Frontalis & Temporalis muscles）</strong>；<br>
+              此導聯不僅能精準捕捉大腦皮質微伏（$\mu\text{V}$）級腦波，更能<strong>敏銳監測 30–300 Hz 的高頻肌電活動（EMG）</strong>，作為評估病人疼痛喚醒、體動風險與神經肌肉阻斷的重要指標。(PMC7581499)
+            </p>
+          </div>
+
+          <!-- Reason 4: Historical Algorithm Calibration -->
+          <div class="bg-slate-900/90 p-4 rounded-2xl border border-purple-800/50 space-y-2">
+            <div class="flex items-center gap-2">
+              <span class="text-base p-1.5 rounded-lg bg-purple-950 text-purple-400 font-bold border border-purple-700/50">📊</span>
+              <h4 class="text-sm font-bold text-white">4. 專利黑盒子演算法的資料庫基準</h4>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Aspect Medical 在 1990 年代研發 BIS 演算法時，訓練資料庫中的<strong>數萬名受試者與手術腦波資料，全數是以「前額額顳導聯（Fpz-At1）」為標準基準推導建立</strong>；<br>
+              若臨床隨意更換至頭頂（Cz）或後腦，各頻段功率分佈與相位偶聯完全脫離模型基準，<strong>計算出的 BIS 數值將徹底崩潰失真</strong>！(PMC7581499)
+            </p>
+          </div>
+        </div>
+
+        <!-- Section 3: Clinical Tips -->
+        <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800 flex items-start gap-3">
+          <span class="text-lg">💡</span>
+          <div class="text-xs text-slate-300 leading-relaxed">
+            <strong class="text-white">床邊黏貼臨床要領：</strong>
+            黏貼前務必使用酒精棉片徹底清潔額頭皮膚油脂與汗水，並依序將 1、2、4、3 號電極邊緣壓緊 5 秒，確保阻抗檢測合格（通常須小於 7.5 k$\Omega$）；顳部電極 3 宜避開顳淺動脈搏動處，減少血管脈搏偽影干擾。
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-5 py-3 border-t border-slate-800 bg-slate-900/80 flex items-center justify-between shrink-0">
+        <span class="text-[11px] text-slate-400">
+          📍 臨床提示：請勿將 BIS 傳感器黏貼於頭皮有毛髮處或非額顳標準位點。
+        </span>
+        <button onclick="toggleSensorModal()" class="px-4 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs transition-all shadow-lg">
+          明白關閉
+        </button>
+      </div>
+
+    </div>
+  </div>
   <script>
     // --- Global Variables & Scene Setup ---
     const container = document.getElementById('canvas-container');
@@ -906,6 +1071,22 @@
         panel.classList.remove('translate-x-0', 'opacity-100', 'pointer-events-auto');
         icon.textContent = "📊";
         text.textContent = "監測數據與決策";
+      }
+    }
+
+    // Sensor Placement Modal Toggle
+    function toggleSensorModal() {
+      const modal = document.getElementById('sensor-modal');
+      const card = document.getElementById('sensor-modal-card');
+      const isOpen = !modal.classList.contains('opacity-0');
+      if (isOpen) {
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        card.classList.add('scale-95');
+        card.classList.remove('scale-100');
+      } else {
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        card.classList.remove('scale-95');
+        card.classList.add('scale-100');
       }
     }
 
