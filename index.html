@@ -809,24 +809,14 @@
     const electrodePulsingRings = [];
 
     // ─────────────────────────────────────────────────────────────────────
-    // BIS Quatro XP electrode positions — derived from the packaging diagram
+    // BIS Quatro XP Electrode positions (per official packaging diagram)
     //
-    //  Sensor layout (right-side oblique view, connector exits toward right ear):
+    // Face front view (+z toward camera), patient's RIGHT = +x (viewer's left)
     //
-    //   [2] Reference  ← top of forehead, near hairline (midline)
-    //   [1] Main EEG  ← forehead center, 4 cm above nasion (midline, between eyebrows)
-    //         \
-    //          \─── flexible strip curves diagonally across right brow ───\
-    //                                                                      [4] Temple (FT9/10)
-    //                                                                      [3] Outer Canthus / Ground-EMG
-    //                                                                           └── connector to monitor
-    //
-    //  3D head coordinate system (Three.js):
-    //   +X = patient's LEFT  (viewer's right in front view)
-    //   +Y = UP
-    //   +Z = FRONT (face toward camera)
-    //
-    //  Electrodes 4 & 3 are on the patient's RIGHT side of the face (+X).
+    //   [2] Reference  — midline forehead, near hairline (y≈5.8)
+    //   [1] Main EEG   — midline forehead center, ~4cm above nasion (y≈3.5)
+    //   [4] Temple     — right lateral forehead/temporal (x≈5, y≈2.8)
+    //   [3] Ground/EMG — right outer canthus/zygoma (x≈4.8, y≈0.0)
     // ─────────────────────────────────────────────────────────────────────
     const electrodes = [
       {
@@ -834,9 +824,8 @@
         name: "電極 1 (前額中央 Fpz+4cm)",
         shortName: "1. 前額",
         tag: "主信號輸入端",
-        // Midline forehead, ~4 cm above nasion — sits on the flat frontal surface
-        pos: new THREE.Vector3(0.0, 3.80, 7.60),
-        normal: new THREE.Vector3(0.0, 0.30, 0.95).normalize(),
+        pos: new THREE.Vector3(0.0, 3.50, 7.88),
+        normal: new THREE.Vector3(0.0, 0.24, 0.97).normalize(),
         color: 0x38bdf8,
         badgeColor: "#38bdf8",
         landmark: "前額正中線，鼻樑（Fpz）上方約 4–5 公分處（眉毛正上方中心平坦處）。",
@@ -848,9 +837,8 @@
         name: "電極 2 (參考電極 Reference)",
         shortName: "2. 參考",
         tag: "基準參考端",
-        // Midline forehead, ~2–3 cm above electrode 1, near hairline
-        pos: new THREE.Vector3(0.0, 6.00, 6.50),
-        normal: new THREE.Vector3(0.0, 0.55, 0.84).normalize(),
+        pos: new THREE.Vector3(0.0, 5.80, 6.70),
+        normal: new THREE.Vector3(0.0, 0.50, 0.87).normalize(),
         color: 0x34d399,
         badgeColor: "#34d399",
         landmark: "電極 1 正上方約 3 公分處，靠近髮際線但仍在無毛髮皮膚上。",
@@ -862,9 +850,8 @@
         name: "電極 4 (顳部電極 FT9/FT10)",
         shortName: "4. 顳部",
         tag: "額顳導聯差分端",
-        // Right temple: lateral forehead / temporal bone, between outer canthus & hairline
-        pos: new THREE.Vector3(4.80, 2.60, 5.80),
-        normal: new THREE.Vector3(0.76, 0.18, 0.62).normalize(),
+        pos: new THREE.Vector3(5.00, 2.80, 5.18),
+        normal: new THREE.Vector3(0.78, 0.14, 0.61).normalize(),
         color: 0xfbbf24,
         badgeColor: "#fbbf24",
         landmark: "顳側太陽穴，外眼角與鬢角髮際線之間的平坦區域。",
@@ -876,9 +863,8 @@
         name: "電極 3 (地線與外眼角 Ground/EMG)",
         shortName: "3. 外眼角",
         tag: "系統接地 & EMG",
-        // Right outer canthus / lateral orbital margin / zygomatic region
-        pos: new THREE.Vector3(4.50, 0.80, 6.55),
-        normal: new THREE.Vector3(0.68, 0.02, 0.73).normalize(),
+        pos: new THREE.Vector3(4.80, -0.10, 6.28),
+        normal: new THREE.Vector3(0.67, -0.02, 0.74).normalize(),
         color: 0xf43f5e,
         badgeColor: "#f43f5e",
         landmark: "外眼角（Outer canthus）與顴弓（Zygomatic arch）交界處，髫角前側。",
@@ -1103,85 +1089,46 @@
       const hairlineMat = new THREE.MeshBasicMaterial({ color: 0x334155 });
       group.add(new THREE.Mesh(hairlineGeom, hairlineMat));
 
-      // 7. Directly Attached Circular BIS Quatro Electrode Pads (1, 2, 4, 3)
-      // Placed directly on facial anatomical landmarks without blocking connector tubes
+      // 7. BIS Quatro Electrode Pads — 4 circular discs placed directly on face surface
+      // Strip / tube removed per user request — pads only
       electrodes.forEach(el => {
         const elGroup = new THREE.Group();
         elGroup.position.copy(el.pos);
-        
-        // Orient electrode pad flat against the skull surface normal
+
+        // Orient disc to face outward along the skin surface normal
         elGroup.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), el.normal);
 
-        // Circular medical sensor pad with illuminated number printed directly inside
-        const discGeom = new THREE.CircleGeometry(0.85, 32);
+        // Medical sensor disc: white adhesive pad with coloured number
+        const discGeom = new THREE.CircleGeometry(0.82, 48);
         const discTex = makeElectrodeDiscTexture(el.id, el.badgeColor);
         const discMat = new THREE.MeshBasicMaterial({
           map: discTex,
-          transparent: true,
-          side: THREE.DoubleSide
+          transparent: false,
+          side: THREE.FrontSide,
+          depthWrite: true
         });
         const discMesh = new THREE.Mesh(discGeom, discMat);
-        discMesh.position.z += 0.04;
+        discMesh.position.z += 0.06;          // push slightly off surface to avoid z-fight
         discMesh.userData = { electrodeId: el.id };
         elGroup.add(discMesh);
         clickableElectrodeMeshes.push(discMesh);
 
-        // Glowing pulsing beacon ring around electrode pad
-        const ringGeom = new THREE.RingGeometry(0.92, 1.32, 32);
+        // Thin glowing indicator ring — small enough that adjacent electrodes DON'T overlap
+        const ringGeom = new THREE.RingGeometry(0.85, 1.05, 48);
         const ringMat = new THREE.MeshBasicMaterial({
           color: el.color,
-          side: THREE.DoubleSide,
+          side: THREE.FrontSide,
           transparent: true,
-          opacity: 0.70
+          opacity: 0.80
         });
         const beaconRing = new THREE.Mesh(ringGeom, ringMat);
-        beaconRing.position.z += 0.05;
+        beaconRing.position.z += 0.07;
         beaconRing.userData = { electrodeId: el.id };
         elGroup.add(beaconRing);
         electrodePulsingRings.push(beaconRing);
 
         group.add(elGroup);
       });
-
-      // 7b. BIS Quatro sensor strip connecting the pads (thin, surface-hugging)
-      // Route: 2(forehead top) → 1(forehead center) → arc across brow → 4(temple) → 3(canthus) → connector tail
-      const stripPoints = [
-        new THREE.Vector3(0.0, 6.00, 6.52),       // Electrode 2 (reference, top)
-        new THREE.Vector3(0.0, 5.00, 7.20),        // Bridge down midline forehead
-        new THREE.Vector3(0.0, 3.80, 7.62),        // Electrode 1 (main, center forehead)
-        new THREE.Vector3(1.5, 3.30, 7.35),        // Begin diagonal arc across right brow
-        new THREE.Vector3(3.0, 3.00, 6.75),        // Brow-temple junction
-        new THREE.Vector3(4.80, 2.60, 5.82),       // Electrode 4 (temple)
-        new THREE.Vector3(4.65, 1.70, 6.20),       // Short down-segment
-        new THREE.Vector3(4.50, 0.80, 6.57),       // Electrode 3 (outer canthus)
-        new THREE.Vector3(5.8, 0.20, 5.0)          // Connector tail toward ear
-      ];
-      const stripCurve = new THREE.CatmullRomCurve3(stripPoints);
-
-      // Thin, subtle medical-white strip substrate (NOT a thick tube that clips through)
-      const stripGeom = new THREE.TubeGeometry(stripCurve, 64, 0.12, 8, false);
-      const stripMat = new THREE.MeshStandardMaterial({
-        color: 0xdde3ea,
-        roughness: 0.45,
-        metalness: 0.05,
-        transparent: true,
-        opacity: 0.88
-      });
-      const stripMesh = new THREE.Mesh(stripGeom, stripMat);
-      group.add(stripMesh);
-
-      // Cyan conductive trace line running along strip center
-      const traceGeom = new THREE.TubeGeometry(stripCurve, 64, 0.025, 6, false);
-      const traceMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.7 });
-      group.add(new THREE.Mesh(traceGeom, traceMat));
-
-      // Small connector plug at the ear end
-      const plugGeom = new THREE.CylinderGeometry(0.35, 0.35, 0.8, 16);
-      const plugMat = new THREE.MeshStandardMaterial({ color: 0x1e3a5f, roughness: 0.4, metalness: 0.3 });
-      const plugMesh = new THREE.Mesh(plugGeom, plugMat);
-      plugMesh.position.set(5.8, 0.20, 5.0);
-      plugMesh.rotation.set(0, 0, Math.PI / 2);
-      group.add(plugMesh);
 
       // 8. Side Leader-Lines & Compact Labels (Positioned to the sides, NEVER blocking face!)
       const calloutsGroup = new THREE.Group();
@@ -1240,10 +1187,10 @@
       }
 
       const sideAnchors = [
-        { id: 2, name: "參考電極",    color: "#34d399", lineEnd: new THREE.Vector3(-8.0, 6.00, 5.5),  spritePos: new THREE.Vector3(-10.8, 6.00, 5.5)  },
-        { id: 1, name: "前額中央",    color: "#38bdf8", lineEnd: new THREE.Vector3(-8.0, 3.80, 6.5),  spritePos: new THREE.Vector3(-10.8, 3.80, 6.5)  },
-        { id: 4, name: "顳部眉外",    color: "#fbbf24", lineEnd: new THREE.Vector3( 9.0, 2.60, 4.5),  spritePos: new THREE.Vector3( 11.8, 2.60, 4.5)  },
-        { id: 3, name: "外眼角/肌電", color: "#f43f5e", lineEnd: new THREE.Vector3( 9.0, 0.80, 5.5),  spritePos: new THREE.Vector3( 11.8, 0.80, 5.5)  }
+        { id: 2, name: "參考電極",    color: "#34d399", lineEnd: new THREE.Vector3(-8.5, 5.80, 5.5),  spritePos: new THREE.Vector3(-11.5, 5.80, 5.5)  },
+        { id: 1, name: "前額中央",    color: "#38bdf8", lineEnd: new THREE.Vector3(-8.5, 3.50, 6.5),  spritePos: new THREE.Vector3(-11.5, 3.50, 6.5)  },
+        { id: 4, name: "顳部眉外",    color: "#fbbf24", lineEnd: new THREE.Vector3( 9.5, 2.80, 4.0),  spritePos: new THREE.Vector3( 12.5, 2.80, 4.0)  },
+        { id: 3, name: "外眼角/肌電", color: "#f43f5e", lineEnd: new THREE.Vector3( 9.5, -0.10, 5.0), spritePos: new THREE.Vector3( 12.5, -0.10, 5.0) }
       ];
 
       sideAnchors.forEach(sa => {
