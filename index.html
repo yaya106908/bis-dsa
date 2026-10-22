@@ -461,19 +461,19 @@
           </div>
         </div>
       </div>
-      <!-- Electrode Selection Tabs (1, 4, 3 per Step 2, and 2 per Step 4) -->
+      <!-- Electrode Selection Tabs (Physical order along sensor strip: 1 -> 2 -> 4 -> 3) -->
       <div class="grid grid-cols-4 gap-1.5">
         <button onclick="selectElectrode(1)" id="el-tab-1" class="py-1.5 px-1 rounded-lg text-[11px] font-extrabold border transition-all text-center bg-cyan-500/20 text-cyan-300 border-cyan-500/60 shadow-lg shadow-cyan-500/20">
           [ 1 ] 前額中央
+        </button>
+        <button onclick="selectElectrode(2)" id="el-tab-2" class="py-1.5 px-1 rounded-lg text-[11px] font-extrabold border border-slate-700 bg-slate-900/80 text-slate-300 hover:text-white transition-all text-center">
+          [ 2 ] 1與4中間
         </button>
         <button onclick="selectElectrode(4)" id="el-tab-4" class="py-1.5 px-1 rounded-lg text-[11px] font-extrabold border border-slate-700 bg-slate-900/80 text-slate-300 hover:text-white transition-all text-center">
           [ 4 ] 眉毛上方
         </button>
         <button onclick="selectElectrode(3)" id="el-tab-3" class="py-1.5 px-1 rounded-lg text-[11px] font-extrabold border border-slate-700 bg-slate-900/80 text-slate-300 hover:text-white transition-all text-center">
           [ 3 ] 太陽穴
-        </button>
-        <button onclick="selectElectrode(2)" id="el-tab-2" class="py-1.5 px-1 rounded-lg text-[11px] font-extrabold border border-slate-700 bg-slate-900/80 text-slate-300 hover:text-white transition-all text-center">
-          [ 2 ] 按壓點
         </button>
       </div>
       <!-- Dynamic Electrode Detail Card -->
@@ -930,12 +930,25 @@
         clinical: "原廠定位基準點：以鼻樑（bridge of nose）為基準向上量測 2 英吋（約 5 公分）。"
       },
       {
+        id: 2,
+        name: "2 (between 1 & 4 · Press firmly for 5 seconds)",
+        shortName: "2. 1與4中間",
+        tag: "Step 4 · 按壓啟用",
+        pos: new THREE.Vector3(1.65, 4.25, 7.42),
+        normal: new THREE.Vector3(0.30, 0.40, 0.86).normalize(),
+        color: 0x34d399,
+        badgeColor: "#34d399",
+        landmark: "【原廠 Step 4】位於電極 1 與 4 之間的斜向貼片本體上；步驟 4 用力按壓 5 秒啟用濕性凝膠。",
+        physiology: "作為基準參考電位（Reference），與電極 1、4 形成同側額葉電位差分計算。",
+        clinical: "位於 1 號與 4 號之間，於步驟 4 與其他電極同時用力按壓 5 秒鐘，使微針穿刺角質層釋放導電凝膠。"
+      },
+      {
         id: 4,
         name: "4 (directly above eyebrow)",
         shortName: "4. 眉毛上方",
         tag: "Step 2 · 眉上基準",
-        pos: new THREE.Vector3(2.80, 3.30, 7.25),
-        normal: new THREE.Vector3(0.50, 0.32, 0.80).normalize(),
+        pos: new THREE.Vector3(3.30, 3.40, 7.10),
+        normal: new THREE.Vector3(0.52, 0.30, 0.80).normalize(),
         color: 0xfbbf24,
         badgeColor: "#fbbf24",
         landmark: "【原廠 Step 2】4 directly above eyebrow（貼於眉毛正上方）。",
@@ -947,26 +960,13 @@
         name: "3 (on temple, between corner of eye and hairline)",
         shortName: "3. 太陽穴",
         tag: "Step 2 · 太陽穴基準",
-        pos: new THREE.Vector3(5.20, 1.80, 5.75),
+        pos: new THREE.Vector3(5.30, 1.80, 5.75),
         normal: new THREE.Vector3(0.80, 0.12, 0.58).normalize(),
         color: 0xf43f5e,
         badgeColor: "#f43f5e",
         landmark: "【原廠 Step 2】3 on temple, between corner of eye and hairline（貼於太陽穴，眼睛外角與髮際線之間）。",
         physiology: "儀器系統接地保護（Ground），並緊密橫跨顳肌，專責監測 30–300 Hz 高頻肌電活動（EMG）！",
         clinical: "原廠外側定位點：位於外眼角與髮際線間之平坦太陽穴；外端 sensor tab 連接 PIC 電纜。"
-      },
-      {
-        id: 2,
-        name: "2 (Press firmly for 5 seconds)",
-        shortName: "2. 按壓啟用",
-        tag: "Step 4 · 按壓啟用",
-        pos: new THREE.Vector3(0.0, 6.90, 6.10),
-        normal: new THREE.Vector3(0.0, 0.68, 0.73).normalize(),
-        color: 0x34d399,
-        badgeColor: "#34d399",
-        landmark: "【原廠 Step 4】Press 1 2 3 and 4 firmly for 5 seconds（感應器上一體成型之電極點，步驟 4 用力按壓 5 秒啟用濕性凝膠）。",
-        physiology: "作為基準參考電位（Reference），與電極 1、4 形成同側額葉電位差分計算。",
-        clinical: "於步驟 4 與其他電極同時用力按壓 5 秒鐘，使微針穿刺角質層釋放導電凝膠。"
       }
     ];
 
@@ -1109,17 +1109,15 @@
       group.add(neckMesh);
 
       // 3. Official Covidien BIS Quatro Sensor Adhesive Strip (Conforming flexible backing band)
-      // Connects: 2 (Midline top) -> 1 (Midline 5cm above nose) -> 4 (Above eyebrow) -> 3 (Temple) -> PIC Sensor Tab
+      // Follows exact physical path: 1 (Forehead center) -> 2 (Between 1 and 4) -> 4 (Above eyebrow) -> 3 (Temple) -> PIC Tab
       const stripPoints = [
-        new THREE.Vector3(0.00, 7.10, 6.00),  // Upper edge above 2
-        new THREE.Vector3(0.00, 6.90, 6.18),  // Electrode 2
-        new THREE.Vector3(0.00, 5.85, 6.98),  // Midline connection
-        new THREE.Vector3(0.00, 4.80, 7.63),  // Electrode 1
-        new THREE.Vector3(1.35, 4.05, 7.50),  // Diagonal curve
-        new THREE.Vector3(2.80, 3.30, 7.32),  // Electrode 4 (above eyebrow)
-        new THREE.Vector3(4.05, 2.50, 6.62),  // Curving toward temple
-        new THREE.Vector3(5.20, 1.80, 5.82),  // Electrode 3 (temple)
-        new THREE.Vector3(6.15, 1.30, 4.90)   // Sensor tab extending toward PIC cable
+        new THREE.Vector3(-0.65, 4.95, 7.45), // Medial tip just past 1
+        new THREE.Vector3( 0.00, 4.80, 7.63), // Electrode 1
+        new THREE.Vector3( 1.65, 4.25, 7.50), // Electrode 2 (between 1 and 4)
+        new THREE.Vector3( 3.30, 3.40, 7.18), // Electrode 4 (above eyebrow)
+        new THREE.Vector3( 4.35, 2.60, 6.55), // Curving toward temple
+        new THREE.Vector3( 5.30, 1.80, 5.82), // Electrode 3 (temple)
+        new THREE.Vector3( 6.25, 1.30, 4.88)  // Sensor tab extending toward PIC cable
       ];
       const stripCurve = new THREE.CatmullRomCurve3(stripPoints);
       const stripGeom = new THREE.TubeGeometry(stripCurve, 64, 0.26, 12, false);
@@ -1143,12 +1141,11 @@
         roughness: 0.3
       });
       const tabMesh = new THREE.Mesh(tabGeom, tabMat);
-      tabMesh.position.set(6.15, 1.30, 4.90);
+      tabMesh.position.set(6.25, 1.30, 4.88);
       tabMesh.rotation.set(0.2, 0.8, -0.4);
       group.add(tabMesh);
 
       // 4. Dotted Alignment Guidelines (對準定位點導引線)
-      // Visualizes Step 2: 鼻樑基準點 -> 5cm -> [1] -> [2] & [1] -> [4] -> [3]
       const guideMat = new THREE.LineDashedMaterial({
         color: 0x38bdf8,
         dashSize: 0.35,
@@ -1158,27 +1155,27 @@
         opacity: 0.85
       });
 
-      // Vertical Midline Axis: 鼻樑基準 -> 1 號 (5cm / 2in) -> 2 號 (Reference)
+      // Vertical Midline Axis: 鼻樑基準 -> 1 號 (~5cm / 2in above bridge of nose)
       const vPoints = [
         new THREE.Vector3(0, 1.85, 7.95),  // 鼻樑 (Bridge of nose)
-        new THREE.Vector3(0, 4.80, 7.72),  // 1 號 (眉心上約 5cm / 2in)
-        new THREE.Vector3(0, 6.90, 6.28)   // 2 號 (1 號上約 2-3cm)
+        new THREE.Vector3(0, 4.80, 7.72)   // 1 號 (前額正中央)
       ];
       const vGeom = new THREE.BufferGeometry().setFromPoints(vPoints);
       const vLine = new THREE.Line(vGeom, guideMat);
       vLine.computeLineDistances();
       group.add(vLine);
 
-      // Lateral Brow-to-Temple Axis: 1 號 -> 4 號 -> 3 號
-      const lPoints = [
-        new THREE.Vector3(0, 4.80, 7.72),     // 1 號 (前額中央)
-        new THREE.Vector3(2.80, 3.30, 7.42),  // 4 號 (眉毛正上方)
-        new THREE.Vector3(5.20, 1.80, 5.92)   // 3 號 (太陽穴)
+      // Diagonal Sensor Axis: 1 號 -> 2 號 (中間) -> 4 號 -> 3 號
+      const dPoints = [
+        new THREE.Vector3(0.00, 4.80, 7.72),  // 1 號
+        new THREE.Vector3(1.65, 4.25, 7.58),  // 2 號 (1 與 4 中間)
+        new THREE.Vector3(3.30, 3.40, 7.26),  // 4 號 (眉毛上方)
+        new THREE.Vector3(5.30, 1.80, 5.92)   // 3 號 (太陽穴)
       ];
-      const lGeom = new THREE.BufferGeometry().setFromPoints(lPoints);
-      const lLine = new THREE.Line(lGeom, guideMat);
-      lLine.computeLineDistances();
-      group.add(lLine);
+      const dGeom = new THREE.BufferGeometry().setFromPoints(dPoints);
+      const dLine = new THREE.Line(dGeom, guideMat);
+      dLine.computeLineDistances();
+      group.add(dLine);
 
       // Glowing Nasion (鼻樑基準點 / Bridge of nose) Marker Pin
       const nasionGeom = new THREE.SphereGeometry(0.24, 16, 16);
@@ -1187,7 +1184,7 @@
       nasionMarker.position.set(0, 1.85, 7.95);
       group.add(nasionMarker);
 
-      // 5. BIS Quatro 4 Electrode Pads (1, 2, 4, 3) - Clean, Zero-Clipping Floating Discs
+      // 5. BIS Quatro 4 Electrode Pads (1, 2, 4, 3) - Perfectly Proportioned, Zero Clipping
       electrodes.forEach(el => {
         const elGroup = new THREE.Group();
         elGroup.position.copy(el.pos);
@@ -1195,8 +1192,8 @@
         // Orient disc flat against skull surface normal
         elGroup.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), el.normal);
 
-        // Medical sensor disc: white adhesive pad with high-contrast colored number
-        const discGeom = new THREE.CircleGeometry(0.85, 48);
+        // Medical sensor disc: compact radius (0.68) prevents overlap while keeping numbers bold & crisp
+        const discGeom = new THREE.CircleGeometry(0.68, 48);
         const discTex = makeElectrodeDiscTexture(el.id, el.badgeColor);
         const discMat = new THREE.MeshBasicMaterial({
           map: discTex,
@@ -1214,7 +1211,7 @@
         clickableElectrodeMeshes.push(discMesh);
 
         // Glowing pulsing indicator ring
-        const ringGeom = new THREE.RingGeometry(0.88, 1.15, 48);
+        const ringGeom = new THREE.RingGeometry(0.72, 0.95, 48);
         const ringMat = new THREE.MeshBasicMaterial({
           color: el.color,
           side: THREE.FrontSide,
@@ -1289,12 +1286,12 @@
         return sp;
       }
 
-      // Exact official Covidien / Medtronic instruction anchors & titles (Strictly following Step 2: 1, 4, 3 + Bridge of nose)
+      // Exact official Covidien / Medtronic instruction anchors & titles
       const sideAnchors = [
         { id: 1, name: "1 at center of forehead (~2in/5cm above nose)", color: "#38bdf8", lineEnd: new THREE.Vector3(-8.5, 4.80, 6.5), spritePos: new THREE.Vector3(-12.5, 4.80, 6.5) },
-        { id: 4, name: "4 directly above eyebrow", color: "#fbbf24", lineEnd: new THREE.Vector3( 9.0, 3.30, 5.5), spritePos: new THREE.Vector3( 12.2, 3.30, 5.5) },
-        { id: 3, name: "3 on temple, between corner of eye and hairline", color: "#f43f5e", lineEnd: new THREE.Vector3( 9.0, 1.80, 4.8), spritePos: new THREE.Vector3( 12.2, 1.80, 4.8) },
-        { id: 2, name: "2 (Press firmly in Step 4)", color: "#34d399", lineEnd: new THREE.Vector3(-8.5, 6.90, 5.5), spritePos: new THREE.Vector3(-12.5, 6.90, 5.5) }
+        { id: 2, name: "2 (between 1 & 4 · Press in Step 4)", color: "#34d399", lineEnd: new THREE.Vector3(-8.0, 6.80, 6.0), spritePos: new THREE.Vector3(-12.0, 6.80, 6.0) },
+        { id: 4, name: "4 directly above eyebrow", color: "#fbbf24", lineEnd: new THREE.Vector3( 9.0, 3.40, 5.5), spritePos: new THREE.Vector3( 12.2, 3.40, 5.5) },
+        { id: 3, name: "3 on temple, between corner of eye and hairline", color: "#f43f5e", lineEnd: new THREE.Vector3( 9.0, 1.80, 4.8), spritePos: new THREE.Vector3( 12.2, 1.80, 4.8) }
       ];
 
       sideAnchors.forEach(sa => {
@@ -1314,7 +1311,7 @@
       const nasionLine = createLeaderLine(new THREE.Vector3(0, 1.85, 7.95), new THREE.Vector3(-8.5, 1.85, 7.0), "#38bdf8");
       calloutsGroup.add(nasionLine);
 
-      const nasionSprite = makeSidePillSprite("★", "鼻樑基準 (Bridge of nose)", "#38bdf8");
+      const nasionSprite = makeSidePillSprite("★", "Bridge of nose (鼻樑基準)", "#38bdf8");
       nasionSprite.position.set(-11.8, 1.85, 7.0);
       calloutsGroup.add(nasionSprite);
 
